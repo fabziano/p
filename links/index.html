@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Faculdade</title>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><path fill='%2300e88f' d='M40 12H22l-4-4H8c-2.2 0-4 1.8-4 4v24c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V16c0-2.2-1.8-4-4-4z'/></svg>">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{background:#191a1a;}
+        body{width:100%;min-height:100dvh;display:flex;flex-direction:column;font-family:system-ui,sans-serif;color:#fff}
+        main{flex:1;width:100%}
+        main a{all:unset;display:flex;padding-left:1rem;cursor:pointer;align-items:center;gap:.5rem;min-height:4.35rem;border-bottom:1px solid #282f3d;font:inherit;-webkit-tap-highlight-color:transparent}
+        main svg{flex-shrink:0;width:4rem!important;height:4rem!important}
+        span{font-size:.8rem;color:#888d9c;display:block}
+    </style>
+</head>
+
+<body>
+    <svg style="display: none">
+        <symbol id="folder" viewBox="0 0 48 48">
+            <path fill="#00e88f"
+                d="M40 12H22l-4-4H8c-2.2 0-4 1.8-4 4v24c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V16c0-2.2-1.8-4-4-4z"></path>
+        </symbol>
+    </svg>
+    <main>
+        <a href="https://jacad.uniamerica.br/academico/aluno-v2/login" rel="noopener noreferrer" target="_blank">
+            <svg>
+                <use href="#folder"></use>
+            </svg>
+            <div class="info">
+                <p>JACAD</p>
+                <span>Portal do Aluno.</span>
+            </div>
+        </a>
+        <a href="https://uniamerica.blackboard.com/ultra/course" rel="noopener noreferrer" target="_blank">
+            <svg>
+                <use href="#folder"></use>
+            </svg>
+
+            <div class="info">
+                <p>Blackboard</p>
+                <span>Plataforma dos Projetos.</span>
+            </div>
+        </a>
+        <a href="https://uniamerica.br/docs/calendarios-academicos/calendario-academico-2026-campus-boulevard.pdf"
+            target="_blank" rel="noopener noreferrer">
+            <svg>
+                <use href="#folder"></use>
+            </svg>
+            <div class="info">
+                <p>Calendário Acadêmico</p>
+                <span>Datas da Faculdade.</span>
+            </div>
+        </a>
+        <a href="/revisao/"
+            target="_blank" rel="noopener noreferrer">
+            <svg>
+                <use href="#folder"></use>
+            </svg>
+            <div class="info">
+                <p>Revisão</p>
+                <span>Revisão da Avaliação Mensal.</span>
+            </div>
+        </a>
+        <a href="https://drive.google.com/" rel="noopener noreferrer" target="_blank">
+            <svg>
+                <use href="#folder"></use>
+            </svg>
+            <div class="info">
+                <p>Drive</p>
+                <span>Armazenamento de arquivos em nuvem.</span>
+            </div>
+        </a>
+        <a href="https://gemini.google.com/" rel="noopener noreferrer" target="_blank">
+            <svg>
+                <use href="#folder"></use>
+            </svg>
+            <div class="info">
+                <p>Gemini</p>
+                <span>IA generativa.</span>
+            </div>
+        </a>
+    </main>
+</body>
+
+</html>

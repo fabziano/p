@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Revisão</title>
+<style>
+:root{--fundo:#121212;--texto:#ffffff;--cinza:#b3b3b3;--linha:#282828}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--fundo);color:var(--texto);font-family:ui-sans-serif,system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center}
+main{width:100%;max-width:28.125rem;display:flex;flex-direction:column;padding:1.5rem}
+.capa{width:100%;aspect-ratio:1/1;background:#282828;border-radius:.5rem;box-shadow:0 .5rem 2rem rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;margin:1.25rem 0}
+h2{margin:0 0 2rem;font-size:1.5rem;font-weight:700;min-height:1.2em}
+#barra{width:100%;height:.25rem;background:rgba(255,255,255,0.1);border-radius:.125rem;cursor:pointer;position:relative;margin-bottom:.5rem}
+#cheio{height:100%;background:#fff;border-radius:.125rem;width:0%;will-change:width}
+.tempo{display:flex;justify-content:space-between;margin-bottom:2rem;font-size:.75rem;color:var(--cinza)}
+.controles{display:flex;justify-content:center;align-items:center;gap:2.5rem;margin-bottom:2.5rem}
+button{background:none;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;user-select:none;-webkit-tap-highlight-color:transparent}
+.play{width:4.5rem;height:4.5rem;background:#fff;color:#000;border-radius:50%;justify-content:center}
+#lista{display:flex;flex-direction:column;border-top:1px solid var(--linha)}
+input{display:none}
+label{display:flex; align-items:center;width:100%;min-height:60px;padding:0 1rem;border-bottom:1px solid var(--linha);cursor:pointer;-webkit-tap-highlight-color:transparent}
+input:checked+label{background-color:#282828}
+</style>
+</head>
+<body>
+<main>
+<div class="capa">
+<svg width="200" height="200" viewBox="0 0 24 24" fill="#444"><path d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z"/></svg>
+</div>
+<h2 id="titulo">OLTP vs OLAP</h2>
+<div id="barra"><div id="cheio"></div></div>
+<div class="tempo"><time id="atual">0:00</time><time id="total">0:00</time></div>
+<nav class="controles">
+<button id="voltar"><svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+<button class="play" id="botao">
+<svg id="liga" width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+<svg id="para" width="36" height="36" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+</button>
+<button id="pular"><svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+</nav>
+<section id="lista">
+<input type="radio" name="r" id="r0" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/1.wav" checked><label for="r0">OLTP vs OLAP</label>
+<input type="radio" name="r" id="r1" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/2.wav"><label for="r1">Centralização Drogarias XPTO</label>
+<input type="radio" name="r" id="r2" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/3.wav"><label for="r2">Processo ETL</label>
+<input type="radio" name="r" id="r3" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/4.wav"><label for="r3">Granularidade</label>
+<input type="radio" name="r" id="r4" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/5.wav"><label for="r4">Star Schema vs Snowflake</label>
+<input type="radio" name="r" id="r5" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/6.wav"><label for="r5">Operações Drill-Down</label>
+<input type="radio" name="r" id="r6" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/7.wav"><label for="r6">BI Seleção Alemã</label>
+<input type="radio" name="r" id="r7" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/8.wav"><label for="r7">Propriedades do DW</label>
+<input type="radio" name="r" id="r8" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/9.wav"><label for="r8">Sistemas Especialistas</label>
+<input type="radio" name="r" id="r9" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/10.wav"><label for="r9">Churn: Descritiva vs Preditiva</label>
+<input type="radio" name="r" id="r10" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/11.wav"><label for="r10">Data Storytelling</label>
+<input type="radio" name="r" id="r11" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/12.wav"><label for="r11">Viés na IA</label>
+<input type="radio" name="r" id="r12" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/13.wav"><label for="r12">IA vs Analistas</label>
+<input type="radio" name="r" id="r13" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/14.wav"><label for="r13">Surrogate Keys</label>
+<input type="radio" name="r" id="r14" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/15.wav"><label for="r14">Análise Prescritiva</label>
+<input type="radio" name="r" id="r15" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/16.wav"><label for="r15">Operações OLAP</label>
+<input type="radio" name="r" id="r16" data-url="https://raw.githubusercontent.com/fabziano/revisao/main/audio/17.wav"><label for="r16">Dicas</label>
+</section>
+</main>
+<audio id="s" src="https://raw.githubusercontent.com/fabziano/revisao/main/audio/1.wav"></audio>
+<script>
+const d=document, s=d.getElementById('s'), t=d.getElementById('titulo'), c=d.getElementById('cheio'), a=d.getElementById('atual'), z=d.getElementById('total'), b=d.getElementById('barra'), l=d.getElementById('liga'), p=d.getElementById('para'), btn=d.getElementById('botao'), list=d.getElementById('lista');
+let cur=0, tot=17;
+const fmt=v=>isNaN(v)?"0:00":`${(v/60)|0}:${((v%60)|0).toString().padStart(2,'0')}`;
+const ui=v=>{l.style.display=v?'none':'block';p.style.display=v?'block':'none'};
+const play=(u,n,i)=>{cur=i; if(s.src!==u){s.src=u;t.textContent=n} s.play();ui(1)};
+list.onchange=e=>{const i=e.target; play(i.dataset.url, i.nextElementSibling.textContent, parseInt(i.id.slice(1)))};
+const nav=v=>{cur=(cur+v+tot)%tot; d.getElementById(`r${cur}`).click()};
+d.getElementById('voltar').onclick=()=>nav(-1);
+d.getElementById('pular').onclick=()=>nav(1);
+btn.onclick=()=>s.paused?(s.play(),ui(1)):(s.pause(),ui(0));
+s.ontimeupdate=()=>{const pc=(s.currentTime/s.duration)*100; c.style.width=pc+'%'; a.textContent=fmt(s.currentTime)};
+s.onloadedmetadata=()=>z.textContent=fmt(s.duration);
+s.onended=()=>nav(1);
+b.onclick=e=>{const r=b.getBoundingClientRect(); s.currentTime=((e.clientX-r.left)/r.width)*s.duration};
+</script>
+</body>
+</html>
