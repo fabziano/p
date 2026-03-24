@@ -4,31 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Revisão</title>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><path fill='%2300e88f' d='M40 12H22l-4-4H8c-2.2 0-4 1.8-4 4v24c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V16c0-2.2-1.8-4-4-4z'/></svg>">
 <style>
-:root{--fundo:#121212;--texto:#ffffff;--cinza:#b3b3b3;--linha:#282828}
+:root{--fundo:#000;--texto:#ffffff;--cinza:#b3b3b3;--linha:#282828}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--fundo);color:var(--texto);font-family:ui-sans-serif,system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center}
 main{width:100%;max-width:28.125rem;display:flex;flex-direction:column;padding:1.5rem}
-.capa{width:100%;aspect-ratio:1/1;background:#282828;border-radius:.5rem;box-shadow:0 .5rem 2rem rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;margin:1.25rem 0}
-h2{margin:0 0 2rem;font-size:1.5rem;font-weight:700;min-height:1.2em}
+.capa{width:100%;aspect-ratio:1/1;background:#121212;border-radius:.5rem;display:flex;align-items:center;justify-content:center;margin:1.25rem 0}
+#titulo{margin:0 0 1rem}
 #barra{width:100%;height:.25rem;background:rgba(255,255,255,0.1);border-radius:.125rem;cursor:pointer;position:relative;margin-bottom:.5rem}
 #cheio{height:100%;background:#fff;border-radius:.125rem;width:0%;will-change:width}
-.tempo{display:flex;justify-content:space-between;margin-bottom:2rem;font-size:.75rem;color:var(--cinza)}
+.tempo{display:flex;justify-content:space-between;margin-bottom:1rem;font-size:.75rem;color:var(--cinza)}
 .controles{display:flex;justify-content:center;align-items:center;gap:2.5rem;margin-bottom:2.5rem}
 button{background:none;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;user-select:none;-webkit-tap-highlight-color:transparent}
 .play{width:4.5rem;height:4.5rem;background:#fff;color:#000;border-radius:50%;justify-content:center}
-#lista{display:flex;flex-direction:column;border-top:1px solid var(--linha)}
+#lista{display:flex;flex-direction:column}
 input{display:none}
-label{display:flex; align-items:center;width:100%;min-height:60px;padding:0 1rem;border-bottom:1px solid var(--linha);cursor:pointer;-webkit-tap-highlight-color:transparent}
-input:checked+label{background-color:#282828}
+label{display:flex; align-items:center;width:100%;min-height:40px;padding:0 .5rem;cursor:pointer;-webkit-tap-highlight-color:transparent}
+input:checked+label{color:#00e88f}
 </style>
 </head>
 <body>
 <main>
 <div class="capa">
-<svg width="200" height="200" viewBox="0 0 24 24" fill="#444"><path d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z"/></svg>
+    <svg width="300" height="300" viewBox="2080 85 210 410">
+        <path fill="#000000" d="m2139.98 471.3c-16.23 0-24.72-8.49-25.85-22.64-0.19-2.65-0.19-5.1-0.19-8.69v-79.63h-29.44v75.29c0 6.04 0 9.82 0.38 16.61 1.69 21.89 16.98 40.95 55.1 40.95q1.57 0 3.09-0.05l8.57-23.75c-3.31 1.24-7.18 1.91-11.66 1.91z"/>
+        <path fill="#000000" d="m2166.02 360.34v69.2l24.97-69.2z"/>
+        <path fill="#00e88f" d="m2228.35 360.34h-32.89-4.47l-24.97 69.2v10.43c0 3.59 0 6.04-0.38 8.69-0.68 10.24-5.34 17.49-14 20.73l-8.57 23.75c15.69-0.44 27.29-4.26 35.5-10.19l8.96-27.3h7 29.86l-7.51-23.69h-21.42-0.42l0.42-1.34 13.83-44.1 13.41 43.36 8.95 28.23 11.33 35.08h32.73z"/>
+        <path fill="#00e88f" d="m2244.9 95.11l-139.7 25.12c-11.49 2.07-20.89 13.35-20.89 26.95v84.88c0 13.93 9.39 24.96 20.86 27.14l139.78 26.56c17.02 3.23 30.95-9.42 30.95-27.56v-134.27c0-20.04-13.95-31.89-31-28.82z"/>
+        <path fill="#000000" fill-rule="evenodd" d="m2210.12 230.55c-8.22 9.33-19.33 15.55-32.67 15.55-30.22 0-52.22-24.44-52.22-58.44 0-33.78 22-58.45 52.22-58.45 11.78 0 21.78 4.44 29.56 11.78l0.32-58.11h28.89l-0.32 160.33h-23.56zm-55.55-42.89c0 19.78 10.44 32.67 26.22 32.67 17.11 0 26.22-12.89 26.22-32.67 0-19.78-9.11-32.67-26.22-32.67-15.78 0-26.22 12.89-26.22 32.67z"/>
+    </svg>
 </div>
-<h2 id="titulo">OLTP vs OLAP</h2>
+<h3 id="titulo">OLTP vs OLAP</h3>
 <div id="barra"><div id="cheio"></div></div>
 <div class="tempo"><time id="atual">0:00</time><time id="total">0:00</time></div>
 <nav class="controles">
