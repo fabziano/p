@@ -1,121 +1,98 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Revisão</title>
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><path fill='%2300e88f' d='M40 12H22l-4-4H8c-2.2 0-4 1.8-4 4v24c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V16c0-2.2-1.8-4-4-4z'/></svg>">
-<style>
-:root{--fundo:#000;--texto:#ffffff;--cinza:#b3b3b3;--linha:#282828}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--fundo);color:var(--texto);font-family:ui-sans-serif,system-ui,sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:center}
-main{width:100%;max-width:28.125rem;display:flex;flex-direction:column;padding:1.5rem}
-.capa{width:100%;aspect-ratio:1/1;background:#121212;border-radius:.5rem;display:flex;align-items:center;justify-content:center;margin:1.25rem 0}
-#titulo{margin:0 0 1rem}
-#barra{width:100%;height:.25rem;background:rgba(255,255,255,0.1);border-radius:.125rem;cursor:pointer;position:relative;margin-bottom:.5rem}
-#cheio{height:100%;background:#fff;border-radius:.125rem;width:0%;will-change:width}
-.tempo{display:flex;justify-content:space-between;margin-bottom:1rem;font-size:.75rem;color:var(--cinza)}
-.controles{display:flex;justify-content:center;align-items:center;gap:2.5rem;margin-bottom:2.5rem}
-button{background:none;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;user-select:none;-webkit-tap-highlight-color:transparent}
-.play{width:4.5rem;height:4.5rem;background:#fff;color:#000;border-radius:50%;justify-content:center}
-#lista{display:flex;flex-direction:column}
-input{display:none}
-label{display:flex; align-items:center;width:100%;min-height:40px;padding:0 .5rem;cursor:pointer;-webkit-tap-highlight-color:transparent}
-input:checked+label{color:#00e88f}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Revisão</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><path fill='%2300e88f' d='M40 12H22l-4-4H8c-2.2 0-4 1.8-4 4v24c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V16c0-2.2-1.8-4-4-4z'/></svg>">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        main { display: none; }
+    </style>
 </head>
 <body>
-<main>
-<div class="capa">
-    <svg width="300" height="300" viewBox="2080 85 210 410">
-        <path fill="#000000" d="m2139.98 471.3c-16.23 0-24.72-8.49-25.85-22.64-0.19-2.65-0.19-5.1-0.19-8.69v-79.63h-29.44v75.29c0 6.04 0 9.82 0.38 16.61 1.69 21.89 16.98 40.95 55.1 40.95q1.57 0 3.09-0.05l8.57-23.75c-3.31 1.24-7.18 1.91-11.66 1.91z"/>
-        <path fill="#000000" d="m2166.02 360.34v69.2l24.97-69.2z"/>
-        <path fill="#00e88f" d="m2228.35 360.34h-32.89-4.47l-24.97 69.2v10.43c0 3.59 0 6.04-0.38 8.69-0.68 10.24-5.34 17.49-14 20.73l-8.57 23.75c15.69-0.44 27.29-4.26 35.5-10.19l8.96-27.3h7 29.86l-7.51-23.69h-21.42-0.42l0.42-1.34 13.83-44.1 13.41 43.36 8.95 28.23 11.33 35.08h32.73z"/>
-        <path fill="#00e88f" d="m2244.9 95.11l-139.7 25.12c-11.49 2.07-20.89 13.35-20.89 26.95v84.88c0 13.93 9.39 24.96 20.86 27.14l139.78 26.56c17.02 3.23 30.95-9.42 30.95-27.56v-134.27c0-20.04-13.95-31.89-31-28.82z"/>
-        <path fill="#000000" fill-rule="evenodd" d="m2210.12 230.55c-8.22 9.33-19.33 15.55-32.67 15.55-30.22 0-52.22-24.44-52.22-58.44 0-33.78 22-58.45 52.22-58.45 11.78 0 21.78 4.44 29.56 11.78l0.32-58.11h28.89l-0.32 160.33h-23.56zm-55.55-42.89c0 19.78 10.44 32.67 26.22 32.67 17.11 0 26.22-12.89 26.22-32.67 0-19.78-9.11-32.67-26.22-32.67-15.78 0-26.22 12.89-26.22 32.67z"/>
-    </svg>
-</div>
-<h3 id="titulo">OLTP vs OLAP</h3>
-<div id="barra"><div id="cheio"></div></div>
-<div class="tempo"><time id="atual">0:00</time><time id="total">0:00</time></div>
-<nav class="controles">
-<button id="voltar"><svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
-<button class="play" id="botao">
-<svg id="liga" width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-<svg id="para" width="36" height="36" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-</button>
-<button id="pular"><svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
-</nav>
-<section id="lista">
-<input type="radio" name="r" id="r0" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/1.wav" checked>
-<label for="r0">OLTP vs OLAP</label>
+    <main id="player">
+        <div class="capa">
+            <svg width="300" height="300" viewBox="2080 85 210 410">
+                <path fill="#000000" d="m2139.98 471.3c-16.23 0-24.72-8.49-25.85-22.64-0.19-2.65-0.19-5.1-0.19-8.69v-79.63h-29.44v75.29c0 6.04 0 9.82 0.38 16.61 1.69 21.89 16.98 40.95 55.1 40.95q1.57 0 3.09-0.05l8.57-23.75c-3.31 1.24-7.18 1.91-11.66 1.91z"/>
+                <path fill="#000000" d="m2166.02 360.34v69.2l24.97-69.2z"/>
+                <path fill="#00e88f" d="m2228.35 360.34h-32.89-4.47l-24.97 69.2v10.43c0 3.59 0 6.04-0.38 8.69-0.68 10.24-5.34 17.49-14 20.73l-8.57 23.75c15.69-0.44 27.29-4.26 35.5-10.19l8.96-27.3h7 29.86l-7.51-23.69h-21.42-0.42l0.42-1.34 13.83-44.1 13.41 43.36 8.95 28.23 11.33 35.08h32.73z"/>
+                <path fill="#00e88f" d="m2244.9 95.11l-139.7 25.12c-11.49 2.07-20.89 13.35-20.89 26.95v84.88c0 13.93 9.39 24.96 20.86 27.14l139.78 26.56c17.02 3.23 30.95-9.42 30.95-27.56v-134.27c0-20.04-13.95-31.89-31-28.82z"/>
+                <path fill="#000000" fill-rule="evenodd" d="m2210.12 230.55c-8.22 9.33-19.33 15.55-32.67 15.55-30.22 0-52.22-24.44-52.22-58.44 0-33.78 22-58.45 52.22-58.45 11.78 0 21.78 4.44 29.56 11.78l0.32-58.11h28.89l-0.32 160.33h-23.56zm-55.55-42.89c0 19.78 10.44 32.67 26.22 32.67 17.11 0 26.22-12.89 26.22-32.67 0-19.78-9.11-32.67-26.22-32.67-15.78 0-26.22 12.89-26.22 32.67z"/>
+            </svg>
+        </div>
+        <h3 id="titulo"></h3>
+        <div id="barra"><div id="cheio"></div></div>
+        <div class="tempo">
+            <time id="atual">0:00</time>
+            <time id="total">0:00</time>
+        </div>
+        <nav class="controles">
+            <button id="voltar"><svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+            <button class="play" id="botao">
+                <svg id="liga" width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                <svg id="para" width="36" height="36" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <button id="pular"><svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+        </nav>
+        <section id="lista"></section>
+    </main>
+    <audio id="s"></audio>
 
-<input type="radio" name="r" id="r1" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/2.wav">
-<label for="r1">Centralização Drogarias XPTO</label>
+    <script>
+        const d=document, s=d.getElementById('s'), t=d.getElementById('titulo'), c=d.getElementById('cheio'), 
+              a=d.getElementById('atual'), z=d.getElementById('total'), b=d.getElementById('barra'), 
+              l=d.getElementById('liga'), p=d.getElementById('para'), btn=d.getElementById('botao'), 
+              list=d.getElementById('lista'), m=d.getElementById('player');
 
-<input type="radio" name="r" id="r2" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/3.wav">
-<label for="r2">Processo ETL</label>
+        let faixas = [], cur = 0;
 
-<input type="radio" name="r" id="r3" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/4.wav">
-<label for="r3">Granularidade</label>
+        const fmt=v=>isNaN(v)?"0:00":`${(v/60)|0}:${((v%60)|0).toString().padStart(2,'0')}`;
+        const ui=v=>{l.style.display=v?'none':'block';p.style.display=v?'block':'none'};
 
-<input type="radio" name="r" id="r4" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/5.wav">
-<label for="r4">Star Schema vs Snowflake</label>
+        const play=(i, start=true)=>{
+            cur=i;
+            const f=faixas[i];
+            const radio = d.getElementById(`r${i}`);
+            if(radio) radio.checked=true;
+            if(s.src!==f.u){ s.src=f.u; t.textContent=f.t; }
+            if(start){ s.play(); ui(1); } else { ui(0); }
+        };
 
-<input type="radio" name="r" id="r5" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/6.wav">
-<label for="r5">Operações Drill-Down</label>
+        const nav=v=>{ 
+            if(!faixas.length) return;
+            cur=(cur+v+faixas.length)%faixas.length; 
+            play(cur); 
+        };
 
-<input type="radio" name="r" id="r6" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/7.wav">
-<label for="r6">BI Seleção Alemã</label>
+        async function init() {
+            try {
+                const res = await fetch('dados.json');
+                if(!res.ok) return;
+                faixas = await res.json();
+                
+                faixas.forEach((f, i)=>{
+                    const r=d.createElement('input'); r.type='radio'; r.name='r'; r.id=`r${i}`;
+                    const lbl=d.createElement('label'); lbl.htmlFor=`r${i}`; lbl.textContent=f.t;
+                    if(i===0) r.checked=true;
+                    r.onclick=()=>play(i);
+                    list.append(r, lbl);
+                });
 
-<input type="radio" name="r" id="r7" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/8.wav">
-<label for="r7">Propriedades do DW</label>
+                play(0, false);
+                m.style.display = 'block';
+            } catch (e) {}
+        }
 
-<input type="radio" name="r" id="r8" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/9.wav">
-<label for="r8">Sistemas Especialistas</label>
+        d.getElementById('voltar').onclick=()=>nav(-1);
+        d.getElementById('pular').onclick=()=>nav(1);
+        btn.onclick=()=>s.paused?(s.play(),ui(1)):(s.pause(),ui(0));
+        s.ontimeupdate=()=>{c.style.width=(s.currentTime/s.duration)*100+'%'; a.textContent=fmt(s.currentTime)};
+        s.onloadedmetadata=()=>z.textContent=fmt(s.duration);
+        s.onended=()=>nav(1);
+        b.onclick=e=>{const r=b.getBoundingClientRect(); s.currentTime=((e.clientX-r.left)/r.width)*s.duration};
 
-<input type="radio" name="r" id="r9" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/10.wav">
-<label for="r9">Churn: Descritiva vs Preditiva</label>
-
-<input type="radio" name="r" id="r10" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/11.wav">
-<label for="r10">Data Storytelling</label>
-
-<input type="radio" name="r" id="r11" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/12.wav">
-<label for="r11">Viés na IA</label>
-
-<input type="radio" name="r" id="r12" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/13.wav">
-<label for="r12">IA vs Analistas</label>
-
-<input type="radio" name="r" id="r13" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/14.wav">
-<label for="r13">Surrogate Keys</label>
-
-<input type="radio" name="r" id="r14" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/15.wav">
-<label for="r14">Análise Prescritiva</label>
-
-<input type="radio" name="r" id="r15" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/16.wav">
-<label for="r15">Operações OLAP</label>
-
-<input type="radio" name="r" id="r16" data-url="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/17.wav">
-<label for="r16">Dicas</label>
-</section>
-</main>
-<audio id="s" src="https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/1.wav"></audio>
-<script>
-const d=document, s=d.getElementById('s'), t=d.getElementById('titulo'), c=d.getElementById('cheio'), a=d.getElementById('atual'), z=d.getElementById('total'), b=d.getElementById('barra'), l=d.getElementById('liga'), p=d.getElementById('para'), btn=d.getElementById('botao'), list=d.getElementById('lista');
-let cur=0, tot=17;
-const fmt=v=>isNaN(v)?"0:00":`${(v/60)|0}:${((v%60)|0).toString().padStart(2,'0')}`;
-const ui=v=>{l.style.display=v?'none':'block';p.style.display=v?'block':'none'};
-const play=(u,n,i)=>{cur=i; if(s.src!==u){s.src=u;t.textContent=n} s.play();ui(1)};
-list.onchange=e=>{const i=e.target; play(i.dataset.url, i.nextElementSibling.textContent, parseInt(i.id.slice(1)))};
-const nav=v=>{cur=(cur+v+tot)%tot; d.getElementById(`r${cur}`).click()};
-d.getElementById('voltar').onclick=()=>nav(-1);
-d.getElementById('pular').onclick=()=>nav(1);
-btn.onclick=()=>s.paused?(s.play(),ui(1)):(s.pause(),ui(0));
-s.ontimeupdate=()=>{const pc=(s.currentTime/s.duration)*100; c.style.width=pc+'%'; a.textContent=fmt(s.currentTime)};
-s.onloadedmetadata=()=>z.textContent=fmt(s.duration);
-s.onended=()=>nav(1);
-b.onclick=e=>{const r=b.getBoundingClientRect(); s.currentTime=((e.clientX-r.left)/r.width)*s.duration};
-</script>
+        init();
+    </script>
 </body>
 </html>
