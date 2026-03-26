@@ -1,4 +1,6 @@
 const faixas = [
-    { t: "OLTP vs OLAP", u: "https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/1.wav" },
-    { t: "Dicas", u: "https://raw.githubusercontent.com/fabziano/p/main/revisao/audio/17.wav" }
+    { t: "Plano de Contingência", u: "https://raw.githubusercontent.com/fabziano/p/main//player/audio/backup/2.ogg" },
+    { t: "Erro do Backup Seletivo", u: "https://raw.githubusercontent.com/fabziano/p/main//player/audio/backup/3.ogg" },
+    { t: "Erro do Backup Reativo", u: "https://raw.githubusercontent.com/fabziano/p/main//player/audio/backup/4.ogg" },
+    { t: "Erro do Local Único", u: "https://raw.githubusercontent.com/fabziano/p/main//player/audio/backup/5.ogg" }
 ];
