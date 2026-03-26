@@ -1,0 +1,17 @@
+:root { --fundo: #121212; --texto: #E0E0E0; --cinza: #e0e0e0; --destaque: #FFC107; --erro: #ff0000; }
+* { margin: 0; padding: 0; box-sizing: border-box }
+body { background: var(--fundo); color: var(--texto); font-family: system-ui, sans-serif; display: flex; justify-content: center }      
+main { width: 100%; max-width: 450px; padding: 1.5rem; display: flex; flex-direction: column; gap: 2rem }        
+#svg { align-self: center }       
+#titulo{text-align: center}       
+#barra { width: 100%; height: .375rem; background: #303030; cursor: pointer; position: relative }
+#barra::after { content: ''; position: absolute; top: -10px; bottom: -10px; left: 0; right: 0 }        
+#cheio { height: 100%; background: var(--destaque); width: 100%; transform: scaleX(0); transform-origin: left }        
+.controles { display: flex; justify-content: center; align-items: center; gap: 2.5rem }
+button { background: none; border: none; color: var(--texto); cursor: pointer; display: flex; align-items: center; -webkit-tap-highlight-color: transparent }        
+.play-btn { width: 70px; height: 70px; background: var(--texto); color: var(--fundo); border-radius: 50%; justify-content: center;flex-shrink: 0 }
+#lista { font-size:1.2rem; display: flex; flex-direction: column; gap: 2rem; -webkit-tap-highlight-color: transparent; align-self: start }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0 }
+.item-audio { cursor: pointer; color: var(--cinza); display: block; font-weight: normal }
+input[type="radio"]:checked + .item-audio { color: var(--destaque); font-weight: bold }
+.item-audio.erro { color: var(--erro); text-decoration: line-through }
