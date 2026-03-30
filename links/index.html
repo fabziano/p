@@ -1,89 +1,48 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Faculdade</title>
-    <link rel="icon" type="image/svg+xml"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><path fill='%23FFC107' d='M40 12H22l-4-4H8c-2.2 0-4 1.8-4 4v24c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V16c0-2.2-1.8-4-4-4z'/></svg>">
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box}
-        html{background:#121212;}
-        body{width:100%;min-height:100dvh;display:flex;flex-direction:column;font-family:system-ui,sans-serif;color:#fff}
-        main{flex:1;width:100%}
-        main a{all:unset;display:flex;padding-left:1rem;cursor:pointer;align-items:center;gap:.5rem;min-height:4.35rem;border-bottom:1px solid #282f3d;font:inherit;-webkit-tap-highlight-color:transparent}
-        main svg{flex-shrink:0;width:4rem!important;height:4rem!important}
-        span{font-size:.8rem;color:#888d9c;display:block}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Links</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><path fill='%239fa8da' d='M40 12H22l-4-4H8c-2.2 0-4 1.8-4 4v24c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V16c0-2.2-1.8-4-4-4z'/></svg>">  
+<style>
+:root{--primaria:#0a0a0c;--secundaria:#9fa8da;--texto:#eeeeee}
+body{background-color:var(--primaria);color:var(--texto);font-family:sans-serif;font-size:1.5rem;margin:0;padding:1rem}
+input{background-color:#1a1a1d;color:var(--texto);font-family:sans-serif;font-size:1.5rem;margin-bottom:20px;outline:none;display:block;width:max-content;min-width:300px;border:0;padding:8px}
+nav{display:block}
+ul{list-style:none;padding:0;margin:0}
+li{margin-bottom:10px}
+a{color:var(--secundaria)}
+.hidden{display:none}
+</style>
 </head>
-
 <body>
-    <svg style="display: none">
-        <symbol id="folder" viewBox="0 0 48 48">
-            <path fill="#FFC107"
-                d="M40 12H22l-4-4H8c-2.2 0-4 1.8-4 4v24c0 2.2 1.8 4 4 4h32c2.2 0 4-1.8 4-4V16c0-2.2-1.8-4-4-4z"></path>
-        </symbol>
-    </svg>
-    <main>
-        <a href="https://jacad.uniamerica.br/academico/aluno-v2/login" rel="noopener noreferrer" target="_blank">
-            <svg>
-                <use href="#folder"></use>
-            </svg>
-            <div class="info">
-                <p>JACAD</p>
-                <span>Portal do Aluno.</span>
-            </div>
-        </a>
-        <a href="https://uniamerica.blackboard.com/ultra/course" rel="noopener noreferrer" target="_blank">
-            <svg>
-                <use href="#folder"></use>
-            </svg>
-
-            <div class="info">
-                <p>Blackboard</p>
-                <span>Plataforma dos Projetos.</span>
-            </div>
-        </a>
-        <a href="https://uniamerica.br/docs/calendarios-academicos/calendario-academico-2026-campus-boulevard.pdf"
-            target="_blank" rel="noopener noreferrer">
-            <svg>
-                <use href="#folder"></use>
-            </svg>
-            <div class="info">
-                <p>Calendário Acadêmico</p>
-                <span>Datas da Faculdade.</span>
-            </div>
-        </a>
-        <a href="../revisao"
-            target="_blank" rel="noopener noreferrer">
-            <svg>
-                <use href="#folder"></use>
-            </svg>
-            <div class="info">
-                <p>Revisão</p>
-                <span>Revisão da Avaliação Mensal.</span>
-            </div>
-        </a>
-        <a href="https://drive.google.com/" rel="noopener noreferrer" target="_blank">
-            <svg>
-                <use href="#folder"></use>
-            </svg>
-            <div class="info">
-                <p>Drive</p>
-                <span>Armazenamento de arquivos em nuvem.</span>
-            </div>
-        </a>
-        <a href="https://gemini.google.com/" rel="noopener noreferrer" target="_blank">
-            <svg>
-                <use href="#folder"></use>
-            </svg>
-            <div class="info">
-                <p>Gemini</p>
-                <span>IA generativa.</span>
-            </div>
-        </a>
-    </main>
+<input type="text" id="search" placeholder="Buscar...">
+<nav>
+<ul id="lista">
+<li><a href="https://github.com/fabziano?tab=repositories" rel="noopener noreferrer" target="_blank">github.com</a></li>
+<li><a href="https://drive.google.com/drive/" rel="noopener noreferrer" target="_blank">google/drive</a></li>
+<li><a href="https://gemini.google.com/" rel="noopener noreferrer" target="_blank">google/gemini</a></li>
+<li><a href="https://mail.google.com/mail/" rel="noopener noreferrer" target="_blank">google/gmail</a></li>
+<li><a href="https://uniamerica.blackboard.com/ultra/course" rel="noopener noreferrer" target="_blank">uniamerica/blackboard</a></li>
+<li><a href="https://uniamerica.br/docs/calendarios-academicos/calendario-academico-2026-campus-boulevard.pdf" rel="noopener noreferrer" target="_blank">uniamerica/calendario</a></li>
+<li><a href="https://jacad.uniamerica.br/academico/aluno-v2/login" rel="noopener noreferrer" target="_blank">uniamerica/jacad</a></li>
+<li><a href="https://web.whatsapp.com/" rel="noopener noreferrer" target="_blank">whatsapp/web</a></li>
+<li><a href="https://music.youtube.com/listen_again" rel="noopener noreferrer" target="_blank">youtube/music</a></li>    
+<li><a href="https://www.youtube.com/feed/subscriptions" rel="noopener noreferrer" target="_blank">youtube/video</a></li>
+</ul>
+</nav>
+<script>
+const input = document.getElementById('search');
+const lista = document.getElementById('lista');
+const itens = Array.from(lista.children);
+input.addEventListener('input', () => {
+    const filtro = input.value.toLowerCase();    
+    itens.forEach(li => {
+        const corresponde = li.textContent.toLowerCase().includes(filtro);
+        li.classList.toggle('hidden', !corresponde);
+    });
+});
+</script>
 </body>
-
 </html>
