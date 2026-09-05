@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bash</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath fill='%238ae234' d='M3 3h18a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm9 12v2h6v-2h-6zm-3.586-3l-2.828 2.828L7 16.243 11.243 12 7 7.757 5.586 9.172 8.414 12z'/%3E%3C/svg%3E">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{background-color:#000;color:#ccc;font-family:Consolas,"Courier New",monospace;font-size:15px;line-height:1.2;width:100%;height:100%;overflow:hidden}
+    @media (max-width:768px){html,body{font-size:18px}}
+    main{width:100%;height:100%;padding:8px;overflow-y:auto;cursor:text}
+    p{white-space:pre;word-break:break-all}
+    .prompt-user, .prompt-char { color: #8ae234}
+    .prompt-path, .dir { color: #729fcf} 
+    .prompt-sep, a{ color: #ccc}  
+    form{display:flex;align-items:center}
+    input{background:0 0;border:none;color:#ccc;font-family:inherit;font-size:inherit;line-height:inherit;outline:0;flex:1}
+  </style>
+</head>
+<body>
+
+  <main id="container">
+    <section id="historico" aria-live="polite"></section>
+    <form id="formulario">
+      <span id="rotulo"></span>
+      <input type="text" id="entrada" autocomplete="off" autocapitalize="none" spellcheck="false" autofocus />
+    </form>
+  </main>
+
+  <script>
+    const elementoHistoricoSaida = document.getElementById('historico');
+    const elementoEntradaComando = document.getElementById('entrada');
+    const elementoConteinerTerminal = document.getElementById('container');
+    const elementoFormulario = document.getElementById('formulario');
+    const elementoRotuloPrompt = document.getElementById('rotulo');
+
+    const historicoComandos = [];
+    let indiceHistorico = -1;
+
+    const sistemaDeArquivos = {
+      '~': {
+        'documentos': { 
+          tipo: 'diretorio', 
+          conteudo: { 
+            'thanos.txt': { tipo: 'arquivo', conteudo: '<a href="https://fabziano.github.io/p/audio/">www.loadbalancer.com</a>' } 
+          } 
+        },
+        'projetos': { tipo: 'diretorio', conteudo: {} },
+        'welcome.txt': { tipo: 'arquivo', conteudo: 'Bem-vindo!' }
+      }
+    };
+
+    let caminhoAtual = ['~'];
+
+    function obterHtmlPrompt() {
+      const caminhoFormatado = caminhoAtual.join('/');
+      return `<span class="prompt-user">user@localhost</span><span class="prompt-sep">:</span><span class="prompt-path">${caminhoFormatado}</span><span class="prompt-char">$</span>`;
+    }
+
+    function atualizarPromptNaTela() {
+      elementoRotuloPrompt.innerHTML = `${obterHtmlPrompt()}&nbsp;`;
+    }
+
+    function obterDiretorioAtual() {
+      let diretorioAtual = sistemaDeArquivos;
+      for (const pasta of caminhoAtual) {
+        diretorioAtual = diretorioAtual[pasta].tipo === 'diretorio' ? diretorioAtual[pasta].conteudo : diretorioAtual[pasta];
+      }
+      return diretorioAtual;
+    }
+
+    function navegarParaCaminho(caminhoString, criarPastasFaltantes = false) {
+      const partes = caminhoString.split('/').filter(Boolean);
+      let atual = obterDiretorioAtual();
+
+      for (let i = 0; i < partes.length; i++) {
+        const parte = partes[i];
+
+        if (!atual[parte]) {
+          if (criarPastasFaltantes) {
+            atual[parte] = { tipo: 'diretorio', conteudo: {} };
+          } else {
+            return null;
+          }
+        }
+
+        if (atual[parte].tipo !== 'diretorio') {
+          return null;
+        }
+
+        atual = atual[parte].conteudo;
+      }
+
+      return atual;
+    }
+
+    function resolverCaminhoEArquivo(caminhoCompleto, criarPastasFaltantes = false) {
+      const partes = caminhoCompleto.split('/').filter(Boolean);
+      const nomeArquivo = partes.pop();
+      const caminhoDiretorio = partes.join('/');
+      
+      const diretorioAlvo = caminhoDiretorio ? navegarParaCaminho(caminhoDiretorio, criarPastasFaltantes) : obterDiretorioAtual();
+
+      return { diretorioAlvo, nomeArquivo };
+    }
+
+    function adicionarLinhaSaida(conteudo, contemHtml = false) {
+      const paragrafo = document.createElement('p');
+      if (contemHtml) {
+        paragrafo.innerHTML = conteudo;
+      } else {
+        paragrafo.textContent = conteudo;
+      }
+      elementoHistoricoSaida.appendChild(paragrafo);
+      elementoConteinerTerminal.scrollTop = elementoConteinerTerminal.scrollHeight;
+    }
+
+    function processarEExecutarComando(linhaDigitation) {
+      const comandoFormatado = linhaDigitation.trim();
+      if (!comandoFormatado) return;
+
+      const argumentos = comandoFormatado.split(/\s+/);
+      const comandoPrincipal = argumentos.shift().toLowerCase();
+      const diretorioAtual = obterDiretorioAtual();
+
+      let resposta = '';
+      let respostaComHtml = false;
+
+      switch (comandoPrincipal) {
+        case 'help':
+          resposta = [
+            '  ls                     Lista os arquivos do diretório atual',
+            '  pwd                    Exibe o caminho do diretório atual',
+            '  cd <dir>               Navega entre diretórios',
+            '  cat <arquivo>          Exibe o conteúdo de um arquivo',
+            '  echo <texto> > <arq>   Sobrescreve/cria o conteúdo de um arquivo',
+            '  mkdir <nome>           Cria um novo diretório',
+            '  touch <nome>           Cria um novo arquivo vazio',
+            '  rm [-r] <alvo>         Remove arquivos ou diretórios (-r para pastas)',
+            '  clear                  Limpa a tela',
+            '  date                   Exibe a data e hora atual'
+          ].join('\n');
+          break;
+
+        case 'pwd':
+          const caminhoAbsoluto = ['home', 'user', ...caminhoAtual.slice(1)];
+          resposta = '/' + caminhoAbsoluto.join('/');
+          break;
+
+        case 'ls':
+          const pastaAlvo = argumentos[0] ? navegarParaCaminho(argumentos[0]) : diretorioAtual;
+          if (!pastaAlvo) {
+            resposta = `ls: ${argumentos[0]}: Diretório não encontrado`;
+          } else {
+            const itens = Object.keys(pastaAlvo).map(item => {
+              if (pastaAlvo[item].tipo === 'diretorio') {
+                return `<span class="dir">${item}</span>`;
+              }
+              return item;
+            });
+            resposta = itens.length > 0 ? itens.join('  ') : '';
+            respostaComHtml = true;
+          }
+          break;
+
+        case 'cd':
+          const pastaDestino = argumentos[0];
+          if (!pastaDestino || pastaDestino === '~') {
+            caminhoAtual = ['~'];
+          } else {
+            const partes = pastaDestino.split('/').filter(Boolean);
+            let tempCaminho = [...caminhoAtual];
+            let erro = false;
+
+            for (const parte of partes) {
+              if (parte === '..') {
+                if (tempCaminho.length > 1) tempCaminho.pop();
+              } else {
+                let dir = sistemaDeArquivos;
+                for (const p of tempCaminho) {
+                  dir = dir[p].tipo === 'diretorio' ? dir[p].conteudo : dir[p];
+                }
+
+                if (dir[parte] && dir[parte].tipo === 'diretorio') {
+                  tempCaminho.push(parte);
+                } else {
+                  erro = true;
+                  break;
+                }
+              }
+            }
+
+            if (erro) {
+              resposta = `cd: ${pastaDestino}: Diretório não encontrado`;
+            } else {
+              caminhoAtual = tempCaminho;
+            }
+          }
+          atualizarPromptNaTela();
+          break;
+
+        case 'cat':
+          const caminhoCat = argumentos[0];
+          if (!caminhoCat) {
+            resposta = 'cat: falta o argumento do arquivo';
+          } else {
+            const { diretorioAlvo, nomeArquivo } = resolverCaminhoEArquivo(caminhoCat);
+            if (diretorioAlvo && diretorioAlvo[nomeArquivo] && diretorioAlvo[nomeArquivo].tipo === 'arquivo') {
+              resposta = diretorioAlvo[nomeArquivo].conteudo || '\n';
+              respostaComHtml = true;
+            } else {
+              resposta = `cat: ${caminhoCat}: Arquivo não encontrado`;
+            }
+          }
+          break;
+
+        case 'echo':
+          const indiceRedirecionamento = linhaDigitation.indexOf('>');
+          
+          if (indiceRedirecionamento !== -1) {
+            let textoParaGravar = linhaDigitation.substring(4, indiceRedirecionamento).trim();
+            
+            if ((textoParaGravar.startsWith('"') && textoParaGravar.endsWith('"')) ||
+                (textoParaGravar.startsWith("'") && textoParaGravar.endsWith("'"))) {
+              textoParaGravar = textoParaGravar.slice(1, -1);
+            }
+
+            const caminhoDestino = linhaDigitation.substring(indiceRedirecionamento + 1).trim();
+
+            if (!caminhoDestino) {
+              resposta = 'bash: erro de sintaxe próximo ao token inesperado \'newline\'';
+            } else {
+              const { diretorioAlvo, nomeArquivo } = resolverCaminhoEArquivo(caminhoDestino, true);
+              if (diretorioAlvo && diretorioAlvo[nomeArquivo] && diretorioAlvo[nomeArquivo].tipo === 'diretorio') {
+                resposta = `bash: ${caminhoDestino}: É um diretório`;
+              } else if (diretorioAlvo) {
+                diretorioAlvo[nomeArquivo] = { tipo: 'arquivo', conteudo: textoParaGravar };
+              }
+            }
+          } else {
+            resposta = linhaDigitation.substring(4).trim();
+          }
+          break;
+
+        case 'mkdir':
+          const caminhoMkdir = argumentos[0];
+          if (!caminhoMkdir) {
+            resposta = 'mkdir: falta o argumento do diretório';
+          } else {
+            navegarParaCaminho(caminhoMkdir, true);
+          }
+          break;
+
+        case 'touch':
+          const caminhoTouch = argumentos[0];
+          if (!caminhoTouch) {
+            resposta = 'touch: falta o argumento do arquivo';
+          } else {
+            const { diretorioAlvo, nomeArquivo } = resolverCaminhoEArquivo(caminhoTouch, true);
+            if (diretorioAlvo && !diretorioAlvo[nomeArquivo]) {
+              diretorioAlvo[nomeArquivo] = { tipo: 'arquivo', conteudo: '' };
+            }
+          }
+          break;
+
+        case 'rm':
+          const possuiOpcaoR = argumentos.includes('-r') || argumentos.includes('-rf') || argumentos.includes('-fr');
+          const argumentosSemOpcoes = argumentos.filter(arg => !arg.startsWith('-'));
+          const caminhoAlvo = argumentosSemOpcoes[0];
+
+          if (!caminhoAlvo) {
+            resposta = 'rm: falta um argumento';
+            break;
+          }
+
+          const { diretorioAlvo, nomeArquivo } = resolverCaminhoEArquivo(caminhoAlvo);
+
+          if (!diretorioAlvo || !diretorioAlvo[nomeArquivo]) {
+            resposta = `rm: não foi possível remover '${caminhoAlvo}': Arquivo ou diretório não encontrado`;
+          } else if (diretorioAlvo[nomeArquivo].tipo === 'diretorio' && !possuiOpcaoR) {
+            resposta = `rm: não foi possível remover '${caminhoAlvo}': É um diretório`;
+          } else {
+            delete diretorioAlvo[nomeArquivo];
+          }
+          break;
+
+        case 'clear':
+          elementoHistoricoSaida.innerHTML = '';
+          return;
+
+        case 'date':
+          resposta = new Date().toString();
+          break;
+
+        default:
+          resposta = `bash: ${comandoPrincipal}: command not found`;
+          break;
+      }
+
+      if (resposta) {
+        adicionarLinhaSaida(resposta, respostaComHtml);
+      }
+    }
+
+    elementoFormulario.addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      const comandoDigitado = elementoEntradaComando.value;
+      const promptAtual = obterHtmlPrompt();
+
+      adicionarLinhaSaida(`${promptAtual}&nbsp;${comandoDigitado}`, true);
+
+      if (comandoDigitado.trim()) {
+        historicoComandos.push(comandoDigitado);
+        indiceHistorico = historicoComandos.length;
+      }
+
+      processarEExecutarComando(comandoDigitado);
+      elementoEntradaComando.value = '';
+      elementoConteinerTerminal.scrollTop = elementoConteinerTerminal.scrollHeight;
+    });
+
+    elementoEntradaComando.addEventListener('keydown', (evento) => {
+      if (evento.key === 'ArrowUp') {
+        evento.preventDefault();
+        if (historicoComandos.length > 0 && indiceHistorico > 0) {
+          indiceHistorico--;
+          elementoEntradaComando.value = historicoComandos[indiceHistorico];
+        }
+      } else if (evento.key === 'ArrowDown') {
+        evento.preventDefault();
+        if (historicoComandos.length > 0 && indiceHistorico < historicoComandos.length - 1) {
+          indiceHistorico++;
+          elementoEntradaComando.value = historicoComandos[indiceHistorico];
+        } else if (indiceHistorico === historicoComandos.length - 1) {
+          indiceHistorico = historicoComandos.length;
+          elementoEntradaComando.value = '';
+        }
+      }
+    });
+
+    elementoConteinerTerminal.addEventListener('click', () => elementoEntradaComando.focus());
+
+    atualizarPromptNaTela();
+  </script>
+</body>
+</html>
