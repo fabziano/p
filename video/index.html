@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Player</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-2 -5 24 24'><path fill='%238ae234' d='M15.812.017H4.145C1.855.017 0 1.852 0 4.116v5.768c0 2.264 1.856 4.1 4.145 4.1h11.667c2.29 0 4.145-1.836 4.145-4.1V4.116c0-2.264-1.856-4.1-4.145-4.1zM13.009 7.28L7.552 9.855a.219.219 0 0 1-.314-.196V4.35c0-.161.173-.266.318-.193l5.458 2.735a.216.216 0 0 1-.005.389z'/></svg>"> 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+  
+  <link rel="preconnect" href="https://www.youtube.com">
+  <link rel="preconnect" href="https://www.googlevideo.com">
+
   <style>
     :root { 
       --fundo: #121212; 
@@ -16,11 +17,7 @@
       --destaque: #8AE234; 
     }
     
-    * { 
-      margin: 0; 
-      padding: 0; 
-      box-sizing: border-box; 
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body { 
       background: var(--fundo); 
@@ -36,7 +33,8 @@
       display: flex; 
       flex-direction: column; 
       gap: 1.5rem; 
-      font-family: "Atkinson Hyperlegible", sans-serif; 
+      font-family: sans-serif; 
+      -webkit-tap-highlight-color: transparent; 
     }
 
     #capa { 
@@ -50,9 +48,7 @@
       cursor: pointer;
     }
 
-    #input-json {
-      display: none;
-    }
+    #input-json { display: none; }
 
     #titulo { 
       text-align: center; 
@@ -75,21 +71,10 @@
       -webkit-appearance: none; 
       appearance: none; 
       outline: none; 
-      -webkit-tap-highlight-color: transparent; 
     }
 
-    #barra::-webkit-slider-thumb { 
-      -webkit-appearance: none; 
-      appearance: none; 
-      width: 0; 
-      height: 0; 
-    }
-
-    #barra::-moz-range-thumb { 
-      width: 0; 
-      height: 0; 
-      border: none; 
-    }
+    #barra::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 0; height: 0; }
+    #barra::-moz-range-thumb { width: 0; height: 0; border: none; }
 
     .tempo-container { 
       display: flex; 
@@ -125,6 +110,14 @@
       justify-content: center; 
       flex-shrink: 0; 
     }
+
+    .player-oculto {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -132,7 +125,9 @@
   <main>
     <img id="capa" alt="Clique para carregar o arquivo JSON" referrerpolicy="no-referrer">
     <input type="file" id="input-json" accept=".json">
-    <div id="yt-player" style="display: none;"></div>
+    
+    <div id="yt-player-A" class="player-oculto"></div>
+    <div id="yt-player-B" class="player-oculto"></div>
 
     <h2 id="titulo">Selecione o arquivo JSON</h2>
 
@@ -177,11 +172,16 @@
     capa.onerror = () => { capa.src = fallbackSrc; };
 
     let items = [];
-    let ytPlayer = null;
+    let indiceAtual = 0;
+    
+    let playerAtivo = null;
+    let playerReserva = null;
+    let idAtivo = 'yt-player-A';
+    let idReserva = 'yt-player-B';
+
     let apiPronta = false;
     let rafId = null;
     let arrastando = false;
-    let buscando = false;
 
     capa.onclick = () => inputJson.click();
 
@@ -194,13 +194,14 @@
         try {
           const data = JSON.parse(event.target.result);
           items = Object.values(data);
-          
-          if (ytPlayer) {
-            ytPlayer.destroy();
-            ytPlayer = null;
-          }
-          
-          iniciarPlayer();
+          indiceAtual = 0;
+
+          if (playerAtivo) playerAtivo.destroy();
+          if (playerReserva) playerReserva.destroy();
+          playerAtivo = null;
+          playerReserva = null;
+
+          iniciarPlayers();
         } catch (err) {
           titulo.textContent = 'Erro ao carregar JSON';
         }
@@ -241,18 +242,75 @@
       }
     };
 
-    function loop() {
-      if (!ytPlayer || !ytPlayer.getCurrentTime) return;
+    function atualizarInterfaceMeta() {
+      const item = items[indiceAtual];
+      if (!item) return;
 
-      const estado = ytPlayer.getPlayerState();
+      titulo.textContent = item.t || '';
+      capa.src = item.i || fallbackSrc;
+
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: item.t,
+          artwork: item.i ? [{ src: item.i }] : []
+        });
+      }
+    }
+
+    function precarregarProximaFaixa() {
+      const proximoIndice = (indiceAtual + 1) % items.length;
+      const idVideoProximo = extrairVideoId(items[proximoIndice].u);
+      
+      if (playerReserva && playerReserva.cueVideoById) {
+        playerReserva.cueVideoById(idVideoProximo);
+      }
+    }
+
+    function alternarParaProximaFaixa() {
+      resetarExibicao();
+
+      if (playerAtivo) playerAtivo.pauseVideo();
+
+      indiceAtual = (indiceAtual + 1) % items.length;
+      atualizarInterfaceMeta();
+
+      const tempPlayer = playerAtivo;
+      playerAtivo = playerReserva;
+      playerReserva = tempPlayer;
+
+      const tempId = idAtivo;
+      idAtivo = idReserva;
+      idReserva = tempId;
+
+      playerAtivo.playVideo();
+      precarregarProximaFaixa();
+    }
+
+    function alternarParaFaixaAnterior() {
+      resetarExibicao();
+
+      if (playerAtivo) playerAtivo.pauseVideo();
+
+      indiceAtual = (indiceAtual - 1 + items.length) % items.length;
+      atualizarInterfaceMeta();
+
+      const videoId = extrairVideoId(items[indiceAtual].u);
+      playerAtivo.loadVideoById(videoId);
+      precarregarProximaFaixa();
+    }
+
+    function loop() {
+      if (!playerAtivo || !playerAtivo.getCurrentTime) return;
+
+      const estado = playerAtivo.getPlayerState();
       if (estado !== YT.PlayerState.PLAYING) {
         rafId = null;
         return;
       }
 
-      if (!arrastando && !buscando) {
-        const atual = ytPlayer.getCurrentTime();
-        const duracao = ytPlayer.getDuration();
+      if (!arrastando) {
+        const atual = playerAtivo.getCurrentTime();
+        const duracao = playerAtivo.getDuration();
 
         tempoAtual.textContent = formatarTempo(atual);
         if (Number.isFinite(duracao) && duracao > 0) {
@@ -265,94 +323,72 @@
       rafId = requestAnimationFrame(loop);
     }
 
-    function atualizarDadosFaixa() {
-      if (!ytPlayer || !ytPlayer.getPlaylistIndex) return;
-      const idx = ytPlayer.getPlaylistIndex();
-      if (items[idx]) {
-        titulo.textContent = items[idx].t;
-        capa.src = items[idx].i || fallbackSrc;
-
-        if ('mediaSession' in navigator) {
-          navigator.mediaSession.metadata = new MediaMetadata({
-            title: items[idx].t,
-            artwork: items[idx].i ? [{ src: items[idx].i }] : []
-          });
-        }
-      }
-    }
-
-    function onPlayerReady() {
-      atualizarDadosFaixa();
-    }
-
-    function onPlayerStateChange(event) {
+    function onStateChangeAtivo(event) {
       if (event.data === YT.PlayerState.PLAYING) {
-        buscando = false;
         atualizarIcone(true);
-        atualizarDadosFaixa();
         if (!rafId) rafId = requestAnimationFrame(loop);
       } else if (event.data === YT.PlayerState.PAUSED) {
         atualizarIcone(false);
+      } else if (event.data === YT.PlayerState.ENDED) {
+        alternarParaProximaFaixa();
       }
     }
 
-    function iniciarPlayer() {
-      if (!apiPronta || items.length === 0 || ytPlayer) return;
+    function iniciarPlayers() {
+      if (!apiPronta || items.length === 0) return;
 
-      const videoIds = items.map(item => extrairVideoId(item.u));
-      if (items[0]) {
-        titulo.textContent = items[0].t || '';
-        capa.src = items[0].i || fallbackSrc;
-      }
+      atualizarInterfaceMeta();
 
-      ytPlayer = new YT.Player('yt-player', {
-        playerVars: {
-          'autoplay': 1,
-          'controls': 1,
-          'playlist': videoIds.join(',')
-        },
+      const idPrimeiro = extrairVideoId(items[0].u);
+      const idSegundo = items.length > 1 ? extrairVideoId(items[1].u) : idPrimeiro;
+
+      playerAtivo = new YT.Player(idAtivo, {
+        videoId: idPrimeiro,
+        playerVars: { 'autoplay': 1, 'controls': 0 },
         events: {
-          'onReady': onPlayerReady,
-          'onStateChange': onPlayerStateChange
+          'onReady': () => { playerAtivo.playVideo(); },
+          'onStateChange': onStateChangeAtivo
+        }
+      });
+
+      playerReserva = new YT.Player(idReserva, {
+        videoId: idSegundo,
+        playerVars: { 'autoplay': 0, 'controls': 0 },
+        events: {
+          'onReady': (e) => { e.target.cueVideoById(idSegundo); }
         }
       });
     }
 
     window.onYouTubeIframeAPIReady = function() {
       apiPronta = true;
-      iniciarPlayer();
+      if (items.length > 0) iniciarPlayers();
     };
 
     doc.getElementById('acao').onclick = () => {
-      if (!ytPlayer || !ytPlayer.getPlayerState) return;
-      const estado = ytPlayer.getPlayerState();
+      if (!playerAtivo || !playerAtivo.getPlayerState) return;
+      const estado = playerAtivo.getPlayerState();
       if (estado === YT.PlayerState.PLAYING) {
-        ytPlayer.pauseVideo();
+        playerAtivo.pauseVideo();
         atualizarIcone(false);
       } else {
-        ytPlayer.playVideo();
+        playerAtivo.playVideo();
         atualizarIcone(true);
       }
     };
 
-    doc.getElementById('voltar').onclick = () => { 
-      if (ytPlayer) {
-        resetarExibicao();
-        ytPlayer.previousVideo();
-      }
+    doc.getElementById('voltar').onclick = () => {
+      if (playerAtivo) alternarParaFaixaAnterior();
     };
 
-    doc.getElementById('pular').onclick = () => { 
-      if (ytPlayer) {
-        resetarExibicao();
-        ytPlayer.nextVideo();
-      }
+    doc.getElementById('pular').onclick = () => {
+      if (playerAtivo) alternarParaProximaFaixa();
     };
 
     barra.onpointerdown = () => { arrastando = true; };
     barra.oninput = () => {
-      if (ytPlayer && ytPlayer.getDuration) {
-        const duracao = ytPlayer.getDuration();
+      if (playerAtivo && playerAtivo.getDuration) {
+        const duracao = playerAtivo.getDuration();
         if (Number.isFinite(duracao) && duracao > 0) {
           const pct = parseFloat(barra.value);
           tempoAtual.textContent = formatarTempo((pct / 100) * duracao);
@@ -361,37 +397,24 @@
       }
     };
     barra.onchange = () => {
-      if (ytPlayer && ytPlayer.getDuration) {
-        const duracao = ytPlayer.getDuration();
+      if (playerAtivo && playerAtivo.getDuration) {
+        const duracao = playerAtivo.getDuration();
         if (Number.isFinite(duracao) && duracao > 0) {
           const pct = parseFloat(barra.value);
           const novoTempo = (pct / 100) * duracao;
-
           tempoAtual.textContent = formatarTempo(novoTempo);
           atualizarBarraVisual(pct);
-
-          buscando = true;
-          ytPlayer.seekTo(novoTempo, true);
+          playerAtivo.seekTo(novoTempo, true);
         }
       }
       arrastando = false;
     };
 
     if ('mediaSession' in navigator) {
-      navigator.mediaSession.setActionHandler('previoustrack', () => { 
-        if (ytPlayer) {
-          resetarExibicao();
-          ytPlayer.previousVideo();
-        }
-      });
-      navigator.mediaSession.setActionHandler('nexttrack', () => { 
-        if (ytPlayer) {
-          resetarExibicao();
-          ytPlayer.nextVideo();
-        }
-      });
-      navigator.mediaSession.setActionHandler('play', () => { if (ytPlayer) ytPlayer.playVideo(); });
-      navigator.mediaSession.setActionHandler('pause', () => { if (ytPlayer) ytPlayer.pauseVideo(); });
+      navigator.mediaSession.setActionHandler('previoustrack', () => alternarParaFaixaAnterior());
+      navigator.mediaSession.setActionHandler('nexttrack', () => alternarParaProximaFaixa());
+      navigator.mediaSession.setActionHandler('play', () => { if (playerAtivo) playerAtivo.playVideo(); });
+      navigator.mediaSession.setActionHandler('pause', () => { if (playerAtivo) playerAtivo.pauseVideo(); });
     }
 
     const tag = doc.createElement('script');
