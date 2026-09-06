@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-2 -5 24 24'><path fill='%238ae234' d='M15.812.017H4.145C1.855.017 0 1.852 0 4.116v5.768c0 2.264 1.856 4.1 4.145 4.1h11.667c2.29 0 4.145-1.836 4.145-4.1V4.116c0-2.264-1.856-4.1-4.145-4.1zM13.009 7.28L7.552 9.855a.219.219 0 0 1-.314-.196V4.35c0-.161.173-.266.318-.193l5.458 2.735a.216.216 0 0 1-.005.389z'/></svg>"> 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root { 
+      --fundo: #121212; 
+      --texto: #E0E0E0; 
+      --cinza: #e0e0e0; 
+      --destaque: #8AE234; 
+    }
+    
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+
+    body { 
+      background: var(--fundo); 
+      color: var(--texto); 
+      display: flex; 
+      justify-content: center; 
+    }
+          
+    main { 
+      width: 100%; 
+      max-width: 450px; 
+      padding: 1.5rem; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 1.5rem; 
+      font-family: "Atkinson Hyperlegible", sans-serif; 
+    }
+
+    #capa { 
+      width: 100%; 
+      aspect-ratio: 1 / 1; 
+      object-fit: cover; 
+      border-radius: 12px; 
+      background: #202020; 
+      border: none; 
+      outline: none; 
+      cursor: pointer;
+    }
+
+    #input-json {
+      display: none;
+    }
+
+    #titulo { 
+      text-align: center; 
+      user-select: none; 
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .progresso-container { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 0.5rem; 
+    }
+
+    #barra { 
+      width: 100%; 
+      height: .375rem; 
+      background: #303030; 
+      cursor: pointer; 
+      -webkit-appearance: none; 
+      appearance: none; 
+      outline: none; 
+      -webkit-tap-highlight-color: transparent; 
+    }
+
+    #barra::-webkit-slider-thumb { 
+      -webkit-appearance: none; 
+      appearance: none; 
+      width: 0; 
+      height: 0; 
+    }
+
+    #barra::-moz-range-thumb { 
+      width: 0; 
+      height: 0; 
+      border: none; 
+    }
+
+    .tempo-container { 
+      display: flex; 
+      justify-content: space-between; 
+      font-size: 0.875rem; 
+      color: var(--cinza); 
+      user-select: none; 
+    }
+
+    .controles { 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      gap: 2.5rem; 
+    }
+
+    button { 
+      background: none; 
+      border: none; 
+      color: var(--texto); 
+      cursor: pointer; 
+      display: flex; 
+      align-items: center; 
+      -webkit-tap-highlight-color: transparent; 
+    }
+
+    .play-btn { 
+      width: 70px; 
+      height: 70px; 
+      background: var(--texto); 
+      color: var(--fundo); 
+      border-radius: 50%; 
+      justify-content: center; 
+      flex-shrink: 0; 
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <img id="capa" alt="Clique para carregar o arquivo JSON" referrerpolicy="no-referrer">
+    <input type="file" id="input-json" accept=".json">
+    <div id="yt-player" style="display: none;"></div>
+
+    <h2 id="titulo">Selecione o arquivo JSON</h2>
+
+    <div class="progresso-container">
+      <input type="range" id="barra" min="0" max="100" value="0" step="0.1" aria-label="Progresso do vídeo">
+      <div class="tempo-container">
+        <time id="tempo-atual">00:00</time>
+        <time id="tempo-total">00:00</time>
+      </div>
+    </div>
+
+    <nav class="controles">
+      <button id="voltar" aria-label="Vídeo anterior">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+      </button>
+
+      <button class="play-btn" id="acao" aria-label="Reproduzir ou pausar">
+        <svg id="icon-play" width="50" height="50" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="icon-pause" width="50" height="50" viewBox="0 0 24 24" fill="currentColor" style="display:none" aria-hidden="true"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+      </button>
+
+      <button id="pular" aria-label="Próximo vídeo">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+      </button>
+    </nav>
+  </main>
+
+  <script>
+    const doc = document;
+    const capa = doc.getElementById('capa');
+    const inputJson = doc.getElementById('input-json');
+    const barra = doc.getElementById('barra');
+    const tempoAtual = doc.getElementById('tempo-atual');
+    const tempoTotal = doc.getElementById('tempo-total');
+    const titulo = doc.getElementById('titulo');
+    const iconPlay = doc.getElementById('icon-play');
+    const iconPause = doc.getElementById('icon-pause');
+
+    const fallbackSrc = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 36 36"><rect x="-6" y="-6" width="36" height="36" fill="%23202020"/><path fill="%238ae234" d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z"/></svg>';
+
+    capa.src = fallbackSrc;
+    capa.onerror = () => { capa.src = fallbackSrc; };
+
+    let items = [];
+    let ytPlayer = null;
+    let apiPronta = false;
+    let rafId = null;
+    let arrastando = false;
+    let buscando = false;
+
+    capa.onclick = () => inputJson.click();
+
+    inputJson.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = JSON.parse(event.target.result);
+          items = Object.values(data);
+          
+          if (ytPlayer) {
+            ytPlayer.destroy();
+            ytPlayer = null;
+          }
+          
+          iniciarPlayer();
+        } catch (err) {
+          titulo.textContent = 'Erro ao carregar JSON';
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    function extrairVideoId(url) {
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : url;
+    }
+
+    const formatarTempo = (s) => {
+      if (!Number.isFinite(s) || s <= 0) return '00:00';
+      const m = Math.floor(s / 60);
+      const seg = Math.floor(s % 60);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${pad(m)}:${pad(seg)}`;
+    };
+
+    const atualizarBarraVisual = (pct) => {
+      barra.value = pct;
+      barra.style.background = `linear-gradient(to right, var(--destaque) ${pct}%, #303030 ${pct}%)`;
+    };
+
+    const resetarExibicao = () => {
+      atualizarBarraVisual(0);
+      tempoAtual.textContent = '00:00';
+      tempoTotal.textContent = '00:00';
+    };
+
+    const atualizarIcone = (reproduzindo) => {
+      iconPlay.style.display = reproduzindo ? 'none' : 'block';
+      iconPause.style.display = reproduzindo ? 'block' : 'none';
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = reproduzindo ? 'playing' : 'paused';
+      }
+    };
+
+    function loop() {
+      if (!ytPlayer || !ytPlayer.getCurrentTime) return;
+
+      const estado = ytPlayer.getPlayerState();
+      if (estado !== YT.PlayerState.PLAYING) {
+        rafId = null;
+        return;
+      }
+
+      if (!arrastando && !buscando) {
+        const atual = ytPlayer.getCurrentTime();
+        const duracao = ytPlayer.getDuration();
+
+        tempoAtual.textContent = formatarTempo(atual);
+        if (Number.isFinite(duracao) && duracao > 0) {
+          tempoTotal.textContent = formatarTempo(duracao);
+          const pct = (atual / duracao) * 100;
+          atualizarBarraVisual(pct);
+        }
+      }
+
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function atualizarDadosFaixa() {
+      if (!ytPlayer || !ytPlayer.getPlaylistIndex) return;
+      const idx = ytPlayer.getPlaylistIndex();
+      if (items[idx]) {
+        titulo.textContent = items[idx].t;
+        capa.src = items[idx].i || fallbackSrc;
+
+        if ('mediaSession' in navigator) {
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: items[idx].t,
+            artwork: items[idx].i ? [{ src: items[idx].i }] : []
+          });
+        }
+      }
+    }
+
+    function onPlayerReady() {
+      atualizarDadosFaixa();
+    }
+
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.PLAYING) {
+        buscando = false;
+        atualizarIcone(true);
+        atualizarDadosFaixa();
+        if (!rafId) rafId = requestAnimationFrame(loop);
+      } else if (event.data === YT.PlayerState.PAUSED) {
+        atualizarIcone(false);
+      }
+    }
+
+    function iniciarPlayer() {
+      if (!apiPronta || items.length === 0 || ytPlayer) return;
+
+      const videoIds = items.map(item => extrairVideoId(item.u));
+      if (items[0]) {
+        titulo.textContent = items[0].t || '';
+        capa.src = items[0].i || fallbackSrc;
+      }
+
+      ytPlayer = new YT.Player('yt-player', {
+        playerVars: {
+          'autoplay': 1,
+          'controls': 1,
+          'playlist': videoIds.join(',')
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+    window.onYouTubeIframeAPIReady = function() {
+      apiPronta = true;
+      iniciarPlayer();
+    };
+
+    doc.getElementById('acao').onclick = () => {
+      if (!ytPlayer || !ytPlayer.getPlayerState) return;
+      const estado = ytPlayer.getPlayerState();
+      if (estado === YT.PlayerState.PLAYING) {
+        ytPlayer.pauseVideo();
+        atualizarIcone(false);
+      } else {
+        ytPlayer.playVideo();
+        atualizarIcone(true);
+      }
+    };
+
+    doc.getElementById('voltar').onclick = () => { 
+      if (ytPlayer) {
+        resetarExibicao();
+        ytPlayer.previousVideo();
+      }
+    };
+
+    doc.getElementById('pular').onclick = () => { 
+      if (ytPlayer) {
+        resetarExibicao();
+        ytPlayer.nextVideo();
+      }
+    };
+
+    barra.onpointerdown = () => { arrastando = true; };
+    barra.oninput = () => {
+      if (ytPlayer && ytPlayer.getDuration) {
+        const duracao = ytPlayer.getDuration();
+        if (Number.isFinite(duracao) && duracao > 0) {
+          const pct = parseFloat(barra.value);
+          tempoAtual.textContent = formatarTempo((pct / 100) * duracao);
+          atualizarBarraVisual(pct);
+        }
+      }
+    };
+    barra.onchange = () => {
+      if (ytPlayer && ytPlayer.getDuration) {
+        const duracao = ytPlayer.getDuration();
+        if (Number.isFinite(duracao) && duracao > 0) {
+          const pct = parseFloat(barra.value);
+          const novoTempo = (pct / 100) * duracao;
+
+          tempoAtual.textContent = formatarTempo(novoTempo);
+          atualizarBarraVisual(pct);
+
+          buscando = true;
+          ytPlayer.seekTo(novoTempo, true);
+        }
+      }
+      arrastando = false;
+    };
+
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.setActionHandler('previoustrack', () => { 
+        if (ytPlayer) {
+          resetarExibicao();
+          ytPlayer.previousVideo();
+        }
+      });
+      navigator.mediaSession.setActionHandler('nexttrack', () => { 
+        if (ytPlayer) {
+          resetarExibicao();
+          ytPlayer.nextVideo();
+        }
+      });
+      navigator.mediaSession.setActionHandler('play', () => { if (ytPlayer) ytPlayer.playVideo(); });
+      navigator.mediaSession.setActionHandler('pause', () => { if (ytPlayer) ytPlayer.pauseVideo(); });
+    }
+
+    const tag = doc.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = doc.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+  </script>
+</body>
+</html>
