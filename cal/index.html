@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendário</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='800px' height='800px' viewBox='0 0 16 16' version='1.1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%238ae234' d='M6,7H4v2h2V7z M6,10H4v2h2V10z M9,7H7v2h2V7z M9,10H7v2h2V10z M12,7h-2v2h2V7z M12,10h-2v2h2V10z M15,2h-1v2h-3V2H5v2H2V2H1 C0.447,2,0,2.447,0,3v11c0,0.553,0.447,1,1,1h14c0.553,0,1-0.447,1-1V3C16,2.447,15.553,2,15,2z M14,13H2V6h12V13z M4,0.494 C4,0.222,3.778,0,3.506,0H3.497C3.222,0,3,0.222,3,0.494V3h1V0.494z M13,0.494C13,0.222,12.778,0,12.506,0h-0.009 C12.222,0,12,0.222,12,0.494V3h1V0.494z' /%3E%3C/svg%3E">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #0b0f19;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+    }
+    
+    .calendar-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      min-height: 0;
+    }
+    
+    .month-section {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      height: 100%;
+    }
+    
+    .month-section h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.2rem;
+      color: #8ae234;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    
+    .table-container {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+    }
+    
+    table {
+      width: 100%;
+      height: 100%;
+      border-collapse: collapse;
+      background: #0b0f19;
+    }
+    
+    td {
+      border: 1px solid #1f2937;
+      padding: 0 8px;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      color: #ffffff;
+    }
+    
+    td.data-cell {
+      font-family: monospace;
+      width: 75px;
+      color: #ffffff;
+    }
+    
+    tr.has-event td {
+      font-weight: 700;
+      color: #ffffff;
+    }
+    
+    tr.has-event td.data-cell {
+      color: #8ae234;
+    }
+    
+    time {
+      display: block;
+    }
+
+    .header-info {
+      flex-shrink: 0;
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      padding-top: 8px;
+    }
+    
+    .card {
+      background: transparent;
+      border: none;
+      padding: 8px;
+      text-align: center;
+      font-size: 1.35rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+    }
+
+    tr.is-past {
+      opacity: 0.35;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="calendar-grid" id="calendar"></main>
+
+  <header class="header-info">
+    <div class="card today-badge" id="today-display"></div>
+    <div class="card next-event" id="next-event-display"></div>
+    <div class="card countdown" id="countdown-display"></div>
+  </header>
+
+  <script src="script.js"></script>
+</body>
+</html>

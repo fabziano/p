@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Editor</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='800px' height='800px' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='4' y='4' width='16' height='16' rx='3' stroke='%238ae234' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M4 16L8.29289 11.7071C8.68342 11.3166 9.31658 11.3166 9.70711 11.7071L13 15M13 15L15.7929 12.2071C16.1834 11.8166 16.8166 11.8166 17.2071 12.2071L20 15M13 15L15.25 17.25' stroke='%238ae234' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <style>
+        body {
+            margin: 0;
+            background: #1e1e1e;
+            color: #fff;
+            font-family: sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+        #sidebar {
+            width: 250px;
+            background: #252526;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+        h3 {
+            margin-top: 0;
+            font-size: 14px;
+            color: #bbb;
+            text-transform: uppercase;
+        }
+        #layers-list {
+            flex: 1;
+            overflow-y: auto;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .layer-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 5px;
+            background: #2d2d2d;
+            border: 1px solid #3c3c3c;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .layer-item.active {
+            border-color: #007acc;
+            background: #37373d;
+        }
+        .layer-actions button {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        #canvas-container {
+            flex: 1;
+            background: #111;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #canvas-wrapper {
+            position: absolute;
+            transform-origin: center center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            display: none;
+        }
+        canvas {
+            background: #fff;
+            display: block;
+            cursor: grab;
+        }
+        canvas:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <h3>Camadas</h3>
+        <ul id="layers-list"></ul>
+    </div>
+
+    <div id="canvas-container">
+        <div id="canvas-wrapper">
+            <canvas id="editorCanvas"></canvas>
+        </div>
+    </div>
+
+<script>
+class Layer {
+    constructor(image, name) {
+        this.image = image;
+        this.name = name;
+        this.visible = true;
+        this.x = 0;
+        this.y = 0;
+        this.scale = 1;
+    }
+
+    clone() {
+        const copy = new Layer(this.image, this.name);
+        copy.visible = this.visible;
+        copy.x = this.x;
+        copy.y = this.y;
+        copy.scale = this.scale;
+        return copy;
+    }
+}
+
+class Editor {
+    constructor() {
+        this.canvas = document.getElementById('editorCanvas');
+        this.wrapper = document.getElementById('canvas-wrapper');
+        this.ctx = this.canvas.getContext('2d');
+        this.layers = [];
+        this.activeLayerIndex = null;
+        this.isFirstImage = true;
+
+        this.isDragging = false;
+        this.startX = 0;
+        this.startY = 0;
+
+        this.canvasZoom = 1;
+        this.history = [];
+
+        this.initEvents();
+    }
+
+    initEvents() {
+        window.addEventListener('paste', (e) => this.handlePaste(e));
+        window.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        
+        this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+        window.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+        window.addEventListener('mouseup', () => this.handleMouseUp());
+        
+        const container = document.getElementById('canvas-container');
+        container.addEventListener('wheel', (e) => this.handleWheel(e), { passive: false });
+    }
+
+    saveState() {
+        const state = {
+            layers: this.layers.map(layer => layer.clone()),
+            activeLayerIndex: this.activeLayerIndex,
+            isFirstImage: this.isFirstImage,
+            canvasWidth: this.canvas.width,
+            canvasHeight: this.canvas.height
+        };
+        this.history.push(state);
+        if (this.history.length > 50) {
+            this.history.shift();
+        }
+    }
+
+    undo() {
+        if (this.history.length === 0) return;
+        const state = this.history.pop();
+        
+        this.layers = state.layers;
+        this.activeLayerIndex = state.activeLayerIndex;
+        this.isFirstImage = state.isFirstImage;
+        
+        if (this.isFirstImage) {
+            this.wrapper.style.display = 'none';
+        } else {
+            this.canvas.width = state.canvasWidth;
+            this.canvas.height = state.canvasHeight;
+            this.wrapper.style.display = 'block';
+        }
+
+        this.render();
+        this.updateLayersUI();
+    }
+
+    handleKeyDown(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+            e.preventDefault();
+            this.undo();
+        }
+    }
+
+    handlePaste(e) {
+        const items = e.clipboardData.items;
+        for (let item of items) {
+            if (item.type.indexOf('image') !== -1) {
+                const blob = item.getAsFile();
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        this.saveState();
+
+                        if (this.isFirstImage) {
+                            this.canvas.width = img.width;
+                            this.canvas.height = img.height;
+                            this.isFirstImage = false;
+                            this.wrapper.style.display = 'block';
+                        }
+
+                        const layerName = `Camada ${this.layers.length + 1}`;
+                        const newLayer = new Layer(img, layerName);
+                        
+                        this.layers.push(newLayer);
+                        this.activeLayerIndex = this.layers.length - 1;
+                        
+                        this.render();
+                        this.updateLayersUI();
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(blob);
+                break;
+            }
+        }
+    }
+
+    handleMouseDown(e) {
+        if (this.activeLayerIndex === null) return;
+        this.saveState();
+        this.isDragging = true;
+        this.startX = e.clientX;
+        this.startY = e.clientY;
+    }
+
+    handleMouseMove(e) {
+        if (!this.isDragging || this.activeLayerIndex === null) return;
+
+        const dx = (e.clientX - this.startX) / this.canvasZoom;
+        const dy = (e.clientY - this.startY) / this.canvasZoom;
+
+        this.startX = e.clientX;
+        this.startY = e.clientY;
+
+        const activeLayer = this.layers[this.activeLayerIndex];
+        activeLayer.x += dx;
+        activeLayer.y += dy;
+
+        this.render();
+    }
+
+    handleMouseUp() {
+        this.isDragging = false;
+    }
+
+    handleWheel(e) {
+        e.preventDefault();
+
+        if (e.shiftKey) {
+            const zoomIntensity = 0.1;
+            if (e.deltaY < 0) {
+                this.canvasZoom += zoomIntensity;
+            } else {
+                this.canvasZoom -= zoomIntensity;
+                if (this.canvasZoom < 0.1) this.canvasZoom = 0.1;
+            }
+            this.wrapper.style.transform = `scale(${this.canvasZoom})`;
+        } else {
+            if (this.activeLayerIndex === null) return;
+            
+            if (!this.isWheeling) {
+                this.saveState();
+                this.isWheeling = true;
+            }
+            clearTimeout(this.wheelTimeout);
+            this.wheelTimeout = setTimeout(() => {
+                this.isWheeling = false;
+            }, 200);
+
+            const activeLayer = this.layers[this.activeLayerIndex];
+            const zoomIntensity = 0.1;
+
+            if (e.deltaY < 0) {
+                activeLayer.scale += zoomIntensity;
+            } else {
+                activeLayer.scale -= zoomIntensity;
+                if (activeLayer.scale < 0.05) activeLayer.scale = 0.05;
+            }
+
+            this.render();
+        }
+    }
+
+    moveLayer(index, direction) {
+        const targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= this.layers.length) return;
+
+        this.saveState();
+
+        const temp = this.layers[index];
+        this.layers[index] = this.layers[targetIndex];
+        this.layers[targetIndex] = temp;
+
+        if (this.activeLayerIndex === index) {
+            this.activeLayerIndex = targetIndex;
+        } else if (this.activeLayerIndex === targetIndex) {
+            this.activeLayerIndex = index;
+        }
+
+        this.render();
+        this.updateLayersUI();
+    }
+
+    render() {
+        if (this.isFirstImage) return;
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        for (let i = 0; i < this.layers.length; i++) {
+            const layer = this.layers[i];
+            if (layer.visible) {
+                this.ctx.save();
+                this.ctx.translate(layer.x, layer.y);
+                this.ctx.scale(layer.scale, layer.scale);
+                this.ctx.drawImage(layer.image, 0, 0);
+                this.ctx.restore();
+            }
+        }
+    }
+
+    updateLayersUI() {
+        const listContainer = document.getElementById('layers-list');
+        listContainer.innerHTML = '';
+
+        for (let i = this.layers.length - 1; i >= 0; i--) {
+            const layer = this.layers[i];
+            const li = document.createElement('li');
+            li.className = `layer-item ${i === this.activeLayerIndex ? 'active' : ''}`;
+            
+            const spanName = document.createElement('span');
+            spanName.textContent = layer.name;
+            spanName.onclick = () => {
+                this.activeLayerIndex = i;
+                this.updateLayersUI();
+            };
+
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'layer-actions';
+
+            const btnUp = document.createElement('button');
+            btnUp.textContent = '▲';
+            btnUp.onclick = (e) => {
+                e.stopPropagation();
+                this.moveLayer(i, 1);
+            };
+
+            const btnDown = document.createElement('button');
+            btnDown.textContent = '▼';
+            btnDown.onclick = (e) => {
+                e.stopPropagation();
+                this.moveLayer(i, -1);
+            };
+
+            actionsDiv.appendChild(btnUp);
+            actionsDiv.appendChild(btnDown);
+
+            li.appendChild(spanName);
+            li.appendChild(actionsDiv);
+            listContainer.appendChild(li);
+        }
+    }
+}
+
+const app = new Editor();
+</script>
+
+</body>
+</html>

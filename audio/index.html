@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Player</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='2 1 20 20'><path fill='%238ae234' d='M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z'/></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --fundo: #121212; --texto: #E0E0E0; --cinza: #e0e0e0; --destaque: #8AE234; }
+        * { margin: 0; padding: 0; box-sizing: border-box }
+        body { background: var(--fundo); color: var(--texto); display: flex; justify-content: center }      
+        main { width: 100%; max-width: 450px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; font-family: "Atkinson Hyperlegible", sans-serif }      
+        #capa { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px; background: #202020; border: none; outline: none }
+        #titulo { text-align: center; user-select:none }
+        .progresso-container { display: flex; flex-direction: column; gap: 0.5rem }
+        #barra { width: 100%; height: .375rem; background: #303030; cursor: pointer; -webkit-appearance: none; appearance: none; outline: none; -webkit-tap-highlight-color: transparent }
+        #barra::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 0; height: 0 }
+        #barra::-moz-range-thumb { width: 0; height: 0; border: none }
+        .tempo-container { display: flex; justify-content: space-between; font-size: 0.875rem; color: var(--cinza); user-select: none }
+        .controles { display: flex; justify-content: center; align-items: center; gap: 2.5rem }
+        button { background: none; border: none; color: var(--texto); cursor: pointer; display: flex; align-items: center; -webkit-tap-highlight-color: transparent }        
+        .play-btn { width: 70px; height: 70px; background: var(--texto); color: var(--fundo); border-radius: 50%; justify-content: center; flex-shrink: 0 }
+    </style>
+</head>
+<body>
+    <main>
+        <img id="capa" alt="" referrerpolicy="no-referrer">
+        <h2 id="titulo"></h2>
+        <div class="progresso-container">
+            <input type="range" id="barra" min="0" max="100" value="0" step="0.1" aria-label="Progresso do áudio">
+            <div class="tempo-container">
+                <time id="tempo-atual">00:00</time>
+                <time id="tempo-total">00:00</time>
+            </div>
+        </div>
+        <nav class="controles">
+            <button id="voltar" aria-label="Faixa anterior"><svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></button>
+            <button class="play-btn" id="acao" aria-label="Reproduzir ou pausar">
+                <svg id="icon-play" width="50" height="50" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                <svg id="icon-pause" width="50" height="50" viewBox="0 0 24 24" fill="currentColor" style="display:none" aria-hidden="true"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <button id="pular" aria-label="Próxima faixa"><svg width="56" height="56" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+        </nav>
+    </main>
+    <audio id="audio-engine" preload="metadata"></audio>
+    <script>
+        const faixas = [
+            { 
+                t: "Thanos", 
+                u: "https://dl.dropboxusercontent.com/scl/fi/883ddhjooaimazel59j48/thanos.mp3?rlkey=bvinluj9di0bweexa6579l2hd",
+                i: "1.png"
+            }
+        ];
+
+        const doc = document;
+        const audio = doc.getElementById('audio-engine');
+        const barra = doc.getElementById('barra');
+        const tempoAtual = doc.getElementById('tempo-atual');
+        const tempoTotal = doc.getElementById('tempo-total');
+        const titulo = doc.getElementById('titulo');
+        const capa = doc.getElementById('capa');
+        const iconPlay = doc.getElementById('icon-play');
+        const iconPause = doc.getElementById('icon-pause');
+
+        let indiceAtual = 0, duracao = 0, rafId = null, arrastando = false;
+
+        capa.onerror = () => {
+            capa.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -6 36 36"><rect x="-6" y="-6" width="36" height="36" fill="%23202020"/><path fill="%238ae234" d="M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z"/></svg>';
+        };
+
+        const formatarTempo = (s) => {
+            if (!Number.isFinite(s) || s <= 0) return '00:00';
+            const m = Math.floor(s / 60);
+            const seg = Math.floor(s % 60);
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${pad(m)}:${pad(seg)}`;
+        };
+
+        const atualizarBarraVisual = (pct) => {
+            barra.value = pct;
+            barra.style.background = `linear-gradient(to right, var(--destaque) ${pct}%, #303030 ${pct}%)`;
+        };
+
+        const atualizarIcone = (reproduzindo) => {
+            iconPlay.style.display = reproduzindo ? 'none' : 'block';
+            iconPause.style.display = reproduzindo ? 'block' : 'none';
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.playbackState = reproduzindo ? 'playing' : 'paused';
+            }
+        };
+
+        function loop() {
+            if (audio.paused) {
+                rafId = null;
+                return;
+            }
+
+            if (!arrastando) {
+                tempoAtual.textContent = formatarTempo(audio.currentTime);
+
+                if (Number.isFinite(audio.duration) && audio.duration > 0) {
+                    duracao = audio.duration;
+                    tempoTotal.textContent = formatarTempo(duracao);
+                    const pct = (audio.currentTime / duracao) * 100;
+                    atualizarBarraVisual(pct);
+                }
+            }
+
+            rafId = requestAnimationFrame(loop);
+        }
+
+        audio.onplay = () => { if (!rafId) rafId = requestAnimationFrame(loop); };
+        audio.onpause = () => { if (rafId) { cancelAnimationFrame(rafId); rafId = null; } };
+        audio.onended = () => proxima(1);
+        audio.onloadedmetadata = () => {
+            duracao = audio.duration;
+            if (Number.isFinite(duracao)) {
+                tempoTotal.textContent = formatarTempo(duracao);
+            }
+        };
+
+        function tocar() {
+            audio.play().then(() => atualizarIcone(true)).catch(() => atualizarIcone(false));
+        }
+
+        function pausar() {
+            audio.pause();
+            atualizarIcone(false);
+        }
+
+        function alternar() { audio.paused ? tocar() : pausar(); }
+
+        function carregar(indice) {
+            indiceAtual = indice;
+            const faixa = faixas[indiceAtual];
+            audio.src = faixa.u;
+            titulo.textContent = faixa.t;
+            capa.src = faixa.i;
+            atualizarBarraVisual(0);
+            tempoAtual.textContent = '00:00';
+            tempoTotal.textContent = '00:00';
+            duracao = 0;
+
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({ 
+                    title: faixa.t,
+                    artwork: [{ src: faixa.i }]
+                });
+            }
+        }
+
+        function proxima(dir) {
+            carregar((indiceAtual + faixas.length + dir) % faixas.length);
+            tocar();
+        }
+
+        doc.getElementById('acao').onclick = alternar;
+        doc.getElementById('voltar').onclick = () => proxima(-1);
+        doc.getElementById('pular').onclick = () => proxima(1);
+
+        audio.onerror = () => {
+            titulo.textContent = 'Erro ao carregar áudio';
+            atualizarIcone(false);
+        };
+
+        barra.onpointerdown = () => { arrastando = true; };
+
+        barra.oninput = () => {
+            if (duracao && Number.isFinite(duracao)) {
+                const pct = parseFloat(barra.value);
+                tempoAtual.textContent = formatarTempo((pct / 100) * duracao);
+                atualizarBarraVisual(pct);
+            }
+        };
+
+        barra.onchange = () => {
+            if (duracao && Number.isFinite(duracao)) {
+                const pct = parseFloat(barra.value);
+                audio.currentTime = (pct / 100) * duracao;
+            }
+            arrastando = false;
+        };
+
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('previoustrack', () => proxima(-1));
+            navigator.mediaSession.setActionHandler('nexttrack', () => proxima(1));
+            navigator.mediaSession.setActionHandler('play', tocar);
+            navigator.mediaSession.setActionHandler('pause', pausar);
+        }
+
+        carregar(0);
+    </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horas</title>
+  <link rel="icon" href="assets/icon.png" type="image/png">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+
+<body>
+  <svg style="display: none;">
+    <symbol id="icon-key" viewBox="0 0 1200 1200">
+      <path fill="currentColor" d="M328.261,271.758C146.977,271.758,0,418.697,0,599.981 c0,181.283,146.977,328.261,328.261,328.261c161.72,0,296.083-116.959,323.206-270.903c0.306,0.017,0.605,0.064,0.912,0.076h126.386 v182.46h139.538v-182.46h65.796v264.068h139.538V657.414H1200V517.878H647.095c-0.322,0.026-0.63,0.048-0.95,0.076 C609.721,376.371,481.219,271.758,328.261,271.758L328.261,271.758z M328.261,423.611c97.415,0,176.37,78.955,176.37,176.37 c0,97.414-78.955,176.407-176.37,176.407s-176.408-78.993-176.408-176.407C151.853,502.566,230.847,423.611,328.261,423.611 L328.261,423.611z" />
+    </symbol>
+    <symbol id="icon-arrow" viewBox="0 0 512 512">
+      <path fill="currentColor" d="M416 448h-84c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h84c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32h-84c-6.6 0-12-5.4-12-12V76c0-6.6 5.4-12 12-12h84c53 0 96 43 96 96v192c0 53-43 96-96 96zm-47-201L201 79c-15-15-41-4.5-41 17v96H24c-13.3 0-24 10.7-24 24v96c0 13.3 10.7 24 24 24h136v96c0 21.5 26 32 41 17l168-168c9.3-9.4 9.3-24.6 0-34z"/></svg>
+    </symbol>
+  </svg>
+
+  <main>
+    <section>
+      <header>
+        <img style="user-select: none;" src="assets/logo.png" alt="Logo">
+      </header>
+      <div class="content">
+        <h1 id="titulo">Horas</h1>
+        <form id="form">
+          <div class="campo" id="campo">
+            <label for="chave">
+              <svg width="20" height="20" aria-hidden="true">
+                <use href="#icon-key"></use>
+              </svg>
+            </label>
+            <input type="text" name="chave" id="chave" placeholder="Informe sua Chave de API" autocomplete="off">
+          </div>
+          <button type="submit" id="botao">
+              <svg width="15" height="15" aria-hidden="true">
+                <use href="#icon-arrow"></use>
+              </svg>
+              <span>Consultar</span>
+          </button>
+        </form>
+        <p class="info" id="atualizacao"></p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    class UtilitarioData {
+      static formatar(iso) {
+        if (!iso) return '';
+        const data = new Date(iso);
+        return `${data.toLocaleDateString('pt-BR')} às ${data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+      }
+    }
+
+    class ServicoArmazenamento {
+      static obterChave() {
+        return localStorage.getItem('chave');
+      }
+
+      static salvarChave(valor) {
+        if (valor) localStorage.setItem('chave', valor);
+        else localStorage.removeItem('chave');
+      }
+    }
+
+    class ServicoApiHoras {
+      static ENDERECO_API = 'https://horas.zibikoski.com.br/api/v1/hours';
+      static MENSAGENS_ERRO = {
+        401: 'Chave de API inválida ou ausente.',
+        404: 'RA não encontrado.',
+        422: 'Parâmetros inválidos.',
+        429: 'Limite de consultas excedido.',
+        503: 'Base de dados indisponível.'
+      };
+
+      static async consultarHoras(chave) {
+        const resposta = await fetch(this.ENDERECO_API, {
+          headers: { 'Authorization': `Bearer ${chave}` }
+        });
+
+        if (!resposta.ok) {
+          const dadosErro = await resposta.json().catch(() => ({}));
+          const mensagem = this.MENSAGENS_ERRO[resposta.status] || dadosErro.detail || 'Erro ao realizar a consulta.';
+          
+          const erro = new Error(mensagem);
+          erro.status = resposta.status;
+          throw erro;
+        }
+
+        return await resposta.json();
+      }
+    }
+
+    class Aplicacao {
+      constructor() {
+        this.elementos = {
+          input: document.getElementById('chave'),
+          campo: document.getElementById('campo'),
+          formulario: document.getElementById('form'),
+          titulo: document.getElementById('titulo'),
+          atualizacao: document.getElementById('atualizacao'),
+          botao: document.getElementById('botao')
+        };
+      }
+
+      iniciar() {
+        const chaveSalva = ServicoArmazenamento.obterChave();
+        this.exibirCampoEntrada(!chaveSalva);
+        this.elementos.formulario.addEventListener('submit', (evento) => this.aoEnviarFormulario(evento));
+      }
+
+      exibirCampoEntrada(visivel) {
+        this.elementos.campo.style.display = visivel ? 'flex' : 'none';
+        this.elementos.input.required = visivel;
+      }
+
+      definirEstadoCarregando(carregando) {
+        this.elementos.botao.disabled = carregando;
+      }
+
+      async aoEnviarFormulario(evento) {
+        evento.preventDefault();
+        const chaveFormulario = this.elementos.input.value.trim();
+        const chaveAtual = ServicoArmazenamento.obterChave() || chaveFormulario;
+
+        if (!chaveAtual) return;
+
+        ServicoArmazenamento.salvarChave(chaveAtual);
+        this.exibirCampoEntrada(false);
+        await this.executarConsulta(chaveAtual);
+      }
+
+      async executarConsulta(chave) {
+        this.definirEstadoCarregando(true);
+
+        try {
+          const dados = await ServicoApiHoras.consultarHoras(chave);
+          this.renderizarSucesso(dados);
+        } catch (erro) {
+          if (erro.status === 401 || erro.status === 404) {
+            ServicoArmazenamento.salvarChave(null);
+            this.exibirCampoEntrada(true);
+          }
+          this.renderizarErro(erro.message);
+        } finally {
+          this.definirEstadoCarregando(false);
+        }
+      }
+
+      renderizarSucesso(dados) {
+        const primeiroNome = dados.nome ? dados.nome.split(' ')[0] : 'Usuário';
+        this.elementos.titulo.textContent = `${primeiroNome}, você tem ${dados.horas_formatadas}`;
+        this.elementos.atualizacao.textContent = `Base de dados atualizada em ${UtilitarioData.formatar(dados.base_atualizada_em)}`;
+      }
+
+      renderizarErro(mensagem) {
+        this.elementos.titulo.textContent = mensagem;
+        this.elementos.atualizacao.textContent = '';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => new Aplicacao().iniciar());
+  </script>
+</body>
+
+</html>

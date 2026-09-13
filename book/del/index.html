@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deletar</title>
+  <style>
+    button{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;margin:0;font-weight:400;padding:.375rem .75rem;font-size:1rem;user-select:none;color:#fff;background-color:#000;border:1px solid #000;border-radius:.25rem;cursor:pointer}
+  </style>
+</head>
+<body>
+
+  <button id="btn">Deletar</button>
+
+  <script>
+    document.getElementById('btn').addEventListener('click', () => {
+      const req = indexedDB.deleteDatabase('BibliotecaDB');
+      
+      req.onsuccess = () => {
+        window.location.href = '../';
+      };
+      
+      req.onblocked = () => {
+        alert('Feche a outra aba com o site aberto para conseguir deletar.');
+      };
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>String</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Cpath fill='%238ae234' d='M875.6 515.9c2.1 0.8 4.4-0.3 5.2-2.4 0.2-0.4 0.2-0.9 0.2-1.4v-58.3c0-1.8-1.1-3.3-2.8-3.8-6-1.8-17.2-3-27.2-3-32.9 0-61.7 16.7-73.5 41.2v-28.6c0-4.4-3.6-8-8-8H717c-4.4 0-8 3.6-8 8V729c0 4.4 3.6 8 8 8h54.8c4.4 0 8-3.6 8-8V572.7c0-36.2 26.1-60.2 65.1-60.2 10.4 0.1 26.6 1.8 30.7 3.4zM338.6 475.4l-54.7-12.6c-61.2-14.2-87.7-34.8-87.7-70.7 0-44.6 39.1-73.5 96.9-73.5 52.8 0 91.4 26.5 99.9 68.9h70C455.9 311.6 387.6 259 293.4 259c-103.3 0-171 55.5-171 139 0 68.6 38.6 109.5 122.2 128.5l61.6 14.3c63.6 14.9 91.6 37.1 91.6 75.1 0 44.1-43.5 75.2-102.5 75.2-60.6 0-104.5-27.2-112.8-70.5H111c7.2 79.9 75.6 130.4 179.1 130.4C402.3 751 471 695.2 471 605.3c0-70.2-38.6-108.5-132.4-129.9z'/%3E%3Cpath fill='%238ae234' d='M877 729m-36 0a36 36 0 1 0 72 0 36 36 0 1 0-72 0Z'/%3E%3Cpath fill='%238ae234' d='M653 457.8h-51.4V396c0-4.4-3.6-8-8-8h-54.7c-4.4 0-8 3.6-8 8v61.8H495c-4.4 0-8 3.6-8 8v42.3c0 4.4 3.6 8 8 8h35.9v147.5c0 56.2 27.4 79.4 93.1 79.4 11.7 0 23.6-1.2 33.8-3.1 1.9-0.3 3.2-2 3.2-3.9v-49.3c0-2.2-1.8-4-4-4h-0.4c-4.9 0.5-6.2 0.6-8.3 0.8-4.1 0.3-7.8 0.5-12.6 0.5-24.1 0-34.1-10.3-34.1-35.6V516.1H653c4.4 0 8-3.6 8-8v-42.3c0-4.4-3.6-8-8-8z'/%3E%3C/svg%3E">
+  <style>
+    :root {--bg:#f6f8fa;--surface:#ffffff;--border:#d0d7de;--text:#1f2328;--text-muted:#636c76;--primary:#0969da;--accent:#1f883d;}
+    * {box-sizing:border-box;margin:0;padding:0;}
+    body {font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background-color:var(--bg);color:var(--text);line-height:1.5;padding:2rem 1rem;}
+    main {max-width:70rem;margin:0 auto;display:grid;grid-template-columns:1fr;gap:1.5rem;}
+    @media (min-width: 850px) {main {grid-template-columns:1fr 1fr;align-items:start;}}
+    h1 {font-size:1.75rem;font-weight:600;color:var(--text);grid-column:1 / -1;margin-bottom:0.5rem;}
+    .card {background-color:var(--surface);border:1px solid var(--border);border-radius:0;padding:1.5rem;display:grid;gap:1.5rem;}
+    .output-card {position:sticky;top:2rem;}
+    .target-selector, .field-item {display:grid;gap:0.5rem;}
+    label {font-size:1.05rem;font-weight:600;color:var(--text);}
+    select, input[type="text"] {width:100%;padding:0.75rem 1rem;background-color:var(--surface);border:1px solid var(--border);border-radius:0;color:var(--text);font-size:1.1rem;outline:none;}
+    select:focus, input[type="text"]:focus {border-color:var(--primary);box-shadow:0 0 0 0.2rem rgba(9,105,218,0.15);}
+    .fields-grid {display:grid;gap:1.25rem;}
+    output {display:block;background-color:var(--bg);border:1px solid var(--border);padding:1.25rem;border-radius:0;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:1.1rem;color:#000000;word-break:break-all;min-height:7.5rem;}
+    .actions {display:flex;gap:0.75rem;flex-wrap:wrap;}
+    .btn {display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;height:3rem;padding:0 1.5rem;font-size:1.1rem;border-radius:0;text-decoration:none;cursor:pointer;white-space:nowrap;flex:1;}
+    .btn-primary {background-color:var(--accent);color:#ffffff;border:1px solid transparent;font-weight:normal;}
+    .btn-secondary {background-color:var(--primary);color:#ffffff;border:1px solid transparent;font-weight:600;}
+  </style>
+</head>
+<body>
+
+  <main>
+    <h1>String de Busca</h1>
+
+    <section class="card">
+      <div class="target-selector">
+        <label for="dbSelect">Base de Dados</label>
+        <select id="dbSelect">
+          <option value="ieee">IEEE Xplore</option>
+          <option value="acm">ACM Digital Library</option>
+          <option value="scholar">Google Acadêmico</option>
+        </select>
+      </div>
+
+      <div class="fields-grid">
+        <div class="field-item">
+          <label for="exactTerm">Expressão Exata</label>
+          <input type="text" id="exactTerm" value="modular monolith" placeholder="modular monolith">
+        </div>
+
+        <div class="field-item">
+          <label for="andTerms">Termos Obrigatórios</label>
+          <input type="text" id="andTerms" value="" placeholder="migration, microservices">
+        </div>
+
+        <div class="field-item">
+          <label for="orTerms">Qualquer um destes termos</label>
+          <input type="text" id="orTerms" value="" placeholder="monolith first, remondialization">
+        </div>
+
+        <div class="field-item">
+          <label for="notTerms">Nenhum destes termos</label>
+          <input type="text" id="notTerms" value="" placeholder="micro frontends">
+        </div>
+      </div>
+    </section>
+
+    <section class="card output-card">
+      <label>String</label>
+      <output id="stringOutput"></output>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" onclick="copyString()">Copiar</button>
+        
+        <a id="targetLink" href="#" target="_blank" rel="noopener" class="btn btn-secondary">Buscar</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const dbSelect = document.getElementById('dbSelect');
+    const exactInput = document.getElementById('exactTerm');
+    const andInput = document.getElementById('andTerms');
+    const orInput = document.getElementById('orTerms');
+    const notInput = document.getElementById('notTerms');
+    const output = document.getElementById('stringOutput');
+    const targetLink = document.getElementById('targetLink');
+
+    function parseCommaList(value) {
+      if (!value.trim()) return [];
+      return value.split(',')
+        .map(t => t.trim())
+        .filter(t => t.length > 0)
+        .map(t => t.includes(' ') ? `"${t}"` : t);
+    }
+
+    function buildString() {
+      const selectedDb = dbSelect.value;
+      const parts = [];
+
+      const exactVal = exactInput.value.trim();
+      if (exactVal) {
+        parts.push(`"${exactVal}"`);
+      }
+
+      const andTerms = parseCommaList(andInput.value);
+      if (andTerms.length > 0) {
+        parts.push(andTerms.join(' AND '));
+      }
+
+      const orTerms = parseCommaList(orInput.value);
+      if (orTerms.length > 0) {
+        const group = orTerms.join(' OR ');
+        parts.push(orTerms.length > 1 ? `(${group})` : group);
+      }
+
+      const notTerms = parseCommaList(notInput.value);
+      if (notTerms.length > 0) {
+        if (selectedDb === 'scholar') {
+          notTerms.forEach(term => {
+            const cleanTerm = term.replace(/"/g, '');
+            parts.push(`-${cleanTerm}`);
+          });
+        } else {
+          notTerms.forEach(term => {
+            parts.push(`NOT ${term}`);
+          });
+        }
+      }
+
+      let finalQuery = selectedDb === 'scholar' ? parts.join(' ') : parts.join(' AND ');
+
+      output.textContent = finalQuery;
+
+      const encodedQuery = encodeURIComponent(finalQuery);
+
+      switch (selectedDb) {
+        case 'ieee':
+          targetLink.href = `https://ieeexplore.ieee.org/search/searchresult.jsp?queryText=${encodedQuery}`;
+          break;
+        case 'acm':
+          targetLink.href = `https://dl.acm.org/action/doSearch?AllField=${encodedQuery}`;
+          break;
+        case 'scholar':
+          targetLink.href = `https://scholar.google.com/scholar?q=${encodedQuery}`;
+          break;
+      }
+    }
+
+    function copyString() {
+      const text = output.textContent;
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.btn-primary');
+        btn.textContent = 'Copiado!';
+        setTimeout(() => {
+          btn.textContent = 'Copiar';
+        }, 1500);
+      });
+    }
+
+    dbSelect.addEventListener('change', buildString);
+    [exactInput, andInput, orInput, notInput].forEach(input => {
+      input.addEventListener('input', buildString);
+    });
+
+    buildString();
+  </script>
+</body>
+</html>
