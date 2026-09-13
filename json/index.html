@@ -6,227 +6,179 @@
     <title>Shop</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='800px' height='800px' viewBox='0 0 52 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%238ae234' d='M44,19.6a4,4,0,0,0-4-4h-.7a13.24,13.24,0,0,0-26.4,0H12a4,4,0,0,0-4,4l-2,25a4,4,0,0,0,4,4H42a4,4,0,0,0,4-4ZM26.1,9.4a7.24,7.24,0,0,1,7.2,6.2H18.9A7.39,7.39,0,0,1,26.1,9.4Zm5.7,18.2H20.2a3,3,0,0,1-3-3,3.08,3.08,0,0,1,3-3H31.9a3,3,0,0,1,3,3A3.1,3.1,0,0,1,31.8,27.6Z'/%3E%3C/svg%3E">
     <style>
-:root {
-    --bg-base: #1e1e1e;
-    --bg-surface: #2d2d2d;
-    --border: #444;
-    --text: #fff;
-    --accent: #8ae234;
-    --accent-hover: #73c428;
-}
+        :root {
+            --bg-base: #1e1e1e;
+            --bg-surface: #2d2d2d;
+            --border: #444;
+            --text: #fff;
+            --accent: #8ae234;
+            --accent-hover: #73c428;
+        }
 
-body {
-    font-family: sans-serif;
-    background: var(--bg-base);
-    color: var(--text);
-    padding: 2rem;
-    margin: 0;
-}
+        body {
+            font-family: sans-serif;
+            background: var(--bg-base);
+            color: var(--text);
+            padding: 2rem;
+            margin: 0;
+        }
 
-header {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+        header {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-nav {
-    display: flex;
-    gap: 1rem;
-}
+        nav {
+            display: flex;
+            gap: 1rem;
+        }
 
-main {
-    max-width: 1400px;
-    margin: 2rem auto 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-}
+        main {
+            max-width: 1400px;
+            margin: 2rem auto 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
 
-section {
-    background: var(--bg-surface);
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-}
+        section {
+            background: var(--bg-surface);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
 
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
 
-.field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-}
+        input[type="file"] {
+            display: none;
+        }
 
-label {
-    font-weight: 600;
-    font-size: 0.875rem;
-}
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
 
-input,
-textarea {
-    width: 100%;
-    padding: 0.75rem;
-    box-sizing: border-box;
-    border: 1px solid var(--border);
-    background: var(--bg-base);
-    color: var(--text);
-    border-radius: 4px;
-    font-family: inherit;
-    outline: none;
-}
+        article.product-card {
+            background: var(--bg-base);
+            border-radius: 6px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
 
-textarea {
-    height: 300px;
-    font-family: monospace;
-    color: var(--accent);
-    resize: none;
-}
+        article.product-card .field-img {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
 
-input:focus,
-textarea:focus {
-    outline: 2px solid var(--accent);
-}
+        article.product-card .field-img input {
+            width: 100%;
+            padding: 0.5rem;
+            box-sizing: border-box;
+            border: 1px solid var(--border);
+            background: var(--bg-base);
+            color: var(--text);
+            border-radius: 4px;
+            font-family: inherit;
+            outline: none;
+            font-size: 0.75rem;
+        }
 
-button,
-.button-label {
-    flex: 1;
-    background: var(--accent);
-    color: var(--bg-base);
-    border: none;
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-    display: inline-block;
-    font-size: 0.875rem;
-    text-decoration: none;
-    font-family: inherit;
-    font-weight: inherit;
-}
+        article.product-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
 
-button:hover,
-.button-label:hover {
-    background: var(--accent-hover);
-}
+        article.product-card input[type="text"], 
+        article.product-card input[type="url"] {
+            width: 100%;
+            padding: 0.5rem;
+            box-sizing: border-box;
+            border: 1px solid var(--border);
+            background: var(--bg-base);
+            color: var(--text);
+            border-radius: 4px;
+            font-family: inherit;
+            outline: none;
+        }
 
-.form-actions {
-    display: flex;
-    gap: 1rem;
-}
+        article.product-card input:focus {
+            outline: 2px solid var(--accent);
+        }
 
-input[type="file"] {
-    display: none;
-}
+        article.product-card time {
+            font-size: 0.75rem;
+            color: #888;
+            font-family: inherit;
+        }
 
-.preview-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
-}
+        article.product-card .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
 
-article.product-card {
-    background: var(--bg-base);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
+        article.product-card a {
+            flex: 1;
+            background: var(--accent);
+            color: var(--bg-base);
+            padding: 0.5rem;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            font-weight: bold;
+        }
 
-article.product-card img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 4px;
-}
+        article.product-card a:hover {
+            background: var(--accent-hover);
+        }
 
-article.product-card h3 {
-    font-size: 0.875rem;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    font-family: inherit;
-}
+        button, .button-label {
+            flex: 0 0 auto;
+            background: var(--accent);
+            color: var(--bg-base);
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+            font-size: 0.875rem;
+            text-decoration: none;
+            font-family: inherit;
+            font-weight: inherit;
+        }
 
-article.product-card data {
-    font-size: 1.125rem;
-    color: var(--accent);
-    font-family: inherit;
-}
-
-article.product-card time {
-    font-size: 0.75rem;
-    color: #888;
-    font-family: inherit;
-}
-
-article.product-card a {
-    background: var(--accent);
-    color: var(--bg-base);
-    padding: 0.5rem;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 4px;
-    font-size: 0.875rem;
-    margin-top: auto;
-    font-family: inherit;
-}
-
-article.product-card a:hover {
-    background: var(--accent-hover);
-}
-
-.view-section {
-    grid-column: span 2;
-}
+        button:hover, .button-label:hover {
+            background: var(--accent-hover);
+        }
     </style>
 </head>
 <body>
     <header></header>
     <main>
         <section>
-            <form id="productForm" autocomplete="off">
-                <div class="field">
-                    <label for="nomeItem">Nome</label>
-                    <input type="text" id="nomeItem" placeholder="Tênis Esportivo" autocomplete="off">
-                </div>
-                <div class="field">
-                    <label for="valorItem">Valor</label>
-                    <input type="text" id="valorItem" placeholder="120.00" autocomplete="off">
-                </div>
-                <div class="field">
-                    <label for="linkImagem">Imagem</label>
-                    <input type="url" id="linkImagem" placeholder="https://" autocomplete="off">
-                </div>
-                <div class="field">
-                    <label for="linkPublicacao">Publicação</label>
-                    <input type="url" id="linkPublicacao" placeholder="https://" autocomplete="off">
-                </div>
-                <div class="form-actions">
-                    <button type="submit">Salvar</button>
-                    <label class="button-label" for="fileInput">Importar</label>
-                    <input type="file" id="fileInput" accept=".json">
-                    <button type="button" id="btnExportar">Exportar</button>
-                </div>
-            </form>
-        </section>
-        <section>
-            <div class="field" style="height: 100%;">
-                <label for="jsonOutput">JSON</label>
-                <textarea id="jsonOutput" readonly autocomplete="off"></textarea>
+            <div class="form-actions">
+                <label class="button-label" for="fileInput">Carregar</label>
+                <input type="file" id="fileInput" accept=".json">
+                <button type="button" id="btnExportar">Exportar</button>
             </div>
-        </section>
-        <section class="view-section">
             <div id="previewContainer" class="preview-grid"></div>
         </section>
     </main>
@@ -236,24 +188,19 @@ article.product-card a:hover {
                 this.database = {};
             }
 
-            addItem(nome, valor, link_imagem, link_publicacao) {
-                const keys = Object.keys(this.database).map(Number);
-                const nextId = keys.length > 0 ? Math.max(...keys) + 1 : 1;
-                this.database[nextId] = {
-                    nome,
-                    valor,
-                    link_imagem,
-                    link_publicacao,
-                    ultima_consulta: this._getDate()
-                };
-            }
-
             setDatabase(data) {
                 this.database = data;
             }
 
             getDatabase() {
                 return this.database;
+            }
+
+            updateItemField(id, field, value) {
+                if (this.database[id]) {
+                    this.database[id][field] = value;
+                    this.database[id].ultima_consulta = this._getDate();
+                }
             }
 
             _getDate() {
@@ -268,31 +215,14 @@ article.product-card a:hover {
         class AppView {
             constructor(manager) {
                 this.manager = manager;
-                this.jsonOutput = document.getElementById('jsonOutput');
                 this.previewContainer = document.getElementById('previewContainer');
-                this.form = document.getElementById('productForm');
                 this.fileInput = document.getElementById('fileInput');
                 this.btnExportar = document.getElementById('btnExportar');
-
                 this._initListeners();
                 this.render();
             }
 
             _initListeners() {
-                this.form.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const nome = document.getElementById('nomeItem').value.trim();
-                    const valor = document.getElementById('valorItem').value.trim();
-                    const link_imagem = document.getElementById('linkImagem').value.trim();
-                    const link_publicacao = document.getElementById('linkPublicacao').value.trim();
-
-                    if (!nome) return;
-
-                    this.manager.addItem(nome, valor, link_imagem, link_publicacao);
-                    this.render();
-                    this.form.reset();
-                });
-
                 this.fileInput.addEventListener('change', (e) => {
                     const file = e.target.files[0];
                     if (!file) return;
@@ -312,11 +242,17 @@ article.product-card a:hover {
                 });
 
                 this.btnExportar.addEventListener('click', () => {
-                    const blob = new Blob([JSON.stringify(this.manager.getDatabase(), null, 2)], { type: "application/json" });
+                    const db = this.manager.getDatabase();
+                    if (Object.keys(db).length === 0) {
+                        alert("Nenhum dado carregado para exportar.");
+                        return;
+                    }
+
+                    const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement("a");
                     a.href = url;
-                    a.download = "compras.json";
+                    a.download = "compras-editado.json";
                     a.click();
                     URL.revokeObjectURL(url);
                 });
@@ -324,21 +260,56 @@ article.product-card a:hover {
 
             render() {
                 const db = this.manager.getDatabase();
-                this.jsonOutput.value = JSON.stringify(db, null, 2);
                 this.previewContainer.innerHTML = "";
 
                 for (const [id, item] of Object.entries(db)) {
                     const article = document.createElement("article");
                     article.className = "product-card";
                     article.innerHTML = `
-                        <img src="${item.link_imagem}" alt="${item.nome}" loading="lazy">
-                        <h3>${item.nome}</h3>
-                        <data value="${item.valor}">R$ ${item.valor}</data>
-                        <time>Atualizado em: ${item.ultima_consulta}</time>
-                        <a href="${item.link_publicacao}" target="_blank" rel="noopener noreferrer">Acessar</a>
+                        <img src="${item.link_imagem || ''}" alt="${item.nome || ''}" loading="lazy" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'><rect width=\'100%\' height=\'100%\' fill=\'%23444\'/><text x=\'50%\' y=\'50%\' fill=\'%23888\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'sans-serif\' font-size=\'12px\'>Sem Foto</text></svg>'">
+                        <div class="field-img">
+                            <label style="font-size:0.75rem; color:#888;">URL Imagem</label>
+                            <input type="url" class="editable-input" data-id="${id}" data-field="link_imagem" value="${item.link_imagem || ''}">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem; color:#888;">Nome</label>
+                            <input type="text" class="editable-input" data-id="${id}" data-field="nome" value="${item.nome || ''}">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem; color:#888;">Valor</label>
+                            <input type="text" class="editable-input" data-id="${id}" data-field="valor" value="${item.valor || ''}">
+                        </div>
+                        <div>
+                            <label style="font-size:0.75rem; color:#888;">Publicação</label>
+                            <input type="url" class="editable-input" data-id="${id}" data-field="link_publicacao" value="${item.link_publicacao || ''}">
+                        </div>
+                        <time class="card-time">Atualizado em: ${item.ultima_consulta || ''}</time>
+                        <div class="card-actions">
+                            <a href="${item.link_publicacao || '#'}" target="_blank" rel="noopener noreferrer">Acessar</a>
+                        </div>
                     `;
                     this.previewContainer.appendChild(article);
                 }
+
+                this.previewContainer.querySelectorAll('.editable-input').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const id = e.target.dataset.id;
+                        const field = e.target.dataset.field;
+                        const value = e.target.value;
+
+                        this.manager.updateItemField(id, field, value);
+
+                        if (field === 'link_imagem') {
+                            const card = e.target.closest('article');
+                            const img = card.querySelector('img');
+                            img.src = value;
+                        }
+
+                        const card = e.target.closest('article');
+                        const time = card.querySelector('time');
+                        time.textContent = `Atualizado em: ${this.manager.getDatabase()[id].ultima_consulta}`;
+                    });
+                });
             }
         }
 
