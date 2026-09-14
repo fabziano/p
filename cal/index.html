@@ -39,14 +39,6 @@
       height: 100%;
     }
     
-    .month-section h2 {
-      margin: 0 0 8px 0;
-      font-size: 1.2rem;
-      color: #8ae234;
-      text-align: center;
-      flex-shrink: 0;
-    }
-    
     .table-container {
       flex: 1;
       min-height: 0;
@@ -59,15 +51,35 @@
       border-collapse: collapse;
       background: #0b0f19;
     }
+
+    th {
+      border: 1px solid #1f2937;
+      padding: 4px 8px;
+      text-align: left;
+      font-size: 0.85rem;
+      font-weight: normal;
+      color: #8ae234;
+    }
     
     td {
-      border: 1px solid #1f2937;
+      border-top: 1px solid #1f2937;
+      border-bottom: 1px solid #1f2937;
+      border-left: none;
+      border-right: none;
       padding: 0 8px;
-      text-align: center;
+      text-align: left;
       vertical-align: middle;
       font-size: 0.85rem;
       white-space: nowrap;
       color: #ffffff;
+    }
+
+    td:first-child {
+      border-left: 1px solid #1f2937;
+    }
+
+    td:last-child {
+      border-right: 1px solid #1f2937;
     }
     
     td.data-cell {
@@ -75,13 +87,12 @@
       width: 75px;
       color: #ffffff;
     }
-    
-    tr.has-event td {
-      font-weight: 700;
-      color: #ffffff;
+
+    td.dia-semana-cell {
+      font-size: 0.8rem;
     }
     
-    tr.has-event td.data-cell {
+    tr.has-event td {
       color: #8ae234;
     }
     

@@ -98,14 +98,20 @@ class CalendarUI {
     const section = document.createElement('section');
     section.className = 'month-section';
 
-    const h2 = document.createElement('h2');
-    h2.textContent = CalendarUI.MONTH_NAMES[monthId] || `Mês ${monthId}`;
-    section.appendChild(h2);
-
     const tableContainer = document.createElement('div');
     tableContainer.className = 'table-container';
 
     const table = document.createElement('table');
+    
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    const th = document.createElement('th');
+    th.setAttribute('colspan', '3');
+    th.textContent = CalendarUI.MONTH_NAMES[monthId] || `Mês ${monthId}`;
+    headerRow.appendChild(th);
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
     const tbody = document.createElement('tbody');
 
     items.forEach(item => {
@@ -141,10 +147,15 @@ class CalendarUI {
     time.textContent = item.data;
     tdData.appendChild(time);
 
+    const tdDiaSemana = document.createElement('td');
+    tdDiaSemana.className = 'dia-semana-cell';
+    tdDiaSemana.textContent = item.dia_semana || '';
+
     const tdCompromisso = document.createElement('td');
     tdCompromisso.textContent = item.compromisso || '';
 
     tr.appendChild(tdData);
+    tr.appendChild(tdDiaSemana);
     tr.appendChild(tdCompromisso);
 
     return tr;
