@@ -11,7 +11,6 @@
     body {font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background-color:var(--bg);color:var(--text);line-height:1.5;padding:2rem 1rem;}
     main {max-width:70rem;margin:0 auto;display:grid;grid-template-columns:1fr;gap:1.5rem;}
     @media (min-width: 850px) {main {grid-template-columns:1fr 1fr;align-items:start;}}
-    h1 {font-size:1.75rem;font-weight:600;color:var(--text);grid-column:1 / -1;margin-bottom:0.5rem;}
     .card {background-color:var(--surface);border:1px solid var(--border);border-radius:0;padding:1.5rem;display:grid;gap:1.5rem;}
     .output-card {position:sticky;top:2rem;}
     .target-selector, .field-item {display:grid;gap:0.5rem;}
@@ -29,8 +28,6 @@
 <body>
 
   <main>
-    <h1>String de Busca</h1>
-
     <section class="card">
       <div class="target-selector">
         <label for="dbSelect">Base de Dados</label>
@@ -38,10 +35,11 @@
           <option value="ieee">IEEE Xplore</option>
           <option value="acm">ACM Digital Library</option>
           <option value="scholar">Google Acadêmico</option>
+          <option value="consensus">Consensus</option>
         </select>
       </div>
 
-      <div class="fields-grid">
+      <div id="booleanFields" class="fields-grid">
         <div class="field-item">
           <label for="exactTerm">Expressão Exata</label>
           <input type="text" id="exactTerm" value="modular monolith" placeholder="modular monolith">
@@ -62,6 +60,11 @@
           <input type="text" id="notTerms" value="" placeholder="micro frontends">
         </div>
       </div>
+
+      <div id="singleField" class="field-item" style="display:none;">
+        <label for="plainQuery">Termo de Busca</label>
+        <input type="text" id="plainQuery" value="modular monolith migration microservices" placeholder="modular monolith migration microservices">
+      </div>
     </section>
 
     <section class="card output-card">
@@ -70,7 +73,6 @@
 
       <div class="actions">
         <button type="button" class="btn btn-primary" onclick="copyString()">Copiar</button>
-        
         <a id="targetLink" href="#" target="_blank" rel="noopener" class="btn btn-secondary">Buscar</a>
       </div>
     </section>
@@ -78,10 +80,15 @@
 
   <script>
     const dbSelect = document.getElementById('dbSelect');
+    const booleanFields = document.getElementById('booleanFields');
+    const singleField = document.getElementById('singleField');
+    const plainInput = document.getElementById('plainQuery');
+    
     const exactInput = document.getElementById('exactTerm');
     const andInput = document.getElementById('andTerms');
     const orInput = document.getElementById('orTerms');
     const notInput = document.getElementById('notTerms');
+    
     const output = document.getElementById('stringOutput');
     const targetLink = document.getElementById('targetLink');
 
@@ -93,10 +100,24 @@
         .map(t => t.includes(' ') ? `"${t}"` : t);
     }
 
+    function toggleFields() {
+      const isConsensus = dbSelect.value === 'consensus';
+      booleanFields.style.display = isConsensus ? 'none' : 'grid';
+      singleField.style.display = isConsensus ? 'grid' : 'none';
+      buildString();
+    }
+
     function buildString() {
       const selectedDb = dbSelect.value;
-      const parts = [];
 
+      if (selectedDb === 'consensus') {
+        const query = plainInput.value.trim();
+        output.textContent = query;
+        targetLink.href = `https://consensus.app/results/?q=${encodeURIComponent(query)}`;
+        return;
+      }
+
+      const parts = [];
       const exactVal = exactInput.value.trim();
       if (exactVal) {
         parts.push(`"${exactVal}"`);
@@ -128,7 +149,6 @@
       }
 
       let finalQuery = selectedDb === 'scholar' ? parts.join(' ') : parts.join(' AND ');
-
       output.textContent = finalQuery;
 
       const encodedQuery = encodeURIComponent(finalQuery);
@@ -158,7 +178,8 @@
       });
     }
 
-    dbSelect.addEventListener('change', buildString);
+    dbSelect.addEventListener('change', toggleFields);
+    plainInput.addEventListener('input', buildString);
     [exactInput, andInput, orInput, notInput].forEach(input => {
       input.addEventListener('input', buildString);
     });
