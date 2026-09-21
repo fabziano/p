@@ -32,9 +32,13 @@
       <div class="target-selector">
         <label for="dbSelect">Base de Dados</label>
         <select id="dbSelect">
+          <option value="scholar">Google Scholar</option>
+          <option value="scielo">SciELO</option>
+          <option value="arxiv">arXiv</option>
           <option value="ieee">IEEE Xplore</option>
           <option value="acm">ACM Digital Library</option>
-          <option value="scholar">Google Acadêmico</option>
+          <option value="semantic">Semantic Scholar</option>
+          <option value="openalex">OpenAlex</option>
           <option value="consensus">Consensus</option>
         </select>
       </div>
@@ -42,28 +46,28 @@
       <div id="booleanFields" class="fields-grid">
         <div class="field-item">
           <label for="exactTerm">Expressão Exata</label>
-          <input type="text" id="exactTerm" value="modular monolith" placeholder="modular monolith">
+          <input type="text" id="exactTerm" value="artificial intelligence in education" placeholder="artificial intelligence in education">
         </div>
 
         <div class="field-item">
           <label for="andTerms">Termos Obrigatórios</label>
-          <input type="text" id="andTerms" value="" placeholder="migration, microservices">
+          <input type="text" id="andTerms" value="students, learning" placeholder="students, learning">
         </div>
 
         <div class="field-item">
           <label for="orTerms">Qualquer um destes termos</label>
-          <input type="text" id="orTerms" value="" placeholder="monolith first, remondialization">
+          <input type="text" id="orTerms" value="" placeholder="">
         </div>
 
         <div class="field-item">
           <label for="notTerms">Nenhum destes termos</label>
-          <input type="text" id="notTerms" value="" placeholder="micro frontends">
+          <input type="text" id="notTerms" value="remote learning, online learning" placeholder="remote learning, online learning">
         </div>
       </div>
 
       <div id="singleField" class="field-item" style="display:none;">
         <label for="plainQuery">Termo de Busca</label>
-        <input type="text" id="plainQuery" value="modular monolith migration microservices" placeholder="modular monolith migration microservices">
+        <input type="text" id="plainQuery" value="artificial intelligence in education students learning" placeholder="artificial intelligence in education students learning">
       </div>
     </section>
 
@@ -136,32 +140,37 @@
 
       const notTerms = parseCommaList(notInput.value);
       if (notTerms.length > 0) {
-        if (selectedDb === 'scholar') {
-          notTerms.forEach(term => {
-            const cleanTerm = term.replace(/"/g, '');
-            parts.push(`-${cleanTerm}`);
-          });
-        } else {
-          notTerms.forEach(term => {
-            parts.push(`NOT ${term}`);
-          });
-        }
+        notTerms.forEach(term => {
+          parts.push(`NOT ${term}`);
+        });
       }
 
-      let finalQuery = selectedDb === 'scholar' ? parts.join(' ') : parts.join(' AND ');
+      let finalQuery = parts.join(' AND ');
       output.textContent = finalQuery;
 
       const encodedQuery = encodeURIComponent(finalQuery);
 
       switch (selectedDb) {
+        case 'scholar':
+          targetLink.href = `https://scholar.google.com/scholar?q=${encodedQuery}`;
+          break;
+        case 'scielo':
+          targetLink.href = `https://search.scielo.org/?q=${encodedQuery}`;
+          break;
+        case 'arxiv':
+          targetLink.href = `https://arxiv.org/search/?query=${encodedQuery}`;
+          break;
         case 'ieee':
           targetLink.href = `https://ieeexplore.ieee.org/search/searchresult.jsp?queryText=${encodedQuery}`;
           break;
         case 'acm':
           targetLink.href = `https://dl.acm.org/action/doSearch?AllField=${encodedQuery}`;
           break;
-        case 'scholar':
-          targetLink.href = `https://scholar.google.com/scholar?q=${encodedQuery}`;
+        case 'semantic':
+          targetLink.href = `https://www.semanticscholar.org/search?q=${encodedQuery}`;
+          break;
+        case 'openalex':
+          targetLink.href = `https://openalex.org/works?search=${encodedQuery}`;
           break;
       }
     }
@@ -171,9 +180,10 @@
       if (!text) return;
       navigator.clipboard.writeText(text).then(() => {
         const btn = document.querySelector('.btn-primary');
+        const originalText = btn.textContent;
         btn.textContent = 'Copiado!';
         setTimeout(() => {
-          btn.textContent = 'Copiar';
+          btn.textContent = originalText;
         }, 1500);
       });
     }
