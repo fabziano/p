@@ -1,0 +1,252 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f8faf9;
+    color: #1f2937;
+    overflow: hidden;
+}
+
+main {
+    width: 100%;
+    height: 100vh;
+    padding: 24px 70px;
+    display: flex;
+    flex-direction: column;
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+nav input {
+    display: none;
+}
+
+nav label {
+    padding: 10px 16px;
+    border-radius: 7px;
+    background: #e5e7eb;
+    color: #374151;
+    font-size: 19px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+nav input:checked+label {
+    background: #166534;
+    color: white;
+}
+
+.progresso {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+progress {
+    width: 100%;
+    height: 16px;
+    appearance: none;
+    border: 0;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #d1d5db;
+}
+
+progress::-webkit-progress-bar {
+    background: #d1d5db;
+}
+
+progress::-webkit-progress-value {
+    background: #15803d;
+}
+
+progress::-moz-progress-bar {
+    background: #15803d;
+}
+
+.contagem {
+    min-width: 45px;
+    color: #166534;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+section {
+    display: none;
+    flex: 1;
+    min-height: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+article {
+    width: min(1050px, 100%);
+}
+
+article h2 {
+    font-size: clamp(32px, 4vw, 48px);
+    margin-bottom: 18px;
+}
+
+article p {
+    max-width: 900px;
+    font-size: clamp(18px, 2vw, 23px);
+    line-height: 1.55;
+    color: #4b5563;
+}
+
+.busca {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.linha {
+    display: flex;
+    gap: 12px;
+}
+
+.campo {
+    flex: 1;
+    min-width: 0;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.campo input,
+.campo select {
+    width: 100%;
+    height: 40px;
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: white;
+    font-size: 15px;
+}
+
+.resultado {
+    padding: 12px;
+    background: #f1f5f9;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 14px;
+    word-break: break-word;
+}
+
+.botoes {
+    display: flex;
+    gap: 8px;
+}
+
+.botoes button {
+    padding: 9px 16px;
+    border: 0;
+    border-radius: 6px;
+    background: #166534;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.lista {
+    margin-top: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.base {
+    flex: 1 1 180px;
+    padding: 14px;
+    background: #eef2f0;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.player {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+}
+
+.player button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #166534;
+    pointer-events: auto;
+}
+
+.voltar {
+    left: 12px;
+}
+
+.avancar {
+    right: 12px;
+}
+
+.player svg {
+    cursor: pointer;
+    width: 42px;
+    height: 42px;
+    display: block;
+}
+
+main:has(#t1:checked) #s1,
+main:has(#t2:checked) #s2,
+main:has(#t3:checked) #s3,
+main:has(#t4:checked) #s4,
+main:has(#t5:checked) #s5,
+main:has(#t6:checked) #s6,
+main:has(#t7:checked) #s7,
+main:has(#t8:checked) #s8 {
+    display: flex;
+}
+
+@media (max-width: 800px) {
+    body {
+        overflow: auto;
+    }
+
+    main {
+        padding: 18px 60px;
+        min-height: 100vh;
+        height: auto;
+    }
+
+    nav label {
+        font-size: 16px;
+    }
+
+    .linha {
+        flex-direction: column;
+    }
+}

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bases de dados acadêmicas</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%238ae234' d='M512 124.7L256 18 0 124.7l256 106.7L512 124.7z M256 274l-144.9-67.6L0 252.7l256 106.7l256-106.7l-111.1-46.3L256 274z M256 402l-139.6-69.8L0 380.7l256 106.7l256-106.7l-116.4-48.5L256 402z'/%3E%3C/svg%3E">
+</head>
+
+<body>
+
+<main>
+
+  <nav>
+    <input type="radio" name="tema" id="t1" checked>
+    <label for="t1">Bases</label>
+
+    <input type="radio" name="tema" id="t2">
+    <label for="t2">Mesma busca</label>
+
+    <input type="radio" name="tema" id="t3">
+    <label for="t3">Quantidade</label>
+
+    <input type="radio" name="tema" id="t4">
+    <label for="t4">Relevância</label>
+
+    <input type="radio" name="tema" id="t5">
+    <label for="t5">Duplicidade</label>
+
+    <input type="radio" name="tema" id="t6">
+    <label for="t6">Filtros</label>
+
+    <input type="radio" name="tema" id="t7">
+    <label for="t7">Metadados</label>
+
+    <input type="radio" name="tema" id="t8">
+    <label for="t8">Exportação</label>
+  </nav>
+
+  <div class="progresso">
+    <progress id="progresso" max="8" value="1"></progress>
+    <span class="contagem" id="contagem">1/8</span>
+  </div>
+
+  <section id="s1">
+    <article>
+      <h2>Bases de dados acadêmicas</h2>
+      <p>
+        A mesma string de busca pode ser aplicada em diferentes bases para que
+        a comparação seja realizada de forma equivalente.
+        Dessa forma, podemos observar como cada base responde à mesma
+        necessidade de pesquisa.
+      </p>
+    </article>
+  </section>
+
+  <section id="s2">
+    <article>
+      <div class="busca">
+
+        <div class="linha">
+          <div class="campo">
+            <label for="base">Base de dados</label>
+            <select id="base">
+              <option value="scholar" selected>Google Scholar</option>
+              <option value="scielo">SciELO</option>
+              <option value="arxiv">arXiv</option>
+              <option value="openalex">OpenAlex</option>
+              <option value="semantic">Semantic Scholar</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="exata">Expressão exata</label>
+            <input id="exata" value="artificial intelligence in education">
+          </div>
+        </div>
+
+        <div class="linha">
+          <div class="campo">
+            <label for="obrigatoria">Termos obrigatórios</label>
+            <input id="obrigatoria" value="students, learning">
+          </div>
+
+          <div class="campo">
+            <label for="alternativa">Termos alternativos</label>
+            <input id="alternativa" value="">
+          </div>
+
+          <div class="campo">
+            <label for="excluir">Termos a excluir</label>
+            <input id="excluir" value="remote learning, online learning">
+          </div>
+        </div>
+
+        <div class="resultado" id="resultado"></div>
+
+        <div class="botoes">
+          <button id="copiar">Copiar</button>
+          <button id="pesquisar">Pesquisar</button>
+        </div>
+
+      </div>
+    </article>
+  </section>
+
+  <section id="s3">
+    <article>
+      <h2>Quantidade</h2>
+      <p>
+        A quantidade de resultados mostra o volume de trabalhos recuperados
+        pela mesma busca em cada base. Esse número será registrado para
+        permitir uma comparação direta entre os resultados.
+      </p>
+    </article>
+  </section>
+
+  <section id="s4">
+    <article>
+      <h2>Relevância</h2>
+      <p>
+        Além da quantidade, é necessário observar a relação dos resultados
+        com o tema pesquisado. A análise considera se os trabalhos
+        recuperados realmente respondem à estratégia de busca utilizada.
+      </p>
+    </article>
+  </section>
+
+  <section id="s5">
+    <article>
+      <h2>Duplicidade</h2>
+      <p>
+        Um mesmo trabalho pode aparecer em diferentes bases. A comparação
+        permite identificar essas duplicidades e observar quanto dos
+        resultados recuperados é compartilhado entre as bases.
+      </p>
+    </article>
+  </section>
+
+  <section id="s6">
+    <article>
+      <h2>Filtros</h2>
+      <p>
+        Os filtros permitem restringir os resultados encontrados. Devemos
+        comparar recursos como período, idioma, tipo de publicação,
+        autor, assunto e disponibilidade do texto completo.
+      </p>
+    </article>
+  </section>
+
+  <section id="s7">
+    <article>
+      <h2>Metadados</h2>
+      <p>
+        Os metadados descrevem cada publicação e podem incluir título,
+        autores, ano, periódico, DOI, resumo e palavras-chave. A comparação
+        mostra quais informações cada base disponibiliza.
+      </p>
+    </article>
+  </section>
+
+  <section id="s8">
+    <article>
+      <h2>Exportação</h2>
+      <p>
+        A exportação permite utilizar os resultados em outras ferramentas.
+        Devemos observar quais formatos estão disponíveis e quais
+        informações são preservadas no arquivo exportado.
+      </p>
+    </article>
+  </section>
+
+</main>
+
+<div class="player">
+
+  <button class="voltar" id="voltar" aria-label="Voltar">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path
+        d="M15 18L9 12L15 6"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </button>
+
+  <button class="avancar" id="avancar" aria-label="Avançar">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path
+        d="M9 18L15 12L9 6"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </button>
+
+</div>
+
+<script>
+  const tabs = document.querySelectorAll('nav input')
+  const progress = document.getElementById('progresso')
+  const count = document.getElementById('contagem')
+
+  const base = document.getElementById('base')
+  const exata = document.getElementById('exata')
+  const obrigatoria = document.getElementById('obrigatoria')
+  const alternativa = document.getElementById('alternativa')
+  const excluir = document.getElementById('excluir')
+  const resultado = document.getElementById('resultado')
+
+  function lista(valor) {
+    return valor
+      .split(',')
+      .map(t => t.trim())
+      .filter(Boolean)
+      .map(t => t.includes(' ') ? `"${t}"` : t)
+  }
+
+  function montar() {
+    const partes = []
+
+    if (exata.value.trim()) {
+      partes.push(`"${exata.value.trim()}"`)
+    }
+
+    const obrigatorios = lista(obrigatoria.value)
+
+    if (obrigatorios.length) {
+      partes.push(obrigatorios.join(' AND '))
+    }
+
+    const alternativas = lista(alternativa.value)
+
+    if (alternativas.length) {
+      partes.push(`(${alternativas.join(' OR ')})`)
+    }
+
+    const exclusoes = lista(excluir.value)
+
+    if (exclusoes.length) {
+      partes.push(
+        exclusoes.map(t => `NOT ${t}`).join(' AND ')
+      )
+    }
+
+    resultado.textContent = partes.join(' AND ')
+  }
+
+  function irPara(indice) {
+    if (indice < 0 || indice >= tabs.length) return
+
+    tabs[indice].checked = true
+    progress.value = indice + 1
+    count.textContent = `${indice + 1}/${tabs.length}`
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('change', () => {
+      progress.value = i + 1
+      count.textContent = `${i + 1}/${tabs.length}`
+    })
+  })
+
+  document.getElementById('voltar').addEventListener('click', () => {
+    const atual = [...tabs].findIndex(tab => tab.checked)
+    irPara(atual - 1)
+  })
+
+  document.getElementById('avancar').addEventListener('click', () => {
+    const atual = [...tabs].findIndex(tab => tab.checked)
+    irPara(atual + 1)
+  })
+
+  ;[
+    base,
+    exata,
+    obrigatoria,
+    alternativa,
+    excluir
+  ].forEach(elemento => {
+    elemento.addEventListener('input', montar)
+    elemento.addEventListener('change', montar)
+  })
+
+  document.getElementById('copiar').addEventListener('click', async () => {
+    await navigator.clipboard.writeText(resultado.textContent)
+  })
+
+  document.getElementById('pesquisar').addEventListener('click', () => {
+    const urls = {
+      scholar: 'https://scholar.google.com/scholar?q=',
+      scielo: 'https://search.scielo.org/?q=',
+      arxiv: 'https://arxiv.org/search/?query=',
+      openalex: 'https://openalex.org/works?search=',
+      semantic: 'https://www.semanticscholar.org/search?q='
+    }
+
+    const url = urls[base.value]
+
+    if (url) {
+      window.open(
+        url + encodeURIComponent(resultado.textContent),
+        '_blank'
+      )
+    }
+  })
+
+  montar()
+</script>
+
+</body>
+</html>
