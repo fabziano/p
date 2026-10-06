@@ -17,4 +17,4 @@ fetch('icones.svg')
             }
         });
     })
-    .catch(err => console.error('Erro ao carregar o SVG externo:', err));
+.catch(err => console.error('Erro ao carregar o SVG externo:', err));

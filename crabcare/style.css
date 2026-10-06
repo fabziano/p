@@ -55,14 +55,12 @@ main {
     transition: all 0.2s ease;
 }
 
-/* Oculta o input radio visualmente mas mantém acessível */
 .item input[type="radio"] {
     position: absolute;
     opacity: 0;
     pointer-events: none;
 }
 
-/* Estilo visual quando o item/rádio está selecionado */
 .item:has(input[type="radio"]:checked) {
     border-color: #0066cc;
     background-color: #f0f7ff;
