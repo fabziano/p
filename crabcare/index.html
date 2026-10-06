@@ -57,11 +57,13 @@
 
     <script>
         const audioPlayer = document.getElementById('audio-player');
-        const radios = document.querySelectorAll('input[type="radio"][name="escala-dor"]');
+        const items = document.querySelectorAll('.item');
 
-        radios.forEach(radio => {
-            radio.addEventListener('click', (e) => {
-                const valor = e.target.value;
+        items.forEach(item => {
+            item.addEventListener('click', () => {
+                const radio = item.querySelector('input[type="radio"]');
+                radio.checked = true;
+                const valor = radio.value;
                 audioPlayer.src = `assets/audio/${valor}.mp3`;
                 audioPlayer.currentTime = 0;
                 audioPlayer.play().catch(err => console.log("Áudio bloqueado ou não encontrado:", err));
