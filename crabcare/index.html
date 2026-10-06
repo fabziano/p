@@ -60,9 +60,10 @@
         const radios = document.querySelectorAll('input[type="radio"][name="escala-dor"]');
 
         radios.forEach(radio => {
-            radio.addEventListener('change', (e) => {
+            radio.addEventListener('click', (e) => {
                 const valor = e.target.value;
                 audioPlayer.src = `assets/audio/${valor}.mp3`;
+                audioPlayer.currentTime = 0;
                 audioPlayer.play().catch(err => console.log("Áudio bloqueado ou não encontrado:", err));
             });
         });
