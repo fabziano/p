@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Escala de Dor - Externo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="icones.js" defer></script>
+</head>
+
+<body>
+    <main>
+        <form class="icones">
+            <label class="item">
+                <input type="radio" name="escala-dor" value="sem_dor">
+                <svg class="face-svg" viewBox="-50 -50 100 100" data-icon="face-1"></svg>
+                <span>Sem dor</span>
+            </label>
+
+            <label class="item">
+                <input type="radio" name="escala-dor" value="dor_leve">
+                <svg class="face-svg" viewBox="-50 -50 100 100" data-icon="face-2"></svg>
+                <span>Dor leve</span>
+            </label>
+
+            <label class="item">
+                <input type="radio" name="escala-dor" value="dor_moderada">
+                <svg class="face-svg" viewBox="-50 -50 100 100" data-icon="face-3"></svg>
+                <span>Dor moderada</span>
+            </label>
+
+            <label class="item">
+                <input type="radio" name="escala-dor" value="dor_intensa">
+                <svg class="face-svg" viewBox="-50 -50 100 100" data-icon="face-4"></svg>
+                <span>Dor intensa</span>
+            </label>
+
+            <label class="item">
+                <input type="radio" name="escala-dor" value="dor_muito_intensa">
+                <svg class="face-svg" viewBox="-50 -50 100 100" data-icon="face-4-intensa"></svg>
+                <span>Dor muito intensa</span>
+            </label>
+
+            <label class="item">
+                <input type="radio" name="escala-dor" value="pior_dor_possivel">
+                <svg class="face-svg" viewBox="-50 -50 100 100" data-icon="face-5"></svg>
+                <span>Pior dor possível</span>
+            </label>
+        </form>
+    </main>
+
+    <audio id="audio-player"></audio>
+
+    <script>
+        const audioPlayer = document.getElementById('audio-player');
+        const radios = document.querySelectorAll('input[type="radio"][name="escala-dor"]');
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const valor = e.target.value;
+                audioPlayer.src = `assets/audio/${valor}.mp3`;
+                audioPlayer.play().catch(err => console.log("Áudio bloqueado ou não encontrado:", err));
+            });
+        });
+    </script>
+</body>
+
+</html>
