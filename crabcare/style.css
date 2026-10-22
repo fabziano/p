@@ -7,7 +7,7 @@
 html, body {
     height: 100%;
     width: 100%;
-    overflow: hidden;
+    overflow: auto;
 }
 
 body {
@@ -15,7 +15,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+    font-family: system-ui, sans-serif;
     padding: 0.5rem;
 }
 
@@ -25,6 +25,89 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+.login {
+    width: 100%;
+    max-width: 24rem;
+    padding: 1.5rem;
+    border: 0.125rem solid #ccc;
+    border-radius: 0.5rem;
+    background: #fff;
+    color: #333;
+}
+
+.login header {
+    margin-bottom: 1.5rem;
+}
+
+.marca {
+    color: #0066cc;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.login h1 {
+    margin-bottom: 0.5rem;
+}
+
+.login p {
+    line-height: 1.5;
+}
+
+.login form {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.login input,
+.login button {
+    width: 100%;
+    padding: 0.875rem;
+    border: 0.125rem solid #ccc;
+    border-radius: 0.5rem;
+    font: inherit;
+}
+
+.login input {
+    color-scheme: light;
+    background-color: #fff;
+    color: #333;
+    caret-color: #333;
+}
+
+.login button {
+    margin-top: 0.5rem;
+    border-color: #0066cc;
+    background-color: #0066cc;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.login button:hover {
+    background-color: #0052a3;
+}
+
+.login label {
+    font-weight: 600;
+}
+
+.login input:focus-visible,
+.login button:focus-visible,
+.item:has(input:focus-visible) {
+    outline: 3px solid #0066cc;
+    outline-offset: 3px;
+}
+
+#escala {
+    width: 100%;
+    max-width: 65rem;
 }
 
 .icones {
