@@ -1,291 +1,830 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
-    <title>CrabCare — Entrar</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html, body {
-    height: 100%;
-    width: 100%;
-    overflow: auto;
-}
-
-body {
-    background-color: #f4f5f7;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: system-ui, sans-serif;
-    padding: 0.5rem;
-}
-
-main {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-[hidden] {
-    display: none !important;
-}
-
-.login {
-    width: 100%;
-    max-width: 24rem;
-    padding: 1.5rem;
-    border: 0.125rem solid #ccc;
-    border-radius: 0.5rem;
-    background: #fff;
-    color: #333;
-}
-
-.login header {
-    margin-bottom: 1.5rem;
-}
-
-.marca {
-    color: #0066cc;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-}
-
-.login h1 {
-    margin-bottom: 0.5rem;
-}
-
-.login p {
-    line-height: 1.5;
-}
-
-.login form {
-    display: grid;
-    gap: 0.75rem;
-}
-
-.login input,
-.login button {
-    width: 100%;
-    padding: 0.875rem;
-    border: 0.125rem solid #ccc;
-    border-radius: 0.5rem;
-    font: inherit;
-}
-
-.login input {
-    color-scheme: light;
-    background-color: #fff;
-    color: #333;
-    caret-color: #333;
-}
-
-.login button {
-    margin-top: 0.5rem;
-    border-color: #0066cc;
-    background-color: #0066cc;
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.login button:hover {
-    background-color: #0052a3;
-}
-
-.login label {
-    font-weight: 600;
-}
-
-.login input:focus-visible,
-.login button:focus-visible,
-.item:has(input:focus-visible) {
-    outline: 3px solid #0066cc;
-    outline-offset: 3px;
-}
-
-#escala {
-    width: 100%;
-    max-width: 65rem;
-}
-
-.icones {
-    width: 100%;
-    max-width: 65rem;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: stretch;
-    gap: 0.5rem;
-}
-
-.item {
-    flex: 1 1 30%;
-    min-width: 0;
-    max-width: 10rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    text-align: center;
-    padding: 0.5rem 0.25rem;
-    border: 0.125rem solid #ccc;
-    border-radius: 0.5rem;
-    background-color: #fff;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.2s ease;
-}
-
-.item input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.item:has(input[type="radio"]:checked) {
-    border-color: #0066cc;
-    background-color: #f0f7ff;
-    box-shadow: 0 0 0.5rem rgba(0, 102, 204, 0.2);
-}
-
-@media (min-width: 48rem) {
-    .icones {
-        gap: 1rem;
-    }
-    .item {
-        flex: 1 1 15%;
-        padding: 0.75rem 0.5rem;
-    }
-}
-
-.face-svg {
-    width: 100%;
-    max-width: 4.5rem;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    overflow: visible;
-    pointer-events: none;
-    filter: drop-shadow(0 0.2rem 0.2rem rgba(0, 0, 0, 0.12));
-}
-
-@media (min-width: 48rem) {
-    .face-svg {
-        max-width: 5rem;
-    }
-}
-
-.item span {
-    width: 100%;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    color: #333;
-    line-height: 1.1;
-    margin-top: 0.3rem;
-    white-space: normal;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-    </style>
-    <script src="icones.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Crabcare — Entrar</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3"></script>
+    <!-- styles:start -->
+<style>
+:root { font-family: system-ui, sans-serif; color: #25312b; background: #f4f7f3; color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, select { font: inherit; }
+button, a, label:has(input) { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+button:disabled { cursor: default; opacity: .5; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid #2563eb; outline-offset: 4px; }
+input { background: #fff; color: #25312b; }
+.ui-icon { width: 1.4rem; height: 1.4rem; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.svg-library { position: absolute; width: 0; height: 0; overflow: hidden; }
+.cc-card { background: #fff; border: 1px solid #e3e9df; border-radius: 1.25rem; box-shadow: 0 4px 18px #344d2507; }
+.cc-inset { border: 1px solid #e6ebdf; border-radius: .85rem; background: #f7f9f4; }
+.cc-button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .8rem 1rem; border: 1px solid #63934b; border-radius: .75rem; background: #63934b; color: #fff; font-weight: 600; line-height: 1.3; text-align: center; transition: background .15s; }
+.cc-button:hover { background: #4e7839; }
+.cc-button.secondary { background: #fff; color: #4e7839; }
+.cc-button.secondary:hover { background: #f0f5e9; }
+.cc-button.blue { background: #0066cc; border-color: #0066cc; }
+.cc-button.blue:hover { background: #0052a3; }
+.cc-round { display: inline-grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 50%; border: 1px solid #e4eadf; background: #fff; color: #6b9256; }
+.cc-field { width: 100%; padding: .85rem; border: 1.5px solid #cbd5c6; border-radius: .6rem; background: #fff; }
+.brand { display: inline-flex; align-items: center; gap: .4rem; background: transparent; border: 0; color: #7aa358; font-size: 1.4rem; font-weight: 750; letter-spacing: -.055em; }
+.brand-leaves { width: 1.65rem; height: 1.75rem; position: relative; }
+.brand-leaves i { position: absolute; width: .55rem; height: 1rem; border-radius: 90% 0 90% 0; background: #9ebc70; left: .6rem; top: 0; transform: rotate(-15deg); }
+.brand-leaves i:nth-child(2) { left: 0; top: .65rem; transform: rotate(-65deg); background: #86aa59; }
+.brand-leaves i:nth-child(3) { left: 1rem; top: .7rem; transform: rotate(30deg); background: #b8cc8f; }
+.welcome-background { background: radial-gradient(ellipse at 95% 0%,#eef5dc,transparent 55%),#fff; }
+.face-option { display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: .65rem; position: relative; padding: 1rem .4rem; border: 1.5px solid transparent; border-radius: .9rem; text-align: center; cursor: pointer; transition: background .15s; }
+.face-option.pain-option { background: #fff; border-color: #dfe5da; }
+.face-option input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.face-option:has(input:checked) { background: #eff6e6; border-color: #7fa55d; box-shadow: 0 0 0 1px #7fa55d; }
+.face-option:has(input:focus-visible), .choice:has(input:focus-visible), .dose:has(input:focus-visible) { outline: 3px solid #2563eb; outline-offset: 3px; }
+.face-art { width: 100%; max-width: 4.5rem; aspect-ratio: 1; overflow: visible; filter: drop-shadow(0 4px 5px #4b50272a); }
+.face-option > span { font-size: .8rem; line-height: 1.3; }
+.choice { display: flex; align-items: center; justify-content: center; gap: .5rem; padding: .8rem .5rem; border: 1px solid #dfe5da; border-radius: .75rem; cursor: pointer; font-size: .85rem; background: #fff; }
+.choice input { accent-color: #63934b; }
+.choice:has(input:checked) { background: #eff6e6; border-color: #7fa55d; }
+.action-tile { display: flex; flex-direction: column; align-items: center; gap: .75rem; padding: 1.25rem .4rem; background: #fff; border: 1px solid #e8ede2; border-radius: .85rem; box-shadow: 0 3px 9px #54643b0b; font-size: .8rem; }
+.action-tile:hover { background: #f6f9ef; }
+.action-tile .ui-icon { width: 2rem; height: 2rem; }
+.alert-card { --tone: #64748b; --tint: #f1f5f9; border: 1px solid var(--tone); border-radius: 1.35rem; overflow: hidden; background: #fff; }
+.alert-card[data-level="critical"] { --tone: #b82222; --tint: #fff1ef; }
+.alert-card[data-level="attention"] { --tone: #9a600b; --tint: #fff8e7; }
+.alert-card[data-level="calm"] { --tone: #4c7a35; --tint: #f1f7eb; }
+.alert-heading { background: var(--tone); color: #fff; }
+.alert-message { background: var(--tint); color: var(--tone); border: 1px solid color-mix(in srgb,var(--tone) 20%,transparent); border-radius: .8rem; }
+.alert-card .alert-action { background: var(--tone); border-color: var(--tone); }
+.alert-dot { width: .55rem; height: .55rem; background: #aab3a5; border-radius: 50%; }
+.alert-dot[data-level="critical"] { background: #c72d2d; }
+.alert-dot[data-level="attention"] { background: #c68720; }
+.alert-dot[data-level="calm"] { background: #6e9a53; }
+.app-nav { border-top: 1px solid #e3e9dd; background: #fffffff5; backdrop-filter: blur(12px); box-shadow: 0 -4px 15px #384d2505; padding-bottom: max(.65rem,env(safe-area-inset-bottom)); }
+.nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem; padding: .75rem .2rem; border: 0; background: transparent; border-radius: .75rem; color: #7b8578; font-size: clamp(.6rem,1.8vw,.75rem); text-decoration: none; }
+.nav-item[aria-current="page"] { color: #4d7837; background: #eef5e7; font-weight: 600; }
+.nav-item:hover { background: #f4f7ef; }
+.dose { display: flex; flex-direction: column; align-items: center; gap: .35rem; padding: .5rem .1rem; border-radius: .6rem; cursor: pointer; position: relative; }
+.dose input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.dose-mark { display: grid; place-items: center; width: 1.2rem; height: 1.2rem; border: 1.5px solid #a1aba0; border-radius: 50%; }
+.dose-mark .ui-icon { width: .8rem; height: .8rem; visibility: hidden; stroke-width: 3; }
+.dose:has(input:checked) { background: #eaf3e0; }
+.dose input:checked + .dose-mark { background: #619846; color: #fff; border-color: #619846; }
+.dose input:checked + .dose-mark .ui-icon { visibility: visible; }
+.medicine-icon { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; flex-shrink: 0; border-radius: 50%; background: #e5edfb; color: #447ab5; }
+.medicine-icon[data-color="orange"] { background: #fbedda; color: #c78538; }
+.medicine-icon[data-color="green"] { background: #e9f2df; color: #70964c; }
+progress { accent-color: #418bce; }
+dialog { margin: auto; border: 1px solid #dfe7d7; border-radius: 1.25rem; max-width: min(90vw,26rem); padding: 1.5rem; background: #fff; color: #25312b; }
+dialog::backdrop { background: #1f351a65; }
+.app-shell { max-width: 54rem; }
+.preview-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.5rem; max-width: 86rem; padding: 1.5rem; border: 0; background: transparent; }
+.preview-grid > [data-page] { min-width: 0; border: 1px solid #e3e9df; border-radius: 1.25rem; background-color: #fff; align-self: start; }
+.preview-grid > nav, .preview-grid > .global-feedback { grid-column: 1 / -1; }
+@media(min-width: 90rem) { .preview-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media(max-width: 54rem) { .preview-grid { grid-template-columns: minmax(0,1fr); max-width: 36rem; padding: .75rem; } }
+</style>
+    <!-- styles:end -->
 </head>
+<body class="min-h-dvh bg-[#f4f7f3]">
+    <!-- faces:start -->
+<svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true" width="0" height="0">
+    <defs>
+        <radialGradient id="grad-verde-claro" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#5ced41" />
+            <stop offset="60%" stop-color="#2bc215" />
+            <stop offset="100%" stop-color="#158206" />
+        </radialGradient>
+        <radialGradient id="grad-verde" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#a3fa8c" />
+            <stop offset="60%" stop-color="#72e655" />
+            <stop offset="100%" stop-color="#41b822" />
+        </radialGradient>
+        <radialGradient id="grad-amarelo" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#ffee42" />
+            <stop offset="60%" stop-color="#f5c400" />
+            <stop offset="100%" stop-color="#b88f00" />
+        </radialGradient>
+        <radialGradient id="grad-laranja" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#ff9d3b" />
+            <stop offset="60%" stop-color="#f56800" />
+            <stop offset="100%" stop-color="#b84500" />
+        </radialGradient>
+        <radialGradient id="grad-laranja-suave" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#ffcf85" />
+            <stop offset="60%" stop-color="#f5a642" />
+            <stop offset="100%" stop-color="#b87100" />
+        </radialGradient>
+        <radialGradient id="grad-vermelho" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#ff4a4a" />
+            <stop offset="60%" stop-color="#d91414" />
+            <stop offset="100%" stop-color="#910505" />
+        </radialGradient>
+    </defs>
 
-<body>
+    <g id="face-1">
+        <circle cx="0" cy="0" r="50" fill="url(#grad-verde-claro)" />
+        <path d="M -22 -10 Q -17 -18 -12 -10" fill="none" stroke="#16590b" stroke-width="4" stroke-linecap="round" />
+        <path d="M 12 -10 Q 17 -18 22 -10" fill="none" stroke="#16590b" stroke-width="4" stroke-linecap="round" />
+        <path d="M -16 8 Q 0 26 16 8 Z" fill="#16590b" />
+    </g>
+
+    <g id="face-2">
+        <circle cx="0" cy="0" r="50" fill="url(#grad-verde)" />
+        <circle cx="-16" cy="-8" r="5" fill="#0e5404" />
+        <circle cx="16" cy="-8" r="5" fill="#0e5404" />
+        <path d="M -16 6 Q 0 20 16 6" fill="none" stroke="#0e5404" stroke-width="4" stroke-linecap="round" />
+    </g>
+
+    <g id="face-3">
+        <circle cx="0" cy="0" r="50" fill="url(#grad-amarelo)" />
+        <circle cx="-16" cy="-8" r="5" fill="#6e5400" />
+        <circle cx="16" cy="-8" r="5" fill="#6e5400" />
+        <line x1="-16" y1="12" x2="16" y2="12" stroke="#6e5400" stroke-width="4" stroke-linecap="round" />
+    </g>
+
+    <g id="face-4">
+        <circle cx="0" cy="0" r="50" fill="url(#grad-laranja-suave)" />
+        <circle cx="-16" cy="-8" r="5" fill="#612300" />
+        <circle cx="16" cy="-8" r="5" fill="#612300" />
+        <line x1="-16" y1="12" x2="16" y2="12" stroke="#612300" stroke-width="4" stroke-linecap="round" />
+    </g>
+
+    <g id="face-4-intensa">
+        <circle cx="0" cy="0" r="50" fill="url(#grad-laranja)" />
+        <circle cx="-16" cy="-8" r="5" fill="#612300" />
+        <circle cx="16" cy="-8" r="5" fill="#612300" />
+        <path d="M -16 12 Q 0 -2 16 12" fill="none" stroke="#612300" stroke-width="4" stroke-linecap="round" />
+    </g>
+
+    <g id="face-5">
+        <circle cx="0" cy="0" r="50" fill="url(#grad-vermelho)" />
+        <path d="M -22 -14 L -10 -8" stroke="#4a0202" stroke-width="4" stroke-linecap="round" />
+        <path d="M 22 -14 L 10 -8" stroke="#4a0202" stroke-width="4" stroke-linecap="round" />
+        <path d="M -20 -8 L -12 -8" stroke="#4a0202" stroke-width="4" stroke-linecap="round" />
+        <path d="M 20 -8 L 12 -8" stroke="#4a0202" stroke-width="4" stroke-linecap="round" />
+        <path d="M -14 16 Q 0 4 14 16 Q 14 2 0 2 Q -14 2 -14 16 Z" fill="#4a0202" />
+    </g>
+</svg>
+    <!-- faces:end -->
     <main>
-        <section class="login" aria-labelledby="login-titulo">
-            <header>
-                <p class="marca">CrabCare</p>
-                <h1 id="login-titulo">Bem-vindo</h1>
-                <p>Entre para registrar como você está se sentindo.</p>
-            </header>
-            <form id="login-form">
-                <label for="usuario">Usuário</label>
-                <input id="usuario" name="usuario" type="text" value="paciente" autocomplete="username" required>
-                <label for="senha">Senha</label>
-                <input id="senha" name="senha" type="password" value="1234" autocomplete="current-password" required>
-                <button type="submit">Entrar</button>
-            </form>
+        <section id="login" class="grid min-h-dvh place-items-center p-4" aria-labelledby="login-titulo">
+            <div class="cc-card w-full max-w-sm space-y-6 p-6 sm:p-8">
+                <header class="space-y-2">
+                    <p class="mb-5 text-xl font-bold text-[#7aa358]">Crabcare</p>
+                    <h1 id="login-titulo" class="text-2xl font-bold tracking-tight">Bem-vindo</h1>
+                    <p class="text-sm leading-relaxed text-stone-500">Entre para registrar como você está se sentindo.</p>
+                </header>
+                <form id="login-form" class="grid gap-3">
+                    <label for="usuario" class="text-sm font-semibold">Usuário</label>
+                    <input id="usuario" name="usuario" class="cc-field" value="paciente" autocomplete="username" required>
+                    <label for="senha" class="mt-2 text-sm font-semibold">Senha</label>
+                    <input id="senha" name="senha" class="cc-field" type="password" value="1234" autocomplete="current-password" required>
+                    <button type="submit" class="cc-button blue mt-3">Entrar</button>
+                </form>
+            </div>
         </section>
-        <section id="escala" aria-label="Escala de dor" hidden>
-        <form class="icones">
-            <label class="item">
-                <input type="radio" name="escala-dor" value="sem_dor">
-                <svg class="face-svg" viewBox="-50 -50 100 100" data-icon="face-1"></svg>
-                <span>Sem dor</span>
-            </label>
 
-            <label class="item">
-                <input type="radio" name="escala-dor" value="dor_leve">
-                <svg class="face-svg" viewBox="-50 -50 100 100" data-icon="face-2"></svg>
-                <span>Dor leve</span>
-            </label>
+        <div id="aplicativo" class="app-shell mx-auto min-h-dvh bg-white sm:my-6 sm:min-h-0 sm:rounded-2xl sm:border sm:border-stone-200" hidden>
+            <section id="inicio" data-page class="welcome-background space-y-6 p-4 sm:p-7" aria-labelledby="inicio-titulo" hidden>
+                <header data-component="header">
+        <div class="flex items-center justify-between gap-3 pb-2">
+            <button type="button" class="cc-round" data-action="profile" aria-label="Meu perfil"><span data-ui-icon="user"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></span></button>
+            <button type="button" class="brand" data-action="logout" aria-label="Crabcare — voltar ao login"><span class="brand-leaves" aria-hidden="true"><i></i><i></i><i></i></span>Crabcare</button>
+            <button type="button" class="cc-round relative" data-screen="painel" aria-label="Ver estado do relato"><span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span><span class="alert-dot absolute right-0 top-0" data-alert-dot></span></button>
+        </div>
+    </header>
+                <section class="cc-card space-y-6 p-5 sm:p-7">
+                    <div>
+                        <p class="mb-1">Olá, <span data-bind="patient">paciente</span>!</p>
+                        <h1 id="inicio-titulo" class="text-2xl font-bold tracking-tight">Bem-vindo ao Crabcare!</h1>
+                    </div>
+                    <fieldset>
+                        <legend class="mb-3 w-full text-center text-sm">Como você está se sentindo hoje?</legend>
+                        <div class="grid grid-cols-3 gap-2" data-component="mood" data-group="inicio"><label class="face-option"><input type="radio" name="mood-inicio" value="bem" data-field="mood" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-1"></use></svg><span data-label>Estou bem</span></label><label class="face-option"><input type="radio" name="mood-inicio" value="normal" data-field="mood" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-3"></use></svg><span data-label>Estou mais ou menos</span></label><label class="face-option"><input type="radio" name="mood-inicio" value="mal" data-field="mood" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-5"></use></svg><span data-label>Não estou bem</span></label></div>
+                    </fieldset>
+                    <p id="mood-feedback" class="min-h-5 text-center text-sm text-[#618546]" role="status"></p>
+                    <button type="button" class="cc-button w-full" data-screen="escala">Registrar minha dor <span data-ui-icon="arrow"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span></button>
+                </section>
+                <nav class="grid grid-cols-3 gap-3" aria-label="Cuidados do paciente">
+                    <button type="button" class="action-tile" data-screen="escala"><span class="text-sky-600" data-ui-icon="thermometer"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14V5a3 3 0 0 1 6 0v9a5 5 0 1 1-6 0Z"/><path d="M12 7v11m4-10h3m-3 4h3"/></svg></span>Sintomas</button>
+                    <button type="button" class="action-tile" data-action="food"><span class="text-[#7aa358]" data-ui-icon="food"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3v6m3-6v18M1 3v6a3 3 0 0 0 6 0m11-6v18m0-18c-5 4-5 10 0 10"/></svg></span>Alimentação</button>
+                    <button type="button" class="action-tile" data-screen="escala"><span class="text-red-400" data-ui-icon="heart"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 3 12a6 6 0 0 1 9-8 6 6 0 0 1 9 8Z"/><path d="M3 12h5l2-4 3 8 2-4h6"/></svg></span>Dor</button>
+                </nav>
+                <div class="cc-inset flex flex-wrap items-center justify-between gap-3 p-4">
+                    <div class="flex items-center gap-2 text-sm"><span class="alert-dot" data-alert-dot></span><span data-bind="shortStatus">Aguardando seu registro</span></div>
+                    <button type="button" class="text-sm font-semibold text-[#567e3d]" data-screen="painel">Ver painel →</button>
+                </div>
+                <p class="text-center text-xs text-stone-400">Demonstração do MVP</p>
+            </section>
 
-            <label class="item">
-                <input type="radio" name="escala-dor" value="dor_moderada">
-                <svg class="face-svg" viewBox="-50 -50 100 100" data-icon="face-3"></svg>
-                <span>Dor moderada</span>
-            </label>
+            <section id="escala" data-page class="space-y-6 p-4 sm:p-7" aria-labelledby="escala-titulo" hidden>
+                <header data-component="header">
+        <div class="flex items-center justify-between gap-3 pb-2">
+            <button type="button" class="cc-round" data-action="profile" aria-label="Meu perfil"><span data-ui-icon="user"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></span></button>
+            <button type="button" class="brand" data-action="logout" aria-label="Crabcare — voltar ao login"><span class="brand-leaves" aria-hidden="true"><i></i><i></i><i></i></span>Crabcare</button>
+            <button type="button" class="cc-round relative" data-screen="painel" aria-label="Ver estado do relato"><span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span><span class="alert-dot absolute right-0 top-0" data-alert-dot></span></button>
+        </div>
+    </header>
+                <div class="space-y-2">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-[#6a904d]">Meu registro</p>
+                    <h1 id="escala-titulo" class="text-2xl font-bold tracking-tight">Como está sua dor?</h1>
+                    <p class="text-sm leading-relaxed text-stone-500">Combine suas respostas para acompanhar o estado no painel.</p>
+                </div>
+                <form id="pain-form" class="space-y-6">
+                    <fieldset>
+                        <legend class="mb-3 font-semibold">1. Qual é a intensidade?</legend>
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3" data-component="pain"><label class="face-option pain-option"><input type="radio" name="pain-escala" value="sem_dor" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-1"></use></svg><span data-label>Sem dor</span></label><label class="face-option pain-option"><input type="radio" name="pain-escala" value="dor_leve" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-2"></use></svg><span data-label>Dor leve</span></label><label class="face-option pain-option"><input type="radio" name="pain-escala" value="dor_moderada" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-3"></use></svg><span data-label>Dor moderada</span></label><label class="face-option pain-option"><input type="radio" name="pain-escala" value="dor_intensa" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-4"></use></svg><span data-label>Dor intensa</span></label><label class="face-option pain-option"><input type="radio" name="pain-escala" value="dor_muito_intensa" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-4-intensa"></use></svg><span data-label>Dor muito intensa</span></label><label class="face-option pain-option"><input type="radio" name="pain-escala" value="pior_dor_possivel" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-5"></use></svg><span data-label>Pior dor possível</span></label></div>
+                    </fieldset>
+                    <fieldset>
+                        <legend class="mb-3 font-semibold">2. Como a dor evoluiu?</legend>
+                        <div class="grid grid-cols-1 gap-3 min-[380px]:grid-cols-3" data-component="trend"><label class="choice"><input type="radio" name="trend-escala" data-field="trend" value="melhorando" required>Melhorando</label><label class="choice"><input type="radio" name="trend-escala" data-field="trend" value="igual" required>Continua igual</label><label class="choice"><input type="radio" name="trend-escala" data-field="trend" value="piorando" required>Piorando</label></div>
+                    </fieldset>
+                    <fieldset>
+                        <legend class="mb-3 font-semibold">3. Como você está se sentindo?</legend>
+                        <div class="grid grid-cols-3 gap-2" data-component="mood" data-group="escala"><label class="face-option"><input type="radio" name="mood-escala" value="bem" data-field="mood" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-1"></use></svg><span data-label>Estou bem</span></label><label class="face-option"><input type="radio" name="mood-escala" value="normal" data-field="mood" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-3"></use></svg><span data-label>Estou mais ou menos</span></label><label class="face-option"><input type="radio" name="mood-escala" value="mal" data-field="mood" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-5"></use></svg><span data-label>Não estou bem</span></label></div>
+                    </fieldset>
+                    <div class="cc-inset space-y-2 p-4" role="status" aria-live="polite" aria-atomic="true">
+                        <p class="flex items-center gap-2 font-semibold"><span class="alert-dot" data-alert-dot></span><span data-bind="shortStatus">Aguardando seu registro</span></p>
+                        <p class="text-sm leading-relaxed text-stone-600" data-bind="reason">Selecione intensidade, evolução e bem-estar para compor o relato.</p>
+                    </div>
+                    <button type="submit" class="cc-button w-full">Registrar e ver meu painel <span data-ui-icon="arrow"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span></button>
+                </form>
+            </section>
 
-            <label class="item">
-                <input type="radio" name="escala-dor" value="dor_intensa">
-                <svg class="face-svg" viewBox="-50 -50 100 100" data-icon="face-4"></svg>
-                <span>Dor intensa</span>
-            </label>
+            <section id="painel" data-page class="space-y-5 p-4 sm:p-7" aria-labelledby="painel-titulo" hidden>
+                <header data-component="header">
+        <div class="flex items-center justify-between gap-3 pb-2">
+            <button type="button" class="cc-round" data-action="profile" aria-label="Meu perfil"><span data-ui-icon="user"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></span></button>
+            <button type="button" class="brand" data-action="logout" aria-label="Crabcare — voltar ao login"><span class="brand-leaves" aria-hidden="true"><i></i><i></i><i></i></span>Crabcare</button>
+            <button type="button" class="cc-round relative" data-screen="painel" aria-label="Ver estado do relato"><span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span><span class="alert-dot absolute right-0 top-0" data-alert-dot></span></button>
+        </div>
+    </header>
+                <div class="flex items-center justify-between gap-3">
+                    <div><p class="text-xs font-semibold uppercase tracking-widest text-[#6a904d]">Acompanhamento</p><h1 id="painel-titulo" class="mt-1 text-2xl font-bold tracking-tight">Meu painel</h1></div>
+                    <button type="button" class="text-sm font-semibold text-[#567e3d]" data-screen="escala">Atualizar relato</button>
+                </div>
+                <article class="alert-card" data-component="alert" data-level="pending" aria-labelledby="alerta-titulo">
+                    <header class="alert-heading flex items-center justify-between gap-3 p-5 sm:px-6">
+                        <h2 id="alerta-titulo" class="text-sm font-bold uppercase tracking-wide" data-bind="title">Aguardando seu registro</h2>
+                        <span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span>
+                    </header>
+                    <div class="space-y-5 p-5 sm:p-6">
+                        <p class="alert-message p-4 text-sm font-semibold leading-relaxed" data-bind="reason">Selecione intensidade, evolução e bem-estar para compor o relato.</p>
+                        <section class="cc-inset overflow-hidden" aria-labelledby="relato-titulo">
+                            <h3 id="relato-titulo" class="border-b border-stone-200 p-4 text-sm font-semibold">Relato de <span data-bind="patient">paciente</span></h3>
+                            <dl class="grid grid-cols-2 gap-x-4 gap-y-5 p-4 text-sm">
+                                <div><dt class="mb-1 text-xs text-stone-500">Intensidade</dt><dd class="font-semibold" data-bind="painLabel">Não informada</dd></div>
+                                <div><dt class="mb-1 text-xs text-stone-500">Evolução</dt><dd class="font-semibold" data-bind="trendLabel">Não informada</dd></div>
+                                <div><dt class="mb-1 text-xs text-stone-500">Bem-estar</dt><dd class="font-semibold" data-bind="moodLabel">Não informado</dd></div>
+                                <div><dt class="mb-1 text-xs text-stone-500">Último registro</dt><dd class="font-semibold" data-bind="recordedAt">Ainda não registrado</dd></div>
+                            </dl>
+                        </section>
+                        <section aria-labelledby="plano-titulo" class="space-y-3">
+                            <h3 id="plano-titulo" class="font-semibold">Plano de ação</h3>
+                            <ol id="action-plan" class="list-decimal space-y-3 pl-5 text-sm leading-relaxed text-stone-600"><li>Selecionar a intensidade da dor.</li><li>Informar a evolução da dor.</li><li>Escolher como você está se sentindo.</li></ol>
+                        </section>
+                        <button type="button" id="alert-action" class="cc-button alert-action w-full" data-action="alert-primary">Completar meu registro</button>
+                    </div>
+                </article>
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <button type="button" class="cc-button secondary" data-action="team">Simular contato com a equipe</button>
+                    <button type="button" class="cc-button secondary" data-action="record" aria-expanded="false" aria-controls="registro-detalhes">Ver meu registro</button>
+                </div>
+                <section id="registro-detalhes" class="cc-inset space-y-3 p-5 text-sm" hidden>
+                    <h2 class="font-semibold">Registro atual</h2>
+                    <p data-bind="summary">Nenhum relato completo registrado.</p>
+                    <p class="text-xs text-stone-500">As escolhas ficam apenas nesta sessão do MVP.</p>
+                </section>
+                <details class="cc-inset p-4 text-sm">
+                    <summary class="cursor-pointer font-semibold">Como essa combinação define o alerta?</summary>
+                    <div class="mt-4 space-y-3 leading-relaxed text-stone-600">
+                        <p><strong>Crítico:</strong> dor muito intensa ou pior dor possível; ou dor intensa combinada com piora ou “Não estou bem”.</p>
+                        <p><strong>Atenção:</strong> dor moderada/intensa, piora ou “Não estou bem”, sem a combinação crítica.</p>
+                        <p><strong>Sem alerta:</strong> sem dor/dor leve, melhorando/igual e “Estou bem”/“Estou mais ou menos”.</p>
+                        <p><strong>Incompleto:</strong> faltam respostas e ainda não há combinação crítica.</p>
+                    </div>
+                </details>
+                <p class="text-center text-xs leading-relaxed text-stone-400">Regras de demonstração do MVP · Não representam um protocolo clínico.</p>
+            </section>
 
-            <label class="item">
-                <input type="radio" name="escala-dor" value="dor_muito_intensa">
-                <svg class="face-svg" viewBox="-50 -50 100 100" data-icon="face-4-intensa"></svg>
-                <span>Dor muito intensa</span>
-            </label>
+            <section id="medicamentos" data-page class="space-y-5 p-4 sm:p-7" aria-labelledby="medicamentos-titulo" hidden>
+                <header data-component="header">
+        <div class="flex items-center justify-between gap-3 pb-2">
+            <button type="button" class="cc-round" data-action="profile" aria-label="Meu perfil"><span data-ui-icon="user"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></span></button>
+            <button type="button" class="brand" data-action="logout" aria-label="Crabcare — voltar ao login"><span class="brand-leaves" aria-hidden="true"><i></i><i></i><i></i></span>Crabcare</button>
+            <button type="button" class="cc-round relative" data-screen="painel" aria-label="Ver estado do relato"><span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span><span class="alert-dot absolute right-0 top-0" data-alert-dot></span></button>
+        </div>
+    </header>
+                <div><p class="text-xs font-semibold uppercase tracking-widest text-[#6a904d]">Meu cuidado</p><h1 id="medicamentos-titulo" class="mt-1 text-2xl font-bold tracking-tight">Medicamentos de hoje</h1><p class="mt-2 text-sm text-stone-500">Seus horários, em um só lugar.</p></div>
+                <article class="cc-card divide-y divide-stone-100 px-4 sm:px-5" aria-label="Agenda de medicamentos" data-component="medicines"><section class="py-5"><header class="flex items-center gap-3"><span class="medicine-icon" data-color="blue"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7"/></svg></span><div class="min-w-0 flex-1"><h2 class="text-sm font-semibold">Morfina 10 mg</h2><p class="mt-1 text-xs text-stone-500">Tomar a cada 6 horas</p></div><span class="text-xs">6/6 h</span></header><div class="mt-3 grid grid-flow-col auto-cols-fr gap-1 sm:ml-12"><label class="dose"><input type="checkbox" data-medicine="0" aria-label="Morfina 10 mg, dose das 00:00"><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="00:00">00:00</time></label><label class="dose"><input type="checkbox" data-medicine="0" aria-label="Morfina 10 mg, dose das 06:00"><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="06:00">06:00</time></label><label class="dose"><input type="checkbox" data-medicine="0" aria-label="Morfina 10 mg, dose das 12:00" checked><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="12:00">12:00</time></label><label class="dose"><input type="checkbox" data-medicine="0" aria-label="Morfina 10 mg, dose das 18:00"><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="18:00">18:00</time></label></div></section><section class="py-5"><header class="flex items-center gap-3"><span class="medicine-icon" data-color="orange"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7"/></svg></span><div class="min-w-0 flex-1"><h2 class="text-sm font-semibold">Ondansetrona 8 mg</h2><p class="mt-1 text-xs text-stone-500">Tomar a cada 8 horas</p></div><span class="text-xs">8/8 h</span></header><div class="mt-3 grid grid-flow-col auto-cols-fr gap-1 sm:ml-12"><label class="dose"><input type="checkbox" data-medicine="1" aria-label="Ondansetrona 8 mg, dose das 08:00" checked><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="08:00">08:00</time></label><label class="dose"><input type="checkbox" data-medicine="1" aria-label="Ondansetrona 8 mg, dose das 16:00"><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="16:00">16:00</time></label><label class="dose"><input type="checkbox" data-medicine="1" aria-label="Ondansetrona 8 mg, dose das 00:00"><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="00:00">00:00</time></label></div></section><section class="py-5"><header class="flex items-center gap-3"><span class="medicine-icon" data-color="green"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7"/></svg></span><div class="min-w-0 flex-1"><h2 class="text-sm font-semibold">Pregabalina 75 mg</h2><p class="mt-1 text-xs text-stone-500">Tomar a cada 12 horas</p></div><span class="text-xs">12/12 h</span></header><div class="mt-3 grid grid-flow-col auto-cols-fr gap-1 sm:ml-12"><label class="dose"><input type="checkbox" data-medicine="2" aria-label="Pregabalina 75 mg, dose das 08:00" checked><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="08:00">08:00</time></label><label class="dose"><input type="checkbox" data-medicine="2" aria-label="Pregabalina 75 mg, dose das 20:00"><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="20:00">20:00</time></label></div></section></article>
+                <section class="rounded-xl border border-sky-200 bg-sky-50 p-5" aria-labelledby="status-titulo">
+                    <h2 id="status-titulo" class="mb-4 font-semibold">Status de hoje</h2>
+                    <div class="flex items-center gap-4">
+                        <span class="text-sky-600" data-ui-icon="check"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span>
+                        <div class="min-w-0 flex-1"><p id="dose-text" class="text-sm">3 de 3 medicamentos</p><progress id="dose-progress" class="my-2 block h-2 w-full" value="3" max="3" aria-label="Medicamentos com uma dose marcada"></progress><p class="text-xs text-stone-500">Medicamentos com pelo menos uma dose marcada</p></div>
+                        <strong id="dose-count" class="text-sm">3/3</strong>
+                    </div>
+                </section>
+                <p class="text-center text-xs text-stone-400">Agenda fictícia do MVP · Toque nos horários para marcar as doses</p>
+            </section>
 
-            <label class="item">
-                <input type="radio" name="escala-dor" value="pior_dor_possivel">
-                <svg class="face-svg" viewBox="-50 -50 100 100" data-icon="face-5"></svg>
-                <span>Pior dor possível</span>
-            </label>
-        </form>
-        </section>
+            <nav class="app-nav sticky bottom-0 z-10 grid grid-cols-5 gap-1 px-2 pt-2 sm:rounded-b-2xl" aria-label="Navegação principal" data-component="navigation"><button type="button" class="nav-item" data-screen="inicio"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10H5V10m5 10v-6h4v6"/></svg><span>Início</span></button><button type="button" class="nav-item" data-screen="painel"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 2h6v4H9zm0 9h6m-6 4h6m-6 4h4"/></svg><span>Meu painel</span></button><button type="button" class="nav-item" data-screen="medicamentos"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7"/></svg><span>Medicamentos</span></button><button type="button" class="nav-item" data-screen="escala"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 3 12a6 6 0 0 1 9-8 6 6 0 0 1 9 8Z"/><path d="M3 12h5l2-4 3 8 2-4h6"/></svg><span>Minha dor</span></button><button type="button" class="nav-item" data-action="logout"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H4v16h6m4-12 4 4-4 4m-6-4h12"/></svg><span>Sair</span></button></nav>
+            <p id="app-feedback" class="global-feedback mx-4 my-3 rounded-xl border border-lime-200 bg-lime-50 p-4 text-sm sm:mx-7" role="status" hidden></p>
+        </div>
     </main>
 
+    <dialog id="alimentacao-dialog" aria-labelledby="alimentacao-titulo">
+        <h2 id="alimentacao-titulo" class="mb-4 text-xl font-bold">Alimentação</h2>
+        <p class="mb-5 text-sm leading-relaxed text-stone-600">A área de refeições será preparada na próxima etapa do MVP.</p>
+        <form method="dialog"><button class="cc-button w-full">Voltar</button></form>
+    </dialog>
     <audio id="audio-player"></audio>
 
-    <script>
-        document.getElementById('login-form').addEventListener('submit', event => {
-            event.preventDefault();
-            document.querySelector('.login').hidden = true;
-            document.getElementById('escala').hidden = false;
-            document.title = 'CrabCare — Escala de dor';
-            document.querySelector('input[name="escala-dor"]').focus();
-        });
+    <!-- Componentes nativos: clones compartilham estrutura e comportamento. -->
+    <template id="header-template">
+        <div class="flex items-center justify-between gap-3 pb-2">
+            <button type="button" class="cc-round" data-action="profile" aria-label="Meu perfil"><span data-ui-icon="user"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></span></button>
+            <button type="button" class="brand" data-action="logout" aria-label="Crabcare — voltar ao login"><span class="brand-leaves" aria-hidden="true"><i></i><i></i><i></i></span>Crabcare</button>
+            <button type="button" class="cc-round relative" data-screen="painel" aria-label="Ver estado do relato"><span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span><span class="alert-dot absolute right-0 top-0" data-alert-dot></span></button>
+        </div>
+    </template>
+    <template id="face-option-template">
+        <label class="face-option">
+            <input type="radio" required>
+            <svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use></use></svg>
+            <span data-label></span>
+        </label>
+    </template>
+    <template id="medicine-template">
+        <section class="py-5">
+            <header class="flex items-center gap-3"><span class="medicine-icon" data-color><span data-ui-icon="pill"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7"/></svg></span></span><div class="min-w-0 flex-1"><h2 class="text-sm font-semibold" data-name></h2><p class="mt-1 text-xs text-stone-500" data-frequency></p></div><span class="text-xs" data-interval></span></header>
+            <div class="mt-3 grid grid-flow-col auto-cols-fr gap-1 sm:ml-12" data-times></div>
+        </section>
+    </template>
+    <!-- app:start -->
+<script>
+'use strict';
 
-        const audioPlayer = document.getElementById('audio-player');
-        const items = document.querySelectorAll('.item');
+// Catálogos compartilhados pelas telas e pelos componentes nativos.
+// catalog:start
+const COMPONENTS = {
+    "PAIN_OPTIONS": [
+        {
+            "value": "sem_dor",
+            "label": "Sem dor",
+            "face": "face-1",
+            "severity": 0
+        },
+        {
+            "value": "dor_leve",
+            "label": "Dor leve",
+            "face": "face-2",
+            "severity": 1
+        },
+        {
+            "value": "dor_moderada",
+            "label": "Dor moderada",
+            "face": "face-3",
+            "severity": 2
+        },
+        {
+            "value": "dor_intensa",
+            "label": "Dor intensa",
+            "face": "face-4",
+            "severity": 3
+        },
+        {
+            "value": "dor_muito_intensa",
+            "label": "Dor muito intensa",
+            "face": "face-4-intensa",
+            "severity": 4
+        },
+        {
+            "value": "pior_dor_possivel",
+            "label": "Pior dor possível",
+            "face": "face-5",
+            "severity": 5
+        }
+    ],
+    "MOOD_OPTIONS": [
+        {
+            "value": "bem",
+            "label": "Estou bem",
+            "face": "face-1"
+        },
+        {
+            "value": "normal",
+            "label": "Estou mais ou menos",
+            "face": "face-3"
+        },
+        {
+            "value": "mal",
+            "label": "Não estou bem",
+            "face": "face-5"
+        }
+    ],
+    "TREND_OPTIONS": [
+        {
+            "value": "melhorando",
+            "label": "Melhorando"
+        },
+        {
+            "value": "igual",
+            "label": "Continua igual"
+        },
+        {
+            "value": "piorando",
+            "label": "Piorando"
+        }
+    ],
+    "MEDICINES": [
+        {
+            "name": "Morfina 10 mg",
+            "frequency": "Tomar a cada 6 horas",
+            "interval": "6/6 h",
+            "color": "blue",
+            "times": [
+                "00:00",
+                "06:00",
+                "12:00",
+                "18:00"
+            ],
+            "checked": [
+                "12:00"
+            ]
+        },
+        {
+            "name": "Ondansetrona 8 mg",
+            "frequency": "Tomar a cada 8 horas",
+            "interval": "8/8 h",
+            "color": "orange",
+            "times": [
+                "08:00",
+                "16:00",
+                "00:00"
+            ],
+            "checked": [
+                "08:00"
+            ]
+        },
+        {
+            "name": "Pregabalina 75 mg",
+            "frequency": "Tomar a cada 12 horas",
+            "interval": "12/12 h",
+            "color": "green",
+            "times": [
+                "08:00",
+                "20:00"
+            ],
+            "checked": [
+                "08:00"
+            ]
+        }
+    ],
+    "NAVIGATION": [
+        {
+            "screen": "inicio",
+            "label": "Início",
+            "icon": "home"
+        },
+        {
+            "screen": "painel",
+            "label": "Meu painel",
+            "icon": "list"
+        },
+        {
+            "screen": "medicamentos",
+            "label": "Medicamentos",
+            "icon": "pill"
+        },
+        {
+            "screen": "escala",
+            "label": "Minha dor",
+            "icon": "heart"
+        },
+        {
+            "action": "logout",
+            "label": "Sair",
+            "icon": "exit"
+        }
+    ],
+    "SCREEN_TITLES": {
+        "inicio": "Boas-vindas",
+        "painel": "Meu painel",
+        "medicamentos": "Medicamentos",
+        "escala": "Minha dor"
+    },
+    "ICONS": {
+        "home": "<path d=\"m3 10 9-7 9 7v10H5V10m5 10v-6h4v6\"/>",
+        "user": "<circle cx=\"12\" cy=\"7\" r=\"4\"/><path d=\"M4 22v-3a8 8 0 0 1 16 0v3\"/>",
+        "bell": "<path d=\"M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4\"/>",
+        "pill": "<path d=\"M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7\"/>",
+        "heart": "<path d=\"M12 21 3 12a6 6 0 0 1 9-8 6 6 0 0 1 9 8Z\"/><path d=\"M3 12h5l2-4 3 8 2-4h6\"/>",
+        "list": "<rect x=\"5\" y=\"4\" width=\"14\" height=\"18\" rx=\"2\"/><path d=\"M9 2h6v4H9zm0 9h6m-6 4h6m-6 4h4\"/>",
+        "exit": "<path d=\"M10 4H4v16h6m4-12 4 4-4 4m-6-4h12\"/>",
+        "thermometer": "<path d=\"M9 14V5a3 3 0 0 1 6 0v9a5 5 0 1 1-6 0Z\"/><path d=\"M12 7v11m4-10h3m-3 4h3\"/>",
+        "food": "<path d=\"M4 3v6m3-6v18M1 3v6a3 3 0 0 0 6 0m11-6v18m0-18c-5 4-5 10 0 10\"/>",
+        "check": "<path d=\"m5 12 4 4L19 6\"/>",
+        "arrow": "<path d=\"M4 12h16m-6-6 6 6-6 6\"/>"
+    }
+};
+// catalog:end
+const { PAIN_OPTIONS, MOOD_OPTIONS, TREND_OPTIONS, MEDICINES, NAVIGATION, SCREEN_TITLES, ICONS } = COMPONENTS;
 
-        items.forEach(item => {
-            item.addEventListener('click', () => {
-                const radio = item.querySelector('input[type="radio"]');
-                radio.checked = true;
-                const valor = radio.value;
-                audioPlayer.src = `assets/audio/${valor}.mp3`;
-                audioPlayer.currentTime = 0;
-                audioPlayer.play().catch(err => console.log("Áudio bloqueado ou não encontrado:", err));
-            });
+// Somente memória da página: nenhuma credencial ou relato é enviado/persistido.
+const state = { patient: 'paciente', pain: null, trend: null, mood: null, recordedAt: null };
+const app = document.getElementById('aplicativo');
+const login = document.getElementById('login');
+
+function cloneTemplate(id) {
+    return document.getElementById(id).content.cloneNode(true);
+}
+function icon(name) {
+    return '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">' + ICONS[name] + '</svg>';
+}
+function populateIcons(root = document) {
+    root.querySelectorAll('[data-ui-icon]').forEach(element => {
+        // Apenas desenhos estáticos conhecidos; rostinhos vêm de icones.svg.
+        element.innerHTML = icon(element.dataset.uiIcon);
+    });
+}
+function faceOption(option, field, group) {
+    const fragment = cloneTemplate('face-option-template');
+    const input = fragment.querySelector('input');
+    input.name = field + '-' + group;
+    input.value = option.value;
+    input.dataset.field = field;
+    fragment.querySelector('use').setAttribute('href', '#' + option.face);
+    fragment.querySelector('[data-label]').textContent = option.label;
+    if (field === 'pain') fragment.querySelector('label').classList.add('pain-option');
+    return fragment;
+}
+function mountComponents() {
+    document.querySelectorAll('[data-component="header"]').forEach(element => {
+        element.replaceChildren(cloneTemplate('header-template'));
+    });
+    document.querySelectorAll('[data-component="mood"]').forEach(element => {
+        element.replaceChildren();
+        MOOD_OPTIONS.forEach(option => element.append(faceOption(option, 'mood', element.dataset.group)));
+    });
+    const pain = document.querySelector('[data-component="pain"]');
+    pain.replaceChildren();
+    PAIN_OPTIONS.forEach(option => pain.append(faceOption(option, 'pain', 'escala')));
+    const trend = document.querySelector('[data-component="trend"]');
+    trend.replaceChildren();
+    TREND_OPTIONS.forEach(option => {
+        const label = document.createElement('label');
+        label.className = 'choice';
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'trend-escala';
+        input.dataset.field = 'trend';
+        input.value = option.value;
+        input.required = true;
+        label.append(input, document.createTextNode(option.label));
+        trend.append(label);
+    });
+    const nav = document.querySelector('[data-component="navigation"]');
+    nav.replaceChildren();
+    NAVIGATION.forEach(item => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'nav-item';
+        if (item.screen) button.dataset.screen = item.screen;
+        else button.dataset.action = item.action;
+        button.innerHTML = icon(item.icon);
+        const label = document.createElement('span');
+        label.textContent = item.label;
+        button.append(label);
+        nav.append(button);
+    });
+    const medicines = document.querySelector('[data-component="medicines"]');
+    medicines.replaceChildren();
+    MEDICINES.forEach((medicine, index) => {
+        const fragment = cloneTemplate('medicine-template');
+        fragment.querySelector('[data-name]').textContent = medicine.name;
+        fragment.querySelector('[data-frequency]').textContent = medicine.frequency;
+        fragment.querySelector('[data-interval]').textContent = medicine.interval;
+        fragment.querySelector('[data-color]').dataset.color = medicine.color;
+        medicine.times.forEach(time => {
+            const label = document.createElement('label');
+            label.className = 'dose';
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.dataset.medicine = index;
+            input.checked = medicine.checked.includes(time);
+            input.setAttribute('aria-label', medicine.name + ', dose das ' + time);
+            const mark = document.createElement('span');
+            mark.className = 'dose-mark';
+            mark.setAttribute('aria-hidden', 'true');
+            mark.innerHTML = icon('check');
+            const timeElement = document.createElement('time');
+            timeElement.className = 'text-xs';
+            timeElement.dateTime = time;
+            timeElement.textContent = time;
+            label.append(input, mark, timeElement);
+            fragment.querySelector('[data-times]').append(label);
         });
-    </script>
+        medicines.append(fragment);
+    });
+    populateIcons();
+}
+
+// Regra visual do MVP: prioridade crítica antes da checagem de completude.
+// Assim, uma dor muito intensa não aparece como "sem alerta" por faltar bem-estar.
+function evaluateReport(report) {
+    const pain = PAIN_OPTIONS.find(option => option.value === report.pain);
+    if (pain && (pain.severity >= 4 || (pain.severity === 3 && (report.trend === 'piorando' || report.mood === 'mal')))) {
+        return {
+            level: 'critical', title: 'Alerta de dor crítica', shortStatus: 'Alerta crítico nesta combinação',
+            reason: pain.severity >= 4
+                ? pain.label + ' informada no relato. Esta intensidade aciona o alerta crítico da demonstração.'
+                : 'Dor intensa combinada com ' + (report.trend === 'piorando' ? 'piora da dor' : '“Não estou bem”') + '.',
+            plan: ['Simular o contato com a equipe de cuidado.', 'Compartilhar a intensidade, a evolução e o bem-estar relatados.', 'Aguardar a avaliação da equipe e atualizar o relato se houver mudança.'],
+            action: 'Simular chamada da equipe'
+        };
+    }
+    const missing = [];
+    if (!pain) missing.push('intensidade');
+    if (!report.trend) missing.push('evolução');
+    if (!report.mood) missing.push('bem-estar');
+    if (missing.length) {
+        return {
+            level: 'pending', title: 'Complete seu registro', shortStatus: 'Falta completar o relato',
+            reason: 'Ainda falta informar: ' + missing.join(', ') + '.',
+            plan: ['Selecionar a intensidade da dor.', 'Informar se a dor melhorou, permaneceu igual ou piorou.', 'Escolher como você está se sentindo para completar a combinação.'],
+            action: 'Completar meu registro'
+        };
+    }
+    if (pain.severity >= 2 || report.trend === 'piorando' || report.mood === 'mal') {
+        const reasons = [];
+        if (pain.severity >= 2) reasons.push(pain.label.toLowerCase());
+        if (report.trend === 'piorando') reasons.push('piora da dor');
+        if (report.mood === 'mal') reasons.push('“Não estou bem”');
+        return {
+            level: 'attention', title: 'Seu relato precisa de atenção', shortStatus: 'Atenção nesta combinação',
+            reason: 'Combinação registrada: ' + reasons.join(' + ') + '.',
+            plan: ['Compartilhar o relato com a equipe de cuidado na demonstração.', 'Acompanhar como a dor evolui.', 'Atualizar as respostas caso a intensidade ou o bem-estar mudem.'],
+            action: 'Simular envio do relato'
+        };
+    }
+    return {
+        level: 'calm', title: 'Sem alerta nesta combinação', shortStatus: 'Sem alerta nesta combinação',
+        reason: pain.label + ', ' + (report.trend === 'melhorando' ? 'melhorando' : 'sem piora') + ' e relato de bem-estar: ' + (report.mood === 'bem' ? '“Estou bem”' : '“Estou mais ou menos”') + '.',
+        plan: ['Manter o relato atualizado.', 'Registrar novamente se a dor ou o bem-estar mudarem.', 'Consultar os horários da agenda de medicamentos.'],
+        action: 'Ver meus medicamentos'
+    };
+}
+function bindText(name, text) {
+    document.querySelectorAll('[data-bind="' + name + '"]').forEach(element => { element.textContent = text; });
+}
+function renderReport() {
+    const result = evaluateReport(state);
+    const pain = PAIN_OPTIONS.find(option => option.value === state.pain);
+    const trend = TREND_OPTIONS.find(option => option.value === state.trend);
+    const mood = MOOD_OPTIONS.find(option => option.value === state.mood);
+    const values = {
+        patient: state.patient,
+        painLabel: pain?.label || 'Não informada',
+        trendLabel: trend?.label || 'Não informada',
+        moodLabel: mood?.label || 'Não informado',
+        recordedAt: state.recordedAt || 'Ainda não registrado',
+        title: result.title, shortStatus: result.shortStatus, reason: result.reason,
+        summary: [pain?.label || 'Dor não informada', trend?.label || 'Evolução não informada', mood?.label || 'Bem-estar não informado'].join(' · ')
+    };
+    Object.entries(values).forEach(([name, text]) => bindText(name, text));
+    document.querySelector('[data-component="alert"]').dataset.level = result.level;
+    document.querySelectorAll('[data-alert-dot]').forEach(dot => { dot.dataset.level = result.level; });
+    const plan = document.getElementById('action-plan');
+    plan.replaceChildren(...result.plan.map(text => {
+        const item = document.createElement('li');
+        item.textContent = text;
+        return item;
+    }));
+    document.getElementById('alert-action').textContent = result.action;
+    document.querySelectorAll('input[data-field]').forEach(input => {
+        input.checked = state[input.dataset.field] === input.value;
+    });
+}
+function feedback(text) {
+    const element = document.getElementById('app-feedback');
+    element.textContent = text;
+    element.hidden = false;
+    element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function showScreen(id) {
+    if (!SCREEN_TITLES[id]) return;
+    app.classList.remove('preview-grid');
+    document.querySelectorAll('[data-page]').forEach(page => { page.hidden = page.id !== id; });
+    document.querySelectorAll('.nav-item[data-screen]').forEach(button => {
+        if (button.dataset.screen === id) button.setAttribute('aria-current', 'page');
+        else button.removeAttribute('aria-current');
+    });
+    document.getElementById('app-feedback').hidden = true;
+    document.title = 'Crabcare — ' + SCREEN_TITLES[id];
+    const heading = document.getElementById(id).querySelector('h1');
+    heading.setAttribute('tabindex', '-1');
+    heading.focus({ preventScroll: true });
+    window.scrollTo({ top: 0 });
+}
+function logout() {
+    app.hidden = true;
+    login.hidden = false;
+    document.title = 'Crabcare — Entrar';
+    document.getElementById('usuario').focus();
+}
+function updateDoses() {
+    const total = MEDICINES.length;
+    const count = MEDICINES.filter((_, index) => document.querySelector('input[data-medicine="' + index + '"]:checked')).length;
+    document.getElementById('dose-text').textContent = count + ' de ' + total + ' medicamentos';
+    document.getElementById('dose-count').textContent = count + '/' + total;
+    const progress = document.getElementById('dose-progress');
+    progress.max = total;
+    progress.value = count;
+}
+function playPainAudio(value) {
+    const audio = document.getElementById('audio-player');
+    audio.src = 'assets/audio/' + value + '.mp3';
+    audio.play().catch(() => { /* A seleção continua funcionando sem áudio. */ });
+}
+function simulateTeamContact() {
+    const result = evaluateReport(state);
+    feedback('Simulação: equipe avisada sobre o relato de ' + state.patient + '. Estado atual: ' + result.shortStatus.toLowerCase() + '.');
+}
+
+mountComponents();
+renderReport();
+updateDoses();
+
+document.getElementById('login-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const patient = document.getElementById('usuario').value.trim() || 'paciente';
+    if (patient !== state.patient) {
+        Object.assign(state, { pain: null, trend: null, mood: null, recordedAt: null });
+        document.getElementById('mood-feedback').textContent = '';
+    }
+    state.patient = patient;
+    login.hidden = true;
+    app.hidden = false;
+    renderReport();
+    showScreen('inicio');
+});
+document.getElementById('pain-form').addEventListener('submit', event => {
+    event.preventDefault();
+    showScreen('painel');
+});
+document.addEventListener('change', event => {
+    const input = event.target;
+    if (input.matches('input[data-field]')) {
+        state[input.dataset.field] = input.value;
+        state.recordedAt = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(new Date());
+        document.getElementById('app-feedback').hidden = true;
+        renderReport();
+        if (input.dataset.field === 'mood') {
+            document.getElementById('mood-feedback').textContent = {
+                bem: 'Que bom! Complete seu relato de dor para acompanhar o painel.',
+                normal: 'Obrigado por compartilhar. Como está sua dor?',
+                mal: 'Conte também a intensidade e a evolução da sua dor.'
+            }[input.value];
+        }
+        if (input.dataset.field === 'pain') playPainAudio(input.value);
+    }
+    if (input.matches('input[data-medicine]')) updateDoses();
+});
+document.addEventListener('click', event => {
+    const button = event.target.closest('button');
+    if (!button) return;
+    if (button.dataset.screen) return showScreen(button.dataset.screen);
+    switch (button.dataset.action) {
+        case 'logout': logout(); break;
+        case 'profile': feedback('Perfil de demonstração: ' + state.patient + '.'); break;
+        case 'food': document.getElementById('alimentacao-dialog').showModal(); break;
+        case 'record': {
+            const record = document.getElementById('registro-detalhes');
+            record.hidden = !record.hidden;
+            button.setAttribute('aria-expanded', String(!record.hidden));
+            break;
+        }
+        case 'team': simulateTeamContact(); break;
+        case 'alert-primary': {
+            const result = evaluateReport(state);
+            if (result.level === 'pending') showScreen('escala');
+            else if (result.level === 'calm') showScreen('medicamentos');
+            else simulateTeamContact();
+            break;
+        }
+    }
+});
+
+// A demonstração compartilha exatamente os componentes e regras do aplicativo.
+if (document.body.dataset.preview === 'true') {
+    login.hidden = true;
+    app.hidden = false;
+    app.classList.add('preview-grid');
+    document.querySelectorAll('[data-page]').forEach(page => { page.hidden = false; });
+    document.title = 'Crabcare — Demonstração';
+}
+</script>
+    <!-- app:end -->
 </body>
-
 </html>
