@@ -117,7 +117,7 @@ def main():
     preview = html.replace('<body class=', '<body data-preview="true" class=', 1)
     preview = preview.replace('id="login" class=', 'id="login" hidden class=', 1)
     preview = re.sub(r'(<div id="aplicativo" class=")([^"]+)("[^>]*?) hidden>', r'\1preview-grid \2\3>', preview, count=1)
-    for page in ['inicio', 'sintomas', 'alimentacao', 'painel', 'medicamentos']:
+    for page in ['inicio', 'alimentacao', 'medicamentos']:
         preview = re.sub(r'(<section id="'+page+r'"[^>]*?) hidden>', r'\1>', preview, count=1)
     preview = preview.replace('<title>Crabcare — Entrar</title>', '<title>Crabcare — Demonstração</title>', 1)
     (ROOT / 'demonstracao.html').write_text(preview)

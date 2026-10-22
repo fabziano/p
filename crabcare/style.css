@@ -65,7 +65,10 @@ input { background: #fff; color: #25312b; }
 .medicine-icon[data-color="orange"] { background: #fbedda; color: #c78538; }
 .medicine-icon[data-color="green"] { background: #e9f2df; color: #70964c; }
 progress { accent-color: #418bce; }
-.app-shell { max-width: 54rem; }
+.app-shell { display: flex; flex-direction: column; width: 100%; max-width: 54rem; height: 100dvh; min-height: 0; overflow: hidden; }
+.app-shell > [data-page] { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; }
+.app-shell > .app-nav { position: static; flex-shrink: 0; }
+.app-shell > .global-feedback { flex-shrink: 0; }
 .preview-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.5rem; max-width: 86rem; padding: 1.5rem; border: 0; background: transparent; }
 .preview-grid > [data-page] { min-width: 0; border: 1px solid #e3e9df; border-radius: 1.25rem; background-color: #fff; align-self: start; }
 .preview-grid > nav, .preview-grid > .global-feedback { grid-column: 1 / -1; }
@@ -90,6 +93,22 @@ textarea { font: inherit; }
 .login-surface { box-shadow: 0 16px 60px #526b3410; border-color: #dde7d3; }
 .login-intro { background: radial-gradient(ellipse at top left,#eef5df,transparent 80%),#f8fbf4; border-bottom: 1px solid #e3ebda; }
 .login-intro .brand { font-size: 1.8rem; }
-.login-care { display: flex; flex-direction: column; align-items: center; gap: .65rem; font-size: .75rem; color: #6c7b5e; }
-.login-care .care-icon { background: #fff; border: 1px solid #e8eddf; box-shadow: 0 3px 10px #567e3d08; }
 @media(min-width: 64rem) { .login-intro { border-bottom: 0; border-right: 1px solid #e3ebda; } }
+
+/* Alerta da combinação na própria tela inicial, inspirado no slide do projeto. */
+.combined-alert { border-radius: 1.75rem 1.75rem 1.1rem 1.1rem; box-shadow: 0 5px 20px #a6252515; }
+.combined-alert[data-level="critical"] > .alert-heading { background: linear-gradient(110deg,#d32b29,#a11920); }
+.combined-alert[data-level="attention"] > .alert-heading { background: linear-gradient(110deg,#b97a1a,#90600e); }
+.combined-alert[data-level="critical"] { border-color: #bf2528; }
+.alert-emblem { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; border: 1px solid #ffffff50; background: #ffffff15; font-weight: 800; font-size: 1.2rem; flex-shrink: 0; }
+.alert-patient { border: 1px solid #e6d2a8; border-radius: .85rem; overflow: hidden; background: #fbefd6; }
+.alert-patient > h3 { background: #e9bd63; color: #493714; }
+.alert-patient dt { color: #796345; }
+.alert-patient dd { color: #41372b; }
+.combined-alert .alert-action { box-shadow: 0 3px 8px #a1272525; }
+
+/* A prévia mantém a mesma barra no rodapé enquanto mostra as telas juntas. */
+.app-shell.preview-grid { height: auto; min-height: 100dvh; overflow: visible; padding-bottom: 7rem; }
+.preview-grid > [data-page] { overflow: visible; }
+.preview-grid > .app-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: calc(100% - 1.5rem); max-width: 83rem; z-index: 30; }
+@media (max-width: 54rem) { .preview-grid > .app-nav { max-width: 34.5rem; } }

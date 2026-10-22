@@ -92,19 +92,19 @@ const COMPONENTS = {
             "icon": "home"
         },
         {
-            "screen": "painel",
-            "label": "Meu painel",
-            "icon": "list"
+            "action": "alert",
+            "label": "Alertas",
+            "icon": "bell"
+        },
+        {
+            "screen": "alimentacao",
+            "label": "Alimentação",
+            "icon": "food"
         },
         {
             "screen": "medicamentos",
             "label": "Medicamentos",
             "icon": "pill"
-        },
-        {
-            "screen": "sintomas",
-            "label": "Sintomas",
-            "icon": "thermometer"
         },
         {
             "action": "logout",
@@ -114,9 +114,7 @@ const COMPONENTS = {
     ],
     "SCREEN_TITLES": {
         "inicio": "Boas-vindas",
-        "painel": "Meu painel",
         "medicamentos": "Medicamentos",
-        "sintomas": "Sintomas",
         "alimentacao": "Alimentação"
     },
     "ICONS": {
@@ -203,13 +201,34 @@ function mountComponents() {
     document.querySelectorAll('[data-ui-icon]').forEach(element => { element.innerHTML = icon(element.dataset.uiIcon); });
 }
 
-// Estados visuais do MVP, definidos somente pela escala de dor existente.
+// Combinações visuais do MVP. Nenhum exame ou diagnóstico é inferido.
 function evaluateReport() {
     const pain = PAIN_OPTIONS.find(option => option.value === state.pain);
-    if (!pain) return { level: 'pending', title: 'Como está sua dor?', reason: 'Escolha um rostinho na tela inicial.', action: 'Ver escala de dor' };
-    if (pain.severity >= 4) return { level: 'critical', title: 'Alerta de dor intensa', reason: pain.label + '. Seu relato precisa de atenção da equipe.', action: 'Simular contato com a equipe' };
-    if (pain.severity >= 2) return { level: 'attention', title: 'Atenção à sua dor', reason: pain.label + ' registrada.', action: 'Simular contato com a equipe' };
-    return { level: 'calm', title: 'Dor registrada', reason: pain.label + '.', action: 'Atualizar minha dor' };
+    const symptoms = (state.symptoms || []).filter(value => value !== 'Nenhum outro sintoma');
+    const fever = symptoms.includes('Febre');
+    const breathing = symptoms.includes('Falta de ar');
+    const parts = [...(pain ? [pain.label] : []), ...symptoms];
+    const combination = parts.join(' + ');
+    const critical = pain?.severity >= 4 || (pain?.severity >= 3 && (fever || breathing)) || (fever && breathing);
+    if (critical) return {
+        level: 'critical', title: 'Alerta de paciente crítico',
+        reason: 'Combinação identificada: ' + combination + '.',
+        combination, status: 'Atenção prioritária',
+        action: 'Simular chamada da equipe',
+        plan: 'Compartilhar com a equipe a dor e os sintomas informados.'
+    };
+    if (pain?.severity >= 2 || symptoms.length) return {
+        level: 'attention', title: 'Alerta de atenção',
+        reason: 'Combinação identificada: ' + combination + '.',
+        combination, status: 'Relato precisa de atenção',
+        action: 'Simular contato com a equipe',
+        plan: 'Encaminhar o relato para acompanhamento da equipe.'
+    };
+    if (pain || state.symptoms) return {
+        level: 'calm', title: 'Relato registrado', reason: combination || 'Nenhum outro sintoma informado.',
+        combination, status: 'Registrado', action: '', plan: ''
+    };
+    return { level: 'pending', title: 'Escolha sua dor e seus sintomas', reason: '', combination: '', status: '', action: '', plan: '' };
 }
 function bindText(name, text) {
     document.querySelectorAll('[data-bind="' + name + '"]').forEach(element => { element.textContent = text; });
@@ -219,12 +238,15 @@ function renderReport() {
     const pain = PAIN_OPTIONS.find(option => option.value === state.pain);
     const values = {
         patient: state.patient, title: result.title, shortStatus: result.title, reason: result.reason,
+        combination: result.combination, alertStatus: result.status, actionPlan: result.plan,
         painLabel: pain?.label || 'Ainda não informada', recordedAt: state.recordedAt || 'Ainda não registrado',
         symptomSummary: state.symptoms ? state.symptoms.join(', ') : 'Ainda não informado',
         nutritionSummary: state.nutrition || 'Ainda não informada'
     };
     Object.entries(values).forEach(([key, value]) => bindText(key, value));
-    document.querySelector('[data-component="alert"]').dataset.level = result.level;
+    const alert = document.querySelector('[data-component="alert"]');
+    alert.dataset.level = result.level;
+    alert.hidden = !['critical', 'attention'].includes(result.level);
     document.querySelectorAll('[data-alert-dot]').forEach(dot => { dot.dataset.level = result.level; });
     document.getElementById('alert-action').textContent = result.action;
     document.querySelectorAll('input[data-field="pain"]').forEach(input => { input.checked = input.value === state.pain; });
@@ -234,11 +256,12 @@ function showScreen(id) {
     app.classList.remove('preview-grid');
     document.querySelectorAll('[data-page]').forEach(page => { page.hidden = page.id !== id; });
     document.querySelectorAll('.nav-item[data-screen]').forEach(button => {
-        if (button.dataset.screen === (id === 'alimentacao' ? 'inicio' : id)) button.setAttribute('aria-current', 'page');
+        if (button.dataset.screen === id) button.setAttribute('aria-current', 'page');
         else button.removeAttribute('aria-current');
     });
     document.getElementById('app-feedback').hidden = true;
     document.title = 'Crabcare — ' + SCREEN_TITLES[id];
+    document.getElementById(id).scrollTop = 0;
     const heading = document.getElementById(id).querySelector('h1');
     heading.setAttribute('tabindex', '-1');
     heading.focus({ preventScroll: true });
@@ -281,15 +304,16 @@ document.getElementById('login-form').addEventListener('submit', event => {
     renderReport();
     showScreen('inicio');
 });
-document.getElementById('home-pain-form').addEventListener('submit', event => { event.preventDefault(); showScreen('painel'); });
 document.addEventListener('change', event => {
     const input = event.target;
+    if (input.matches('[data-field="pain"], input[name="sintoma"]')) document.getElementById('alert-feedback').hidden = true;
     if (input.matches('[data-field="pain"]')) {
         state.pain = input.value;
         state.recordedAt = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(new Date());
         renderReport();
     }
     if (input.matches('input[name="sintoma"]')) {
+        state.recordedAt = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(new Date());
         if (input.checked) document.querySelectorAll('input[name="sintoma"]').forEach(option => {
             if ((input.value === 'Nenhum outro sintoma' && option !== input) || (input.value !== 'Nenhum outro sintoma' && option.value === 'Nenhum outro sintoma')) option.checked = false;
         });
@@ -311,12 +335,30 @@ document.addEventListener('click', event => {
     if (button.dataset.screen) return showScreen(button.dataset.screen);
     switch (button.dataset.action) {
         case 'pain': goToPain(); break;
+        case 'symptoms': showScreen('inicio'); document.getElementById('sintomas-escolhas').scrollIntoView({block: 'center', behavior: 'smooth'}); break;
+        case 'alert': {
+            showScreen('inicio');
+            const target = document.getElementById('alerta-combinacao');
+            if (target.hidden) document.getElementById('relato-status').scrollIntoView({block: 'center', behavior: 'smooth'});
+            else { target.scrollIntoView({block: 'center', behavior: 'smooth'}); target.focus({preventScroll: true}); }
+            break;
+        }
+        case 'record': {
+            const record = document.getElementById('relato-resumo');
+            record.hidden = !record.hidden;
+            button.setAttribute('aria-expanded', String(!record.hidden));
+            break;
+        }
         case 'logout': app.hidden = true; login.hidden = false; document.title = 'Crabcare — Entrar'; document.getElementById('usuario').focus(); break;
         case 'profile': feedback('Perfil de demonstração: ' + state.patient + '.'); break;
         case 'alert-primary': {
             const result = evaluateReport();
             if (result.level === 'pending' || result.level === 'calm') goToPain();
-            else feedback('Simulação: relato de dor compartilhado com a equipe.');
+            else {
+                const feedback = document.getElementById('alert-feedback');
+                feedback.textContent = 'Simulação: equipe avisada sobre ' + result.combination.toLowerCase() + '.';
+                feedback.hidden = false;
+            }
             break;
         }
     }
