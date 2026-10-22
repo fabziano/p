@@ -16,7 +16,7 @@ function docMessage(text) {
 function selectedReport() { return doctor.reports.find(record => record.id === doctor.selectedId); }
 function renderDoctor() {
     const enriched = doctor.reports.map(record => ({ record, alert: Crabcare.evaluateReport(record) }));
-    enriched.sort((a, b) => levels[a.alert.level] - levels[b.alert.level] || b.record.updatedAt.localeCompare(a.record.updatedAt));
+    enriched.sort((a, b) => levels[a.alert.level] - levels[b.alert.level] || Number(b.record.contactRequest?.status === 'pending') - Number(a.record.contactRequest?.status === 'pending') || b.record.updatedAt.localeCompare(a.record.updatedAt));
     const alerts = enriched.filter(item => ['critical', 'attention'].includes(item.alert.level));
     document.getElementById('doc-total').textContent = enriched.length;
     document.getElementById('doc-alerts').textContent = alerts.length;
@@ -45,6 +45,12 @@ function renderDoctor() {
         time.className = 'text-xs text-stone-400';
         time.textContent = record.hasReport ? formatDate(record.updatedAt) + (record.reviewedFor === record.updatedAt ? ' · Visto' : ' · Novo relato') : 'Sem respostas registradas';
         button.append(name, status, time);
+        if (record.contactRequest?.status === 'pending') {
+            const contact = document.createElement('strong');
+            contact.className = 'doctor-contact-tag';
+            contact.textContent = 'Contato solicitado';
+            button.append(contact);
+        }
         list.append(button);
     });
     document.querySelectorAll('[data-doc-action="all"], [data-doc-action="alerts"]').forEach(button => {
@@ -68,6 +74,9 @@ function renderDoctor() {
         combination: alert.combination || 'Dor e sintomas ainda não informados.'
     };
     Object.entries(values).forEach(([key, value]) => document.querySelectorAll('[data-doc-bind="' + key + '"]').forEach(element => { element.textContent = value; }));
+    const contact = record.contactRequest;
+    document.getElementById('doc-contact-request').hidden = contact?.status !== 'pending';
+    document.getElementById('doc-contact-time').textContent = contact ? 'Solicitado em ' + formatDate(contact.requestedAt) : '';
     const reviewed = record.reviewedFor === record.updatedAt;
     const reviewButton = document.getElementById('doc-review');
     reviewButton.disabled = reviewed || !record.hasReport;
@@ -147,6 +156,19 @@ document.addEventListener('click', event => {
         case 'all': doctor.filter = 'all'; renderDoctor(); break;
         case 'alerts': doctor.filter = 'alerts'; renderDoctor(); break;
         case 'review': reviewCurrent('Relato visualizado'); break;
+        case 'contact': {
+            const record = selectedReport();
+            if (!record?.contactRequest) break;
+            try {
+                Crabcare.respondContact(record.id, record.contactRequest.requestedAt, doctor.id);
+                refreshReports();
+                docMessage('Contato registrado na demonstração.');
+            } catch (error) {
+                refreshReports();
+                docMessage(error.message);
+            }
+            break;
+        }
         case 'nursing': reviewCurrent('Chamada da enfermagem simulada'); break;
         case 'record': {
             const record = document.getElementById('doc-record');

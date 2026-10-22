@@ -124,11 +124,21 @@ textarea { font: inherit; }
 
 .doctor-shell { max-width: 68rem; }
 .doctor-role { font-size: .65rem; color: #72825e; border: 1px solid #e4eade; background: #f5f8ee; border-radius: 2rem; padding: .4rem .65rem; }
-.doctor-patient { display: flex; flex-direction: column; gap: .5rem; padding: 1rem; border: 1px solid #e0e7d7; border-left: 4px solid #a7b59b; border-radius: .85rem; text-align: left; background: #fff; }
+.doctor-patient { display: flex; flex-direction: column; gap: .5rem; padding: 1rem; border: 1px solid #e0e7d7; border-left: 4px solid #a7b59b; border-radius: 0; text-align: left; background: #fff; }
 .doctor-patient[data-level="critical"] { border-left-color: #b82222; }
 .doctor-patient[data-level="attention"] { border-left-color: #ae7a20; }
 .doctor-patient[aria-current] { background: #f3f7ec; border-top-color: #8aa972; border-right-color: #8aa972; border-bottom-color: #8aa972; box-shadow: 0 2px 8px #567e3d10; }
 .doctor-patient:hover { background: #f7f9f3; }
+
+/* O alerta crítico interrompe o fluxo na camada modal nativa. */
+.critical-dialog { position: fixed; inset: 0; width: min(34rem,calc(100vw - 2rem)); max-width: none; max-height: calc(100dvh - 2rem); margin: auto; padding: 0; border: 0; border-radius: 1.75rem 1.75rem 1.1rem 1.1rem; overflow-y: auto; overscroll-behavior: contain; background: #fff; color: #25312b; box-shadow: 0 24px 80px #00000055; }
+.critical-dialog::backdrop { background: #172015b8; backdrop-filter: blur(3px); }
+.critical-dialog > .combined-alert { margin: 0; border: 0; }
+body:has(.critical-dialog[open]) { overflow: hidden; }
+.alert-record-button { display: block; width: 100%; border: 0; background: transparent; color: #6b755e; padding: .5rem; font: inherit; font-size: .8rem; text-decoration: underline; }
+.doctor-contact-request { border: 1px solid #e5aca7; border-radius: .75rem; background: #fff2f0; color: #a12822; }
+.doctor-contact-request .cc-button { border-color: #b82b25; background: #b82b25; }
+.doctor-contact-tag { font-size: .7rem; color: #b12823; }
 </style>
     <!-- styles:end -->
 </head>
@@ -192,6 +202,7 @@ textarea { font: inherit; }
                                     <div class="col-span-2"><dt class="mb-1 text-xs">Alimentação</dt><dd class="font-semibold" data-doc-bind="nutrition"></dd></div>
                                 </dl>
                             </section>
+                            <section id="doc-contact-request" class="doctor-contact-request space-y-3 p-4 text-sm" aria-labelledby="doc-contact-title" hidden><h3 id="doc-contact-title" class="font-bold">Paciente solicitou contato</h3><p id="doc-contact-time"></p><button type="button" class="cc-button w-full" data-doc-action="contact">Marcar contato realizado na demonstração</button></section>
                             <section aria-labelledby="doc-plan-title" class="space-y-3">
                                 <h3 id="doc-plan-title" class="text-center font-bold">Plano de ação</h3>
                                 <p id="doc-plan" class="text-center text-sm leading-relaxed text-stone-600"></p>
@@ -419,6 +430,13 @@ function evaluateReport(state) {
         if (key === 'medico') return CRABCARE_DEMO.doctors.find(doctor => doctor.id === CRABCARE_DEMO.defaultDoctorId);
         return CRABCARE_DEMO.doctors.find(doctor => identity(doctor.id) === key || identity(doctor.name) === key) || null;
     }
+    function normalizeContact(request) {
+        if (!request || typeof request !== 'object' || !['pending', 'contacted'].includes(request.status) || typeof request.combination !== 'string' || typeof request.requestedAt !== 'string' || !Number.isFinite(Date.parse(request.requestedAt))) return null;
+        return { combination: request.combination.slice(0, 600), requestedAt: request.requestedAt, status: request.status, contactedAt: typeof request.contactedAt === 'string' ? request.contactedAt : null, doctorId: typeof request.doctorId === 'string' ? request.doctorId.slice(0, 80) : null };
+    }
+    function combinationKey(record) {
+        return JSON.stringify([record.id || record.patientId || getPatientProfile(record.patient)?.id, record.pain || null, [...(record.symptoms || [])].sort()]);
+    }
     function normalize(record) {
         if (!record || typeof record !== 'object' || typeof record.patient !== 'string' || !record.patient.trim()) return null;
         const profile = getPatientProfile(record.id || record.patientId || record.patient);
@@ -440,6 +458,7 @@ function evaluateReport(state) {
             reviewedFor: typeof record.reviewedFor === 'string' ? record.reviewedFor : null,
             reviewedAt: typeof record.reviewedAt === 'string' ? record.reviewedAt : null,
             reviewedBy: typeof record.reviewedBy === 'string' ? record.reviewedBy.slice(0, 80) : null,
+            contactRequest: normalizeContact(record.contactRequest),
             careActions: Array.isArray(record.careActions) ? record.careActions.filter(action => action && typeof action.label === 'string' && typeof action.at === 'string').slice(-10).map(action => ({ label: action.label.slice(0, 150), at: action.at, doctorId: typeof action.doctorId === 'string' ? action.doctorId : CRABCARE_DEMO.defaultDoctorId })) : []
         };
     }
@@ -495,6 +514,7 @@ function evaluateReport(state) {
             updatedAt: new Date(Math.max(Date.now(), (Date.parse(previous.updatedAt) || 0) + 1)).toISOString()
         });
         if (!next) throw new Error('Registro inválido.');
+        if (next.contactRequest && next.contactRequest.combination !== combinationKey(next)) next.contactRequest = null;
         if (index < 0) records.push(next);
         else records[index] = next;
         writeReports(records);
@@ -516,7 +536,33 @@ function evaluateReport(state) {
         writeReports(records);
         return record;
     }
-    window.Crabcare = Object.freeze({ STORAGE_KEY, PAIN_OPTIONS, DEFAULT_PATIENT_ID: CRABCARE_DEMO.defaultPatientId, DEFAULT_DOCTOR_ID: CRABCARE_DEMO.defaultDoctorId, getPatientProfile, getDoctorProfile, initializeDemo, evaluateReport, readReports, getReport, saveReport, reviewReport });
+    function requestContact(patient) {
+        const records = readReports();
+        const id = getPatientProfile(patient)?.id;
+        const record = records.find(item => item.id === id);
+        if (!record?.hasReport) throw new Error('Registre sua dor e seus sintomas antes de solicitar contato.');
+        const combination = combinationKey(record);
+        if (record.contactRequest?.status === 'pending' && record.contactRequest.combination === combination) return record;
+        record.contactRequest = { combination, requestedAt: new Date(Math.max(Date.now(), (Date.parse(record.contactRequest?.requestedAt) || 0) + 1)).toISOString(), status: 'pending', contactedAt: null, doctorId: null };
+        writeReports(records);
+        return record;
+    }
+    function respondContact(patientId, requestedAt, doctorId) {
+        const profile = getDoctorProfile(doctorId);
+        const records = readReports();
+        const record = records.find(item => item.id === patientId && item.doctorId === profile?.id);
+        if (!profile || !record) throw new Error('Registro não disponível para este médico.');
+        if (!record.contactRequest || record.contactRequest.requestedAt !== requestedAt || record.contactRequest.status !== 'pending') throw new Error('A solicitação de contato mudou. Atualize o relato.');
+        const now = new Date().toISOString();
+        record.contactRequest = { ...record.contactRequest, status: 'contacted', contactedAt: now, doctorId: profile.id };
+        record.reviewedAt = now;
+        record.reviewedFor = record.updatedAt;
+        record.reviewedBy = profile.id;
+        record.careActions = [...record.careActions, { label: 'Contato com o paciente registrado na demonstração', at: now, doctorId: profile.id }].slice(-10);
+        writeReports(records);
+        return record;
+    }
+    window.Crabcare = Object.freeze({ STORAGE_KEY, PAIN_OPTIONS, DEFAULT_PATIENT_ID: CRABCARE_DEMO.defaultPatientId, DEFAULT_DOCTOR_ID: CRABCARE_DEMO.defaultDoctorId, getPatientProfile, getDoctorProfile, initializeDemo, evaluateReport, readReports, getReport, saveReport, reviewReport, combinationKey, requestContact, respondContact });
 })();
 </script>
     <!-- shared:end -->
@@ -540,7 +586,7 @@ function docMessage(text) {
 function selectedReport() { return doctor.reports.find(record => record.id === doctor.selectedId); }
 function renderDoctor() {
     const enriched = doctor.reports.map(record => ({ record, alert: Crabcare.evaluateReport(record) }));
-    enriched.sort((a, b) => levels[a.alert.level] - levels[b.alert.level] || b.record.updatedAt.localeCompare(a.record.updatedAt));
+    enriched.sort((a, b) => levels[a.alert.level] - levels[b.alert.level] || Number(b.record.contactRequest?.status === 'pending') - Number(a.record.contactRequest?.status === 'pending') || b.record.updatedAt.localeCompare(a.record.updatedAt));
     const alerts = enriched.filter(item => ['critical', 'attention'].includes(item.alert.level));
     document.getElementById('doc-total').textContent = enriched.length;
     document.getElementById('doc-alerts').textContent = alerts.length;
@@ -569,6 +615,12 @@ function renderDoctor() {
         time.className = 'text-xs text-stone-400';
         time.textContent = record.hasReport ? formatDate(record.updatedAt) + (record.reviewedFor === record.updatedAt ? ' · Visto' : ' · Novo relato') : 'Sem respostas registradas';
         button.append(name, status, time);
+        if (record.contactRequest?.status === 'pending') {
+            const contact = document.createElement('strong');
+            contact.className = 'doctor-contact-tag';
+            contact.textContent = 'Contato solicitado';
+            button.append(contact);
+        }
         list.append(button);
     });
     document.querySelectorAll('[data-doc-action="all"], [data-doc-action="alerts"]').forEach(button => {
@@ -592,6 +644,9 @@ function renderDoctor() {
         combination: alert.combination || 'Dor e sintomas ainda não informados.'
     };
     Object.entries(values).forEach(([key, value]) => document.querySelectorAll('[data-doc-bind="' + key + '"]').forEach(element => { element.textContent = value; }));
+    const contact = record.contactRequest;
+    document.getElementById('doc-contact-request').hidden = contact?.status !== 'pending';
+    document.getElementById('doc-contact-time').textContent = contact ? 'Solicitado em ' + formatDate(contact.requestedAt) : '';
     const reviewed = record.reviewedFor === record.updatedAt;
     const reviewButton = document.getElementById('doc-review');
     reviewButton.disabled = reviewed || !record.hasReport;
@@ -671,6 +726,19 @@ document.addEventListener('click', event => {
         case 'all': doctor.filter = 'all'; renderDoctor(); break;
         case 'alerts': doctor.filter = 'alerts'; renderDoctor(); break;
         case 'review': reviewCurrent('Relato visualizado'); break;
+        case 'contact': {
+            const record = selectedReport();
+            if (!record?.contactRequest) break;
+            try {
+                Crabcare.respondContact(record.id, record.contactRequest.requestedAt, doctor.id);
+                refreshReports();
+                docMessage('Contato registrado na demonstração.');
+            } catch (error) {
+                refreshReports();
+                docMessage(error.message);
+            }
+            break;
+        }
         case 'nursing': reviewCurrent('Chamada da enfermagem simulada'); break;
         case 'record': {
             const record = document.getElementById('doc-record');

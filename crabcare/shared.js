@@ -203,6 +203,13 @@ function evaluateReport(state) {
         if (key === 'medico') return CRABCARE_DEMO.doctors.find(doctor => doctor.id === CRABCARE_DEMO.defaultDoctorId);
         return CRABCARE_DEMO.doctors.find(doctor => identity(doctor.id) === key || identity(doctor.name) === key) || null;
     }
+    function normalizeContact(request) {
+        if (!request || typeof request !== 'object' || !['pending', 'contacted'].includes(request.status) || typeof request.combination !== 'string' || typeof request.requestedAt !== 'string' || !Number.isFinite(Date.parse(request.requestedAt))) return null;
+        return { combination: request.combination.slice(0, 600), requestedAt: request.requestedAt, status: request.status, contactedAt: typeof request.contactedAt === 'string' ? request.contactedAt : null, doctorId: typeof request.doctorId === 'string' ? request.doctorId.slice(0, 80) : null };
+    }
+    function combinationKey(record) {
+        return JSON.stringify([record.id || record.patientId || getPatientProfile(record.patient)?.id, record.pain || null, [...(record.symptoms || [])].sort()]);
+    }
     function normalize(record) {
         if (!record || typeof record !== 'object' || typeof record.patient !== 'string' || !record.patient.trim()) return null;
         const profile = getPatientProfile(record.id || record.patientId || record.patient);
@@ -224,6 +231,7 @@ function evaluateReport(state) {
             reviewedFor: typeof record.reviewedFor === 'string' ? record.reviewedFor : null,
             reviewedAt: typeof record.reviewedAt === 'string' ? record.reviewedAt : null,
             reviewedBy: typeof record.reviewedBy === 'string' ? record.reviewedBy.slice(0, 80) : null,
+            contactRequest: normalizeContact(record.contactRequest),
             careActions: Array.isArray(record.careActions) ? record.careActions.filter(action => action && typeof action.label === 'string' && typeof action.at === 'string').slice(-10).map(action => ({ label: action.label.slice(0, 150), at: action.at, doctorId: typeof action.doctorId === 'string' ? action.doctorId : CRABCARE_DEMO.defaultDoctorId })) : []
         };
     }
@@ -279,6 +287,7 @@ function evaluateReport(state) {
             updatedAt: new Date(Math.max(Date.now(), (Date.parse(previous.updatedAt) || 0) + 1)).toISOString()
         });
         if (!next) throw new Error('Registro inválido.');
+        if (next.contactRequest && next.contactRequest.combination !== combinationKey(next)) next.contactRequest = null;
         if (index < 0) records.push(next);
         else records[index] = next;
         writeReports(records);
@@ -300,5 +309,31 @@ function evaluateReport(state) {
         writeReports(records);
         return record;
     }
-    window.Crabcare = Object.freeze({ STORAGE_KEY, PAIN_OPTIONS, DEFAULT_PATIENT_ID: CRABCARE_DEMO.defaultPatientId, DEFAULT_DOCTOR_ID: CRABCARE_DEMO.defaultDoctorId, getPatientProfile, getDoctorProfile, initializeDemo, evaluateReport, readReports, getReport, saveReport, reviewReport });
+    function requestContact(patient) {
+        const records = readReports();
+        const id = getPatientProfile(patient)?.id;
+        const record = records.find(item => item.id === id);
+        if (!record?.hasReport) throw new Error('Registre sua dor e seus sintomas antes de solicitar contato.');
+        const combination = combinationKey(record);
+        if (record.contactRequest?.status === 'pending' && record.contactRequest.combination === combination) return record;
+        record.contactRequest = { combination, requestedAt: new Date(Math.max(Date.now(), (Date.parse(record.contactRequest?.requestedAt) || 0) + 1)).toISOString(), status: 'pending', contactedAt: null, doctorId: null };
+        writeReports(records);
+        return record;
+    }
+    function respondContact(patientId, requestedAt, doctorId) {
+        const profile = getDoctorProfile(doctorId);
+        const records = readReports();
+        const record = records.find(item => item.id === patientId && item.doctorId === profile?.id);
+        if (!profile || !record) throw new Error('Registro não disponível para este médico.');
+        if (!record.contactRequest || record.contactRequest.requestedAt !== requestedAt || record.contactRequest.status !== 'pending') throw new Error('A solicitação de contato mudou. Atualize o relato.');
+        const now = new Date().toISOString();
+        record.contactRequest = { ...record.contactRequest, status: 'contacted', contactedAt: now, doctorId: profile.id };
+        record.reviewedAt = now;
+        record.reviewedFor = record.updatedAt;
+        record.reviewedBy = profile.id;
+        record.careActions = [...record.careActions, { label: 'Contato com o paciente registrado na demonstração', at: now, doctorId: profile.id }].slice(-10);
+        writeReports(records);
+        return record;
+    }
+    window.Crabcare = Object.freeze({ STORAGE_KEY, PAIN_OPTIONS, DEFAULT_PATIENT_ID: CRABCARE_DEMO.defaultPatientId, DEFAULT_DOCTOR_ID: CRABCARE_DEMO.defaultDoctorId, getPatientProfile, getDoctorProfile, initializeDemo, evaluateReport, readReports, getReport, saveReport, reviewReport, combinationKey, requestContact, respondContact });
 })();

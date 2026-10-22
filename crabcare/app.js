@@ -100,6 +100,8 @@ const state = { patientId: Crabcare.DEFAULT_PATIENT_ID, patient: Crabcare.getPat
 const app = document.getElementById('aplicativo');
 const login = document.getElementById('login');
 let loggedIn = false;
+let dismissedCritical = null;
+const criticalDialog = document.getElementById('critical-alert-dialog');
 
 function cloneTemplate(id) { return document.getElementById(id).content.cloneNode(true); }
 function icon(name) { return '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">' + ICONS[name] + '</svg>'; }
@@ -186,9 +188,41 @@ function renderReport() {
     alert.dataset.level = result.level;
     alert.hidden = !['critical', 'attention'].includes(result.level);
     document.querySelectorAll('[data-alert-dot]').forEach(dot => { dot.dataset.level = result.level; });
-    document.getElementById('alert-action').textContent = 'Registrar meu relato';
+    const request = state.contactRequest;
+    const pendingContact = request?.status === 'pending' && request.combination === Crabcare.combinationKey(state);
+    const contactButton = document.getElementById('alert-action');
+    contactButton.textContent = pendingContact ? 'Contato solicitado' : 'Solicitar contato da equipe';
+    contactButton.disabled = pendingContact;
+    if (pendingContact) {
+        const message = document.getElementById('alert-feedback');
+        message.textContent = 'Solicitação registrada. Aguarde o contato da equipe nesta demonstração.';
+        message.hidden = false;
+    } else if (request?.status === 'contacted' && request.combination === Crabcare.combinationKey(state)) {
+        const message = document.getElementById('alert-feedback');
+        message.textContent = 'A equipe registrou o contato na demonstração.';
+        message.hidden = false;
+        contactButton.textContent = 'Solicitar novo contato';
+    } else document.getElementById('alert-feedback').hidden = true;
+    syncCriticalDialog(result);
     document.querySelectorAll('input[data-field="pain"]').forEach(input => { input.checked = input.value === state.pain; });
 }
+function syncCriticalDialog(result, force = false) {
+    const alert = document.getElementById('alerta-combinacao');
+    if (result.level !== 'critical') {
+        if (criticalDialog.open) criticalDialog.close();
+        document.getElementById('inline-alert-slot').append(alert);
+        dismissedCritical = null;
+        return;
+    }
+    if (alert.parentElement !== criticalDialog) criticalDialog.append(alert);
+    const key = Crabcare.combinationKey(state);
+    const contactExists = state.contactRequest?.combination === key;
+    if (loggedIn && !app.hidden && !criticalDialog.open && (force || (dismissedCritical !== key && !contactExists))) {
+        criticalDialog.showModal();
+        criticalDialog.querySelector('button:not(:disabled)')?.focus({ preventScroll: true });
+    }
+}
+criticalDialog.addEventListener('cancel', () => { dismissedCritical = Crabcare.combinationKey(state); });
 function showScreen(id) {
     if (!SCREEN_TITLES[id]) return;
     app.classList.remove('preview-grid');
@@ -237,8 +271,9 @@ function restorePatient(patient) {
         if (patient === state.patient) return;
     }
     const profile = Crabcare.getPatientProfile(patient);
-    Object.assign(state, { patientId: profile.id, patient: profile.name, pain: null, recordedAt: null, symptoms: null, nutrition: null, updatedAt: null });
-    if (record) Object.assign(state, { patientId: record.id, patient: record.patient, pain: record.pain, symptoms: record.symptoms, nutrition: record.nutrition, recordedAt: record.recordedAt, updatedAt: record.updatedAt });
+    if (state.patientId !== profile.id) dismissedCritical = null;
+    Object.assign(state, { patientId: profile.id, patient: profile.name, pain: null, recordedAt: null, symptoms: null, nutrition: null, updatedAt: null, contactRequest: null });
+    if (record) Object.assign(state, { patientId: record.id, patient: record.patient, pain: record.pain, symptoms: record.symptoms, nutrition: record.nutrition, recordedAt: record.recordedAt, updatedAt: record.updatedAt, contactRequest: record.contactRequest });
     document.querySelectorAll('input[name="sintoma"]').forEach(input => { input.checked = !!state.symptoms?.includes(input.value); });
     document.querySelectorAll('input[name="alimentacao"]').forEach(input => { input.checked = input.value === state.nutrition; });
     document.querySelectorAll('input[data-medicine]').forEach(input => {
@@ -246,8 +281,9 @@ function restorePatient(patient) {
         input.checked = record?.doses ? record.doses.includes(input.dataset.medicine + ':' + input.dataset.time) : medicine.checked.includes(input.dataset.time);
     });
     const care = document.getElementById('care-status');
-    care.hidden = !record || record.reviewedFor !== record.updatedAt;
-    care.textContent = care.hidden ? '' : 'Sua equipe visualizou este relato na demonstração.';
+    const contact = record?.contactRequest;
+    care.hidden = !contact && (!record || record.reviewedFor !== record.updatedAt);
+    care.textContent = contact?.status === 'pending' ? 'Você solicitou contato da equipe.' : contact?.status === 'contacted' ? 'A equipe registrou o contato na demonstração.' : care.hidden ? '' : 'Sua equipe visualizou este relato na demonstração.';
     renderReport();
     updateDoses();
 }
@@ -257,6 +293,7 @@ function persistReport() {
         const doses = [...document.querySelectorAll('input[data-medicine]:checked')].map(input => input.dataset.medicine + ':' + input.dataset.time);
         const record = Crabcare.saveReport({ ...state, doses });
         state.updatedAt = record.updatedAt;
+        state.contactRequest = record.contactRequest;
         document.getElementById('care-status').hidden = true;
         storageMessage('');
         return true;
@@ -290,6 +327,7 @@ document.getElementById('login-form').addEventListener('submit', event => {
     app.hidden = false;
     renderReport();
     showScreen('inicio');
+    syncCriticalDialog(evaluateReport());
 });
 document.addEventListener('change', event => {
     const input = event.target;
@@ -329,7 +367,14 @@ document.addEventListener('click', event => {
             showScreen('inicio');
             const target = document.getElementById('alerta-combinacao');
             if (target.hidden) document.getElementById('relato-status').scrollIntoView({block: 'center', behavior: 'smooth'});
+            else if (evaluateReport().level === 'critical') syncCriticalDialog(evaluateReport(), true);
             else { target.scrollIntoView({block: 'center', behavior: 'smooth'}); target.focus({preventScroll: true}); }
+            break;
+        }
+        case 'revise-alert': {
+            dismissedCritical = Crabcare.combinationKey(state);
+            if (criticalDialog.open) criticalDialog.close();
+            goToPain();
             break;
         }
         case 'record': {
@@ -338,12 +383,24 @@ document.addEventListener('click', event => {
             button.setAttribute('aria-expanded', String(!record.hidden));
             break;
         }
-        case 'logout': loggedIn = false; app.hidden = true; login.hidden = false; document.title = 'Crabcare — Paciente'; document.getElementById('usuario').focus(); break;
+        case 'logout': if (criticalDialog.open) criticalDialog.close(); loggedIn = false; app.hidden = true; login.hidden = false; document.title = 'Crabcare — Paciente'; document.getElementById('usuario').focus(); break;
         case 'profile': feedback('Perfil de demonstração: ' + state.patient + '.'); break;
         case 'alert-primary': {
-            if (persistReport()) {
+            if (!persistReport()) {
                 const message = document.getElementById('alert-feedback');
-                message.textContent = 'Seu relato foi registrado.';
+                message.textContent = 'Não foi possível registrar a solicitação neste navegador.';
+                message.hidden = false;
+                break;
+            }
+            try {
+                const record = Crabcare.requestContact(state.patientId);
+                state.contactRequest = record.contactRequest;
+                renderReport();
+                document.getElementById('care-status').textContent = 'Você solicitou contato da equipe.';
+                document.getElementById('care-status').hidden = false;
+            } catch {
+                const message = document.getElementById('alert-feedback');
+                message.textContent = 'Não foi possível solicitar contato. Tente novamente.';
                 message.hidden = false;
             }
             break;
@@ -358,4 +415,5 @@ if (document.body.dataset.preview === 'true') {
     app.classList.add('preview-grid');
     document.querySelectorAll('[data-page]').forEach(page => { page.hidden = false; });
     document.title = 'Crabcare — Demonstração';
+    syncCriticalDialog(evaluateReport());
 }

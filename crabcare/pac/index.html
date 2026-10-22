@@ -124,11 +124,21 @@ textarea { font: inherit; }
 
 .doctor-shell { max-width: 68rem; }
 .doctor-role { font-size: .65rem; color: #72825e; border: 1px solid #e4eade; background: #f5f8ee; border-radius: 2rem; padding: .4rem .65rem; }
-.doctor-patient { display: flex; flex-direction: column; gap: .5rem; padding: 1rem; border: 1px solid #e0e7d7; border-left: 4px solid #a7b59b; border-radius: .85rem; text-align: left; background: #fff; }
+.doctor-patient { display: flex; flex-direction: column; gap: .5rem; padding: 1rem; border: 1px solid #e0e7d7; border-left: 4px solid #a7b59b; border-radius: 0; text-align: left; background: #fff; }
 .doctor-patient[data-level="critical"] { border-left-color: #b82222; }
 .doctor-patient[data-level="attention"] { border-left-color: #ae7a20; }
 .doctor-patient[aria-current] { background: #f3f7ec; border-top-color: #8aa972; border-right-color: #8aa972; border-bottom-color: #8aa972; box-shadow: 0 2px 8px #567e3d10; }
 .doctor-patient:hover { background: #f7f9f3; }
+
+/* O alerta crítico interrompe o fluxo na camada modal nativa. */
+.critical-dialog { position: fixed; inset: 0; width: min(34rem,calc(100vw - 2rem)); max-width: none; max-height: calc(100dvh - 2rem); margin: auto; padding: 0; border: 0; border-radius: 1.75rem 1.75rem 1.1rem 1.1rem; overflow-y: auto; overscroll-behavior: contain; background: #fff; color: #25312b; box-shadow: 0 24px 80px #00000055; }
+.critical-dialog::backdrop { background: #172015b8; backdrop-filter: blur(3px); }
+.critical-dialog > .combined-alert { margin: 0; border: 0; }
+body:has(.critical-dialog[open]) { overflow: hidden; }
+.alert-record-button { display: block; width: 100%; border: 0; background: transparent; color: #6b755e; padding: .5rem; font: inherit; font-size: .8rem; text-decoration: underline; }
+.doctor-contact-request { border: 1px solid #e5aca7; border-radius: .75rem; background: #fff2f0; color: #a12822; }
+.doctor-contact-request .cc-button { border-color: #b82b25; background: #b82b25; }
+.doctor-contact-tag { font-size: .7rem; color: #b12823; }
 </style>
     <!-- styles:end -->
 </head>
@@ -257,6 +267,7 @@ textarea { font: inherit; }
                     <p id="care-status" class="text-sm text-[#567e3d]" role="status" hidden></p>
                 </section>
 
+                <div id="inline-alert-slot">
                 <article id="alerta-combinacao" class="alert-card combined-alert" data-component="alert" data-level="pending" aria-labelledby="alerta-titulo" tabindex="-1" hidden>
                     <header class="alert-heading flex items-center justify-between gap-3 px-5 py-4 sm:px-6"><h2 id="alerta-titulo" class="text-sm font-bold uppercase tracking-wide sm:text-base" data-bind="title">Alerta de atenção</h2><span class="alert-emblem" aria-hidden="true">!</span></header>
                     <div class="space-y-4 p-4 sm:space-y-5 sm:p-6">
@@ -271,12 +282,14 @@ textarea { font: inherit; }
                             </dl>
                         </section>
                         <section class="space-y-2 text-center" aria-labelledby="plano-alerta-titulo"><h3 id="plano-alerta-titulo" class="font-bold">Próximo passo</h3><p class="text-sm leading-relaxed text-stone-600" data-bind="actionPlan"></p></section>
-                        <button type="button" id="alert-action" class="cc-button alert-action w-full" data-action="alert-primary">Registrar meu relato</button>
-                        <button type="button" class="cc-button secondary w-full" data-action="record" aria-expanded="false" aria-controls="relato-resumo">Visualizar meu relato</button>
+                        <button type="button" id="alert-action" class="cc-button alert-action w-full" data-action="alert-primary">Solicitar contato da equipe</button>
+                        <button type="button" class="cc-button secondary w-full" data-action="revise-alert">Voltar ao registro</button>
+                        <button type="button" class="alert-record-button" data-action="record" aria-expanded="false" aria-controls="relato-resumo">Visualizar meu relato</button>
                         <div id="relato-resumo" class="cc-inset space-y-2 p-4 text-sm" hidden><p class="font-semibold" data-bind="combination"></p><p class="text-stone-500">Último registro: <span data-bind="recordedAt">Ainda não registrado</span></p></div>
                         <p id="alert-feedback" class="cc-inset p-4 text-sm" role="status" hidden></p>
                     </div>
                 </article>
+                </div>
 
                 <nav class="grid grid-cols-3 gap-3" aria-label="Cuidados do paciente">
                     <button type="button" class="action-tile" data-action="symptoms"><span class="care-icon symptoms-icon" data-ui-icon="thermometer"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14.7V5a3 3 0 0 1 6 0v9.7a5 5 0 1 1-6 0Z"/><path d="M10 8v10m7-12h4m-4 4h3m-3 4h4"/><circle cx="10" cy="18.5" r="1.5" fill="currentColor" stroke="none"/></svg></span><span class="font-semibold">Sintomas</span></button>
@@ -332,6 +345,7 @@ textarea { font: inherit; }
             <nav class="app-nav z-10 grid grid-cols-5 gap-1 px-2 pt-2" aria-label="Navegação principal" data-component="navigation"><button type="button" class="nav-item" data-screen="inicio"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10H5V10m5 10v-6h4v6"/></svg><span>Início</span></button><button type="button" class="nav-item" data-action="alert"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg><span>Alertas</span></button><button type="button" class="nav-item" data-screen="alimentacao"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3v5a2 2 0 0 0 4 0V3M6 3v18m13 0V3c-3 2-4 5-4 9h4"/></svg><span>Alimentação</span></button><button type="button" class="nav-item" data-screen="medicamentos"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7"/></svg><span>Medicamentos</span></button><button type="button" class="nav-item" data-action="logout"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H4v16h6m4-12 4 4-4 4m-6-4h12"/></svg><span>Sair</span></button></nav>
         </div>
     </main>
+    <dialog id="critical-alert-dialog" class="critical-dialog" role="alertdialog" aria-labelledby="alerta-titulo" aria-describedby="critical-dialog-description"><p id="critical-dialog-description" class="sr-only">Seu relato precisa de atenção. Solicite contato da equipe de cuidado.</p></dialog>
 
 <!-- Componentes nativos: clones compartilham estrutura e comportamento. -->
     <template id="header-template">
@@ -561,6 +575,13 @@ function evaluateReport(state) {
         if (key === 'medico') return CRABCARE_DEMO.doctors.find(doctor => doctor.id === CRABCARE_DEMO.defaultDoctorId);
         return CRABCARE_DEMO.doctors.find(doctor => identity(doctor.id) === key || identity(doctor.name) === key) || null;
     }
+    function normalizeContact(request) {
+        if (!request || typeof request !== 'object' || !['pending', 'contacted'].includes(request.status) || typeof request.combination !== 'string' || typeof request.requestedAt !== 'string' || !Number.isFinite(Date.parse(request.requestedAt))) return null;
+        return { combination: request.combination.slice(0, 600), requestedAt: request.requestedAt, status: request.status, contactedAt: typeof request.contactedAt === 'string' ? request.contactedAt : null, doctorId: typeof request.doctorId === 'string' ? request.doctorId.slice(0, 80) : null };
+    }
+    function combinationKey(record) {
+        return JSON.stringify([record.id || record.patientId || getPatientProfile(record.patient)?.id, record.pain || null, [...(record.symptoms || [])].sort()]);
+    }
     function normalize(record) {
         if (!record || typeof record !== 'object' || typeof record.patient !== 'string' || !record.patient.trim()) return null;
         const profile = getPatientProfile(record.id || record.patientId || record.patient);
@@ -582,6 +603,7 @@ function evaluateReport(state) {
             reviewedFor: typeof record.reviewedFor === 'string' ? record.reviewedFor : null,
             reviewedAt: typeof record.reviewedAt === 'string' ? record.reviewedAt : null,
             reviewedBy: typeof record.reviewedBy === 'string' ? record.reviewedBy.slice(0, 80) : null,
+            contactRequest: normalizeContact(record.contactRequest),
             careActions: Array.isArray(record.careActions) ? record.careActions.filter(action => action && typeof action.label === 'string' && typeof action.at === 'string').slice(-10).map(action => ({ label: action.label.slice(0, 150), at: action.at, doctorId: typeof action.doctorId === 'string' ? action.doctorId : CRABCARE_DEMO.defaultDoctorId })) : []
         };
     }
@@ -637,6 +659,7 @@ function evaluateReport(state) {
             updatedAt: new Date(Math.max(Date.now(), (Date.parse(previous.updatedAt) || 0) + 1)).toISOString()
         });
         if (!next) throw new Error('Registro inválido.');
+        if (next.contactRequest && next.contactRequest.combination !== combinationKey(next)) next.contactRequest = null;
         if (index < 0) records.push(next);
         else records[index] = next;
         writeReports(records);
@@ -658,7 +681,33 @@ function evaluateReport(state) {
         writeReports(records);
         return record;
     }
-    window.Crabcare = Object.freeze({ STORAGE_KEY, PAIN_OPTIONS, DEFAULT_PATIENT_ID: CRABCARE_DEMO.defaultPatientId, DEFAULT_DOCTOR_ID: CRABCARE_DEMO.defaultDoctorId, getPatientProfile, getDoctorProfile, initializeDemo, evaluateReport, readReports, getReport, saveReport, reviewReport });
+    function requestContact(patient) {
+        const records = readReports();
+        const id = getPatientProfile(patient)?.id;
+        const record = records.find(item => item.id === id);
+        if (!record?.hasReport) throw new Error('Registre sua dor e seus sintomas antes de solicitar contato.');
+        const combination = combinationKey(record);
+        if (record.contactRequest?.status === 'pending' && record.contactRequest.combination === combination) return record;
+        record.contactRequest = { combination, requestedAt: new Date(Math.max(Date.now(), (Date.parse(record.contactRequest?.requestedAt) || 0) + 1)).toISOString(), status: 'pending', contactedAt: null, doctorId: null };
+        writeReports(records);
+        return record;
+    }
+    function respondContact(patientId, requestedAt, doctorId) {
+        const profile = getDoctorProfile(doctorId);
+        const records = readReports();
+        const record = records.find(item => item.id === patientId && item.doctorId === profile?.id);
+        if (!profile || !record) throw new Error('Registro não disponível para este médico.');
+        if (!record.contactRequest || record.contactRequest.requestedAt !== requestedAt || record.contactRequest.status !== 'pending') throw new Error('A solicitação de contato mudou. Atualize o relato.');
+        const now = new Date().toISOString();
+        record.contactRequest = { ...record.contactRequest, status: 'contacted', contactedAt: now, doctorId: profile.id };
+        record.reviewedAt = now;
+        record.reviewedFor = record.updatedAt;
+        record.reviewedBy = profile.id;
+        record.careActions = [...record.careActions, { label: 'Contato com o paciente registrado na demonstração', at: now, doctorId: profile.id }].slice(-10);
+        writeReports(records);
+        return record;
+    }
+    window.Crabcare = Object.freeze({ STORAGE_KEY, PAIN_OPTIONS, DEFAULT_PATIENT_ID: CRABCARE_DEMO.defaultPatientId, DEFAULT_DOCTOR_ID: CRABCARE_DEMO.defaultDoctorId, getPatientProfile, getDoctorProfile, initializeDemo, evaluateReport, readReports, getReport, saveReport, reviewReport, combinationKey, requestContact, respondContact });
 })();
 </script>
     <!-- shared:end -->
@@ -766,6 +815,8 @@ const state = { patientId: Crabcare.DEFAULT_PATIENT_ID, patient: Crabcare.getPat
 const app = document.getElementById('aplicativo');
 const login = document.getElementById('login');
 let loggedIn = false;
+let dismissedCritical = null;
+const criticalDialog = document.getElementById('critical-alert-dialog');
 
 function cloneTemplate(id) { return document.getElementById(id).content.cloneNode(true); }
 function icon(name) { return '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">' + ICONS[name] + '</svg>'; }
@@ -852,9 +903,41 @@ function renderReport() {
     alert.dataset.level = result.level;
     alert.hidden = !['critical', 'attention'].includes(result.level);
     document.querySelectorAll('[data-alert-dot]').forEach(dot => { dot.dataset.level = result.level; });
-    document.getElementById('alert-action').textContent = 'Registrar meu relato';
+    const request = state.contactRequest;
+    const pendingContact = request?.status === 'pending' && request.combination === Crabcare.combinationKey(state);
+    const contactButton = document.getElementById('alert-action');
+    contactButton.textContent = pendingContact ? 'Contato solicitado' : 'Solicitar contato da equipe';
+    contactButton.disabled = pendingContact;
+    if (pendingContact) {
+        const message = document.getElementById('alert-feedback');
+        message.textContent = 'Solicitação registrada. Aguarde o contato da equipe nesta demonstração.';
+        message.hidden = false;
+    } else if (request?.status === 'contacted' && request.combination === Crabcare.combinationKey(state)) {
+        const message = document.getElementById('alert-feedback');
+        message.textContent = 'A equipe registrou o contato na demonstração.';
+        message.hidden = false;
+        contactButton.textContent = 'Solicitar novo contato';
+    } else document.getElementById('alert-feedback').hidden = true;
+    syncCriticalDialog(result);
     document.querySelectorAll('input[data-field="pain"]').forEach(input => { input.checked = input.value === state.pain; });
 }
+function syncCriticalDialog(result, force = false) {
+    const alert = document.getElementById('alerta-combinacao');
+    if (result.level !== 'critical') {
+        if (criticalDialog.open) criticalDialog.close();
+        document.getElementById('inline-alert-slot').append(alert);
+        dismissedCritical = null;
+        return;
+    }
+    if (alert.parentElement !== criticalDialog) criticalDialog.append(alert);
+    const key = Crabcare.combinationKey(state);
+    const contactExists = state.contactRequest?.combination === key;
+    if (loggedIn && !app.hidden && !criticalDialog.open && (force || (dismissedCritical !== key && !contactExists))) {
+        criticalDialog.showModal();
+        criticalDialog.querySelector('button:not(:disabled)')?.focus({ preventScroll: true });
+    }
+}
+criticalDialog.addEventListener('cancel', () => { dismissedCritical = Crabcare.combinationKey(state); });
 function showScreen(id) {
     if (!SCREEN_TITLES[id]) return;
     app.classList.remove('preview-grid');
@@ -903,8 +986,9 @@ function restorePatient(patient) {
         if (patient === state.patient) return;
     }
     const profile = Crabcare.getPatientProfile(patient);
-    Object.assign(state, { patientId: profile.id, patient: profile.name, pain: null, recordedAt: null, symptoms: null, nutrition: null, updatedAt: null });
-    if (record) Object.assign(state, { patientId: record.id, patient: record.patient, pain: record.pain, symptoms: record.symptoms, nutrition: record.nutrition, recordedAt: record.recordedAt, updatedAt: record.updatedAt });
+    if (state.patientId !== profile.id) dismissedCritical = null;
+    Object.assign(state, { patientId: profile.id, patient: profile.name, pain: null, recordedAt: null, symptoms: null, nutrition: null, updatedAt: null, contactRequest: null });
+    if (record) Object.assign(state, { patientId: record.id, patient: record.patient, pain: record.pain, symptoms: record.symptoms, nutrition: record.nutrition, recordedAt: record.recordedAt, updatedAt: record.updatedAt, contactRequest: record.contactRequest });
     document.querySelectorAll('input[name="sintoma"]').forEach(input => { input.checked = !!state.symptoms?.includes(input.value); });
     document.querySelectorAll('input[name="alimentacao"]').forEach(input => { input.checked = input.value === state.nutrition; });
     document.querySelectorAll('input[data-medicine]').forEach(input => {
@@ -912,8 +996,9 @@ function restorePatient(patient) {
         input.checked = record?.doses ? record.doses.includes(input.dataset.medicine + ':' + input.dataset.time) : medicine.checked.includes(input.dataset.time);
     });
     const care = document.getElementById('care-status');
-    care.hidden = !record || record.reviewedFor !== record.updatedAt;
-    care.textContent = care.hidden ? '' : 'Sua equipe visualizou este relato na demonstração.';
+    const contact = record?.contactRequest;
+    care.hidden = !contact && (!record || record.reviewedFor !== record.updatedAt);
+    care.textContent = contact?.status === 'pending' ? 'Você solicitou contato da equipe.' : contact?.status === 'contacted' ? 'A equipe registrou o contato na demonstração.' : care.hidden ? '' : 'Sua equipe visualizou este relato na demonstração.';
     renderReport();
     updateDoses();
 }
@@ -923,6 +1008,7 @@ function persistReport() {
         const doses = [...document.querySelectorAll('input[data-medicine]:checked')].map(input => input.dataset.medicine + ':' + input.dataset.time);
         const record = Crabcare.saveReport({ ...state, doses });
         state.updatedAt = record.updatedAt;
+        state.contactRequest = record.contactRequest;
         document.getElementById('care-status').hidden = true;
         storageMessage('');
         return true;
@@ -956,6 +1042,7 @@ document.getElementById('login-form').addEventListener('submit', event => {
     app.hidden = false;
     renderReport();
     showScreen('inicio');
+    syncCriticalDialog(evaluateReport());
 });
 document.addEventListener('change', event => {
     const input = event.target;
@@ -995,7 +1082,14 @@ document.addEventListener('click', event => {
             showScreen('inicio');
             const target = document.getElementById('alerta-combinacao');
             if (target.hidden) document.getElementById('relato-status').scrollIntoView({block: 'center', behavior: 'smooth'});
+            else if (evaluateReport().level === 'critical') syncCriticalDialog(evaluateReport(), true);
             else { target.scrollIntoView({block: 'center', behavior: 'smooth'}); target.focus({preventScroll: true}); }
+            break;
+        }
+        case 'revise-alert': {
+            dismissedCritical = Crabcare.combinationKey(state);
+            if (criticalDialog.open) criticalDialog.close();
+            goToPain();
             break;
         }
         case 'record': {
@@ -1004,12 +1098,24 @@ document.addEventListener('click', event => {
             button.setAttribute('aria-expanded', String(!record.hidden));
             break;
         }
-        case 'logout': loggedIn = false; app.hidden = true; login.hidden = false; document.title = 'Crabcare — Paciente'; document.getElementById('usuario').focus(); break;
+        case 'logout': if (criticalDialog.open) criticalDialog.close(); loggedIn = false; app.hidden = true; login.hidden = false; document.title = 'Crabcare — Paciente'; document.getElementById('usuario').focus(); break;
         case 'profile': feedback('Perfil de demonstração: ' + state.patient + '.'); break;
         case 'alert-primary': {
-            if (persistReport()) {
+            if (!persistReport()) {
                 const message = document.getElementById('alert-feedback');
-                message.textContent = 'Seu relato foi registrado.';
+                message.textContent = 'Não foi possível registrar a solicitação neste navegador.';
+                message.hidden = false;
+                break;
+            }
+            try {
+                const record = Crabcare.requestContact(state.patientId);
+                state.contactRequest = record.contactRequest;
+                renderReport();
+                document.getElementById('care-status').textContent = 'Você solicitou contato da equipe.';
+                document.getElementById('care-status').hidden = false;
+            } catch {
+                const message = document.getElementById('alert-feedback');
+                message.textContent = 'Não foi possível solicitar contato. Tente novamente.';
                 message.hidden = false;
             }
             break;
@@ -1024,6 +1130,7 @@ if (document.body.dataset.preview === 'true') {
     app.classList.add('preview-grid');
     document.querySelectorAll('[data-page]').forEach(page => { page.hidden = false; });
     document.title = 'Crabcare — Demonstração';
+    syncCriticalDialog(evaluateReport());
 }
 </script>
     <!-- app:end -->

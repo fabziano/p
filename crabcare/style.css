@@ -115,8 +115,18 @@ textarea { font: inherit; }
 
 .doctor-shell { max-width: 68rem; }
 .doctor-role { font-size: .65rem; color: #72825e; border: 1px solid #e4eade; background: #f5f8ee; border-radius: 2rem; padding: .4rem .65rem; }
-.doctor-patient { display: flex; flex-direction: column; gap: .5rem; padding: 1rem; border: 1px solid #e0e7d7; border-left: 4px solid #a7b59b; border-radius: .85rem; text-align: left; background: #fff; }
+.doctor-patient { display: flex; flex-direction: column; gap: .5rem; padding: 1rem; border: 1px solid #e0e7d7; border-left: 4px solid #a7b59b; border-radius: 0; text-align: left; background: #fff; }
 .doctor-patient[data-level="critical"] { border-left-color: #b82222; }
 .doctor-patient[data-level="attention"] { border-left-color: #ae7a20; }
 .doctor-patient[aria-current] { background: #f3f7ec; border-top-color: #8aa972; border-right-color: #8aa972; border-bottom-color: #8aa972; box-shadow: 0 2px 8px #567e3d10; }
 .doctor-patient:hover { background: #f7f9f3; }
+
+/* O alerta crítico interrompe o fluxo na camada modal nativa. */
+.critical-dialog { position: fixed; inset: 0; width: min(34rem,calc(100vw - 2rem)); max-width: none; max-height: calc(100dvh - 2rem); margin: auto; padding: 0; border: 0; border-radius: 1.75rem 1.75rem 1.1rem 1.1rem; overflow-y: auto; overscroll-behavior: contain; background: #fff; color: #25312b; box-shadow: 0 24px 80px #00000055; }
+.critical-dialog::backdrop { background: #172015b8; backdrop-filter: blur(3px); }
+.critical-dialog > .combined-alert { margin: 0; border: 0; }
+body:has(.critical-dialog[open]) { overflow: hidden; }
+.alert-record-button { display: block; width: 100%; border: 0; background: transparent; color: #6b755e; padding: .5rem; font: inherit; font-size: .8rem; text-decoration: underline; }
+.doctor-contact-request { border: 1px solid #e5aca7; border-radius: .75rem; background: #fff2f0; color: #a12822; }
+.doctor-contact-request .cc-button { border-color: #b82b25; background: #b82b25; }
+.doctor-contact-tag { font-size: .7rem; color: #b12823; }
