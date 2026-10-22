@@ -74,14 +74,34 @@ input { background: #fff; color: #25312b; }
 .medicine-icon[data-color="orange"] { background: #fbedda; color: #c78538; }
 .medicine-icon[data-color="green"] { background: #e9f2df; color: #70964c; }
 progress { accent-color: #418bce; }
-dialog { margin: auto; border: 1px solid #dfe7d7; border-radius: 1.25rem; max-width: min(90vw,26rem); padding: 1.5rem; background: #fff; color: #25312b; }
-dialog::backdrop { background: #1f351a65; }
 .app-shell { max-width: 54rem; }
 .preview-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.5rem; max-width: 86rem; padding: 1.5rem; border: 0; background: transparent; }
 .preview-grid > [data-page] { min-width: 0; border: 1px solid #e3e9df; border-radius: 1.25rem; background-color: #fff; align-self: start; }
 .preview-grid > nav, .preview-grid > .global-feedback { grid-column: 1 / -1; }
 @media(min-width: 90rem) { .preview-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } }
 @media(max-width: 54rem) { .preview-grid { grid-template-columns: minmax(0,1fr); max-width: 36rem; padding: .75rem; } }
+
+/* Atalhos de cuidado: mesma proporção e traço para os três ícones. */
+.care-icon { display: inline-grid; place-items: center; width: 3.5rem; height: 3.5rem; flex-shrink: 0; border-radius: 1rem; }
+.care-icon .ui-icon { width: 2rem; height: 2rem; stroke-width: 1.65; }
+.symptoms-icon { color: #568eab; background: #edf5fa; }
+.nutrition-icon { color: #73954c; background: #f0f5e7; }
+.pain-icon { color: #cf6262; background: #fceeee; }
+.symptom-choice { justify-content: flex-start; min-height: 3.1rem; padding: .9rem 1rem; }
+textarea { font: inherit; }
+.action-tile { gap: .5rem; }
+@media (max-width: 24rem) { .action-tile { padding: 1rem .25rem; } .care-icon { width: 3rem; height: 3rem; } }
+
+.preview-grid #inicio [data-component="pain"] { grid-template-columns: repeat(3,minmax(0,1fr)); }
+
+/* A mesma identidade de cuidado começa no login. */
+.login-screen { background: radial-gradient(ellipse at 15% 15%,#e5efd5,transparent 55%),radial-gradient(ellipse at 90% 85%,#edf3e3,transparent 45%),#f6f8f3; }
+.login-surface { box-shadow: 0 16px 60px #526b3410; border-color: #dde7d3; }
+.login-intro { background: radial-gradient(ellipse at top left,#eef5df,transparent 80%),#f8fbf4; border-bottom: 1px solid #e3ebda; }
+.login-intro .brand { font-size: 1.8rem; }
+.login-care { display: flex; flex-direction: column; align-items: center; gap: .65rem; font-size: .75rem; color: #6c7b5e; }
+.login-care .care-icon { background: #fff; border: 1px solid #e8eddf; box-shadow: 0 3px 10px #567e3d08; }
+@media(min-width: 64rem) { .login-intro { border-bottom: 0; border-right: 1px solid #e3ebda; } }
 </style>
     <!-- styles:end -->
 </head>
@@ -167,20 +187,24 @@ dialog::backdrop { background: #1f351a65; }
 </svg>
     <!-- faces:end -->
     <main>
-        <section id="login" class="grid min-h-dvh place-items-center p-4" aria-labelledby="login-titulo">
-            <div class="cc-card w-full max-w-sm space-y-6 p-6 sm:p-8">
-                <header class="space-y-2">
-                    <p class="mb-5 text-xl font-bold text-[#7aa358]">Crabcare</p>
-                    <h1 id="login-titulo" class="text-2xl font-bold tracking-tight">Bem-vindo</h1>
-                    <p class="text-sm leading-relaxed text-stone-500">Entre para registrar como você está se sentindo.</p>
+        <section id="login" class="login-screen grid min-h-dvh place-items-center p-4 sm:p-8" aria-labelledby="login-titulo">
+            <div class="login-surface cc-card grid w-full max-w-4xl overflow-hidden lg:grid-cols-2">
+                <header class="login-intro space-y-6 p-6 sm:p-9">
+                    <p class="brand"><span class="brand-leaves" aria-hidden="true"><i></i><i></i><i></i></span>Crabcare</p>
+                    <div class="space-y-3"><p class="text-xs font-semibold uppercase tracking-widest text-[#6a904d]">Acompanhamento oncológico</p><h1 id="login-titulo" class="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">Seu cuidado,<br>todos os dias.</h1><p class="max-w-sm text-sm leading-relaxed text-stone-500">Um espaço para contar como você está, acompanhar seus sintomas e registrar sua alimentação.</p></div>
+                    <ul class="grid grid-cols-3 gap-3" aria-label="Meus cuidados"><li class="login-care"><span class="care-icon symptoms-icon" data-ui-icon="thermometer"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14.7V5a3 3 0 0 1 6 0v9.7a5 5 0 1 1-6 0Z"/><path d="M10 8v10m7-12h4m-4 4h3m-3 4h4"/><circle cx="10" cy="18.5" r="1.5" fill="currentColor" stroke="none"/></svg></span><span>Sintomas</span></li><li class="login-care"><span class="care-icon nutrition-icon" data-ui-icon="food"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3v5a2 2 0 0 0 4 0V3M6 3v18m13 0V3c-3 2-4 5-4 9h4"/></svg></span><span>Alimentação</span></li><li class="login-care"><span class="care-icon pain-icon" data-ui-icon="heart"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6Z"/><path d="M3 12h4l2-4 4 8 2-4h6"/></svg></span><span>Dor</span></li></ul>
                 </header>
-                <form id="login-form" class="grid gap-3">
-                    <label for="usuario" class="text-sm font-semibold">Usuário</label>
-                    <input id="usuario" name="usuario" class="cc-field" value="paciente" autocomplete="username" required>
-                    <label for="senha" class="mt-2 text-sm font-semibold">Senha</label>
-                    <input id="senha" name="senha" class="cc-field" type="password" value="1234" autocomplete="current-password" required>
-                    <button type="submit" class="cc-button blue mt-3">Entrar</button>
-                </form>
+                <div class="space-y-6 p-6 sm:p-9 lg:self-center">
+                    <div class="space-y-2"><h2 class="text-2xl font-bold tracking-tight">Bem-vindo de volta</h2><p class="text-sm text-stone-500">Entre para acompanhar seu dia.</p></div>
+                    <form id="login-form" class="grid gap-3">
+                        <label for="usuario" class="text-sm font-semibold">Usuário</label>
+                        <input id="usuario" name="usuario" class="cc-field" value="paciente" autocomplete="username" required>
+                        <label for="senha" class="mt-2 text-sm font-semibold">Senha</label>
+                        <input id="senha" name="senha" class="cc-field" type="password" value="1234" autocomplete="current-password" required>
+                        <button type="submit" class="cc-button mt-4 w-full">Entrar <span data-ui-icon="arrow"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span></button>
+                    </form>
+                    <p class="text-center text-xs text-stone-400">Crabcare · Demonstração do MVP</p>
+                </div>
             </div>
         </section>
 
@@ -194,30 +218,29 @@ dialog::backdrop { background: #1f351a65; }
         </div>
     </header>
                 <section class="cc-card space-y-6 p-5 sm:p-7">
-                    <div>
-                        <p class="mb-1">Olá, <span data-bind="patient">paciente</span>!</p>
-                        <h1 id="inicio-titulo" class="text-2xl font-bold tracking-tight">Bem-vindo ao Crabcare!</h1>
-                    </div>
-                    <fieldset>
-                        <legend class="mb-3 w-full text-center text-sm">Como você está se sentindo hoje?</legend>
-                        <div class="grid grid-cols-3 gap-2" data-component="mood" data-group="inicio"><label class="face-option"><input type="radio" name="mood-inicio" value="bem" data-field="mood" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-1"></use></svg><span data-label>Estou bem</span></label><label class="face-option"><input type="radio" name="mood-inicio" value="normal" data-field="mood" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-3"></use></svg><span data-label>Estou mais ou menos</span></label><label class="face-option"><input type="radio" name="mood-inicio" value="mal" data-field="mood" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-5"></use></svg><span data-label>Não estou bem</span></label></div>
-                    </fieldset>
-                    <p id="mood-feedback" class="min-h-5 text-center text-sm text-[#618546]" role="status"></p>
-                    <button type="button" class="cc-button w-full" data-screen="escala">Registrar minha dor <span data-ui-icon="arrow"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span></button>
+                    <div><p class="mb-1">Olá, <span data-bind="patient">paciente</span>!</p><h1 id="inicio-titulo" class="text-2xl font-bold tracking-tight">Como está sua dor hoje?</h1><p class="mt-2 text-sm leading-relaxed text-stone-500">Escolha o rostinho que representa sua dor.</p></div>
+                    <form id="home-pain-form" data-pain-form class="space-y-5">
+                        <fieldset><legend class="mb-3 font-semibold">Intensidade da dor</legend><div class="grid grid-cols-3 gap-2 sm:grid-cols-6 sm:gap-3" data-component="pain" data-group="inicio"><label class="face-option pain-option"><input type="radio" name="pain-inicio" value="sem_dor" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-1"></use></svg><span data-label>Sem dor</span></label><label class="face-option pain-option"><input type="radio" name="pain-inicio" value="dor_leve" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-2"></use></svg><span data-label>Dor leve</span></label><label class="face-option pain-option"><input type="radio" name="pain-inicio" value="dor_moderada" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-3"></use></svg><span data-label>Dor moderada</span></label><label class="face-option pain-option"><input type="radio" name="pain-inicio" value="dor_intensa" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-4"></use></svg><span data-label>Dor intensa</span></label><label class="face-option pain-option"><input type="radio" name="pain-inicio" value="dor_muito_intensa" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-4-intensa"></use></svg><span data-label>Dor muito intensa</span></label><label class="face-option pain-option"><input type="radio" name="pain-inicio" value="pior_dor_possivel" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-5"></use></svg><span data-label>Pior dor possível</span></label></div></fieldset>
+                        <div class="flex items-center gap-2 text-sm" role="status"><span class="alert-dot" data-alert-dot></span><span data-bind="shortStatus">Aguardando seu registro</span></div>
+                        <button type="submit" class="cc-button w-full">Ver meu painel <span data-ui-icon="arrow"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span></button>
+                    </form>
                 </section>
-                <nav class="grid grid-cols-3 gap-3" aria-label="Cuidados do paciente">
-                    <button type="button" class="action-tile" data-screen="escala"><span class="text-sky-600" data-ui-icon="thermometer"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14V5a3 3 0 0 1 6 0v9a5 5 0 1 1-6 0Z"/><path d="M12 7v11m4-10h3m-3 4h3"/></svg></span>Sintomas</button>
-                    <button type="button" class="action-tile" data-action="food"><span class="text-[#7aa358]" data-ui-icon="food"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3v6m3-6v18M1 3v6a3 3 0 0 0 6 0m11-6v18m0-18c-5 4-5 10 0 10"/></svg></span>Alimentação</button>
-                    <button type="button" class="action-tile" data-screen="escala"><span class="text-red-400" data-ui-icon="heart"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 3 12a6 6 0 0 1 9-8 6 6 0 0 1 9 8Z"/><path d="M3 12h5l2-4 3 8 2-4h6"/></svg></span>Dor</button>
-                </nav>
-                <div class="cc-inset flex flex-wrap items-center justify-between gap-3 p-4">
-                    <div class="flex items-center gap-2 text-sm"><span class="alert-dot" data-alert-dot></span><span data-bind="shortStatus">Aguardando seu registro</span></div>
-                    <button type="button" class="text-sm font-semibold text-[#567e3d]" data-screen="painel">Ver painel →</button>
-                </div>
+                <section class="space-y-3" aria-labelledby="cuidados-titulo">
+                    <h2 id="cuidados-titulo" class="text-lg font-semibold">Meus cuidados</h2>
+                    <nav class="grid grid-cols-3 gap-3" aria-label="Cuidados do paciente">
+                        <button type="button" class="action-tile" data-screen="sintomas"><span class="care-icon symptoms-icon" data-ui-icon="thermometer"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14.7V5a3 3 0 0 1 6 0v9.7a5 5 0 1 1-6 0Z"/><path d="M10 8v10m7-12h4m-4 4h3m-3 4h4"/><circle cx="10" cy="18.5" r="1.5" fill="currentColor" stroke="none"/></svg></span><span class="font-semibold">Sintomas</span><span class="text-xs text-stone-500">O que estou sentindo</span></button>
+                        <button type="button" class="action-tile" data-screen="alimentacao"><span class="care-icon nutrition-icon" data-ui-icon="food"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3v5a2 2 0 0 0 4 0V3M6 3v18m13 0V3c-3 2-4 5-4 9h4"/></svg></span><span class="font-semibold">Alimentação</span><span class="text-xs text-stone-500">Como me alimentei</span></button>
+                        <button type="button" class="action-tile" data-action="pain"><span class="care-icon pain-icon" data-ui-icon="heart"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6Z"/><path d="M3 12h4l2-4 4 8 2-4h6"/></svg></span><span class="font-semibold">Dor</span><span class="text-xs text-stone-500">Minha escala</span></button>
+                    </nav>
+                    <div class="grid gap-3 sm:grid-cols-2">
+                        <p class="cc-inset p-4 text-xs leading-relaxed text-stone-500"><strong class="mb-1 block text-sm text-stone-700">Sintomas</strong><span data-bind="symptomSummary">Nenhum registro de sintomas ainda.</span></p>
+                        <p class="cc-inset p-4 text-xs leading-relaxed text-stone-500"><strong class="mb-1 block text-sm text-stone-700">Alimentação</strong><span data-bind="nutritionSummary">Nenhuma refeição registrada ainda.</span></p>
+                    </div>
+                </section>
                 <p class="text-center text-xs text-stone-400">Demonstração do MVP</p>
             </section>
 
-            <section id="escala" data-page class="space-y-6 p-4 sm:p-7" aria-labelledby="escala-titulo" hidden>
+            <section id="sintomas" data-page class="space-y-5 p-4 sm:p-7" aria-labelledby="sintomas-titulo" hidden>
                 <header data-component="header">
         <div class="flex items-center justify-between gap-3 pb-2">
             <button type="button" class="cc-round" data-action="profile" aria-label="Meu perfil"><span data-ui-icon="user"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></span></button>
@@ -225,30 +248,34 @@ dialog::backdrop { background: #1f351a65; }
             <button type="button" class="cc-round relative" data-screen="painel" aria-label="Ver estado do relato"><span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span><span class="alert-dot absolute right-0 top-0" data-alert-dot></span></button>
         </div>
     </header>
-                <div class="space-y-2">
-                    <p class="text-xs font-semibold uppercase tracking-widest text-[#6a904d]">Meu registro</p>
-                    <h1 id="escala-titulo" class="text-2xl font-bold tracking-tight">Como está sua dor?</h1>
-                    <p class="text-sm leading-relaxed text-stone-500">Combine suas respostas para acompanhar o estado no painel.</p>
-                </div>
-                <form id="pain-form" class="space-y-6">
-                    <fieldset>
-                        <legend class="mb-3 font-semibold">1. Qual é a intensidade?</legend>
-                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3" data-component="pain"><label class="face-option pain-option"><input type="radio" name="pain-escala" value="sem_dor" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-1"></use></svg><span data-label>Sem dor</span></label><label class="face-option pain-option"><input type="radio" name="pain-escala" value="dor_leve" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-2"></use></svg><span data-label>Dor leve</span></label><label class="face-option pain-option"><input type="radio" name="pain-escala" value="dor_moderada" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-3"></use></svg><span data-label>Dor moderada</span></label><label class="face-option pain-option"><input type="radio" name="pain-escala" value="dor_intensa" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-4"></use></svg><span data-label>Dor intensa</span></label><label class="face-option pain-option"><input type="radio" name="pain-escala" value="dor_muito_intensa" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-4-intensa"></use></svg><span data-label>Dor muito intensa</span></label><label class="face-option pain-option"><input type="radio" name="pain-escala" value="pior_dor_possivel" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-5"></use></svg><span data-label>Pior dor possível</span></label></div>
-                    </fieldset>
-                    <fieldset>
-                        <legend class="mb-3 font-semibold">2. Como a dor evoluiu?</legend>
-                        <div class="grid grid-cols-1 gap-3 min-[380px]:grid-cols-3" data-component="trend"><label class="choice"><input type="radio" name="trend-escala" data-field="trend" value="melhorando" required>Melhorando</label><label class="choice"><input type="radio" name="trend-escala" data-field="trend" value="igual" required>Continua igual</label><label class="choice"><input type="radio" name="trend-escala" data-field="trend" value="piorando" required>Piorando</label></div>
-                    </fieldset>
-                    <fieldset>
-                        <legend class="mb-3 font-semibold">3. Como você está se sentindo?</legend>
-                        <div class="grid grid-cols-3 gap-2" data-component="mood" data-group="escala"><label class="face-option"><input type="radio" name="mood-escala" value="bem" data-field="mood" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-1"></use></svg><span data-label>Estou bem</span></label><label class="face-option"><input type="radio" name="mood-escala" value="normal" data-field="mood" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-3"></use></svg><span data-label>Estou mais ou menos</span></label><label class="face-option"><input type="radio" name="mood-escala" value="mal" data-field="mood" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-5"></use></svg><span data-label>Não estou bem</span></label></div>
-                    </fieldset>
-                    <div class="cc-inset space-y-2 p-4" role="status" aria-live="polite" aria-atomic="true">
-                        <p class="flex items-center gap-2 font-semibold"><span class="alert-dot" data-alert-dot></span><span data-bind="shortStatus">Aguardando seu registro</span></p>
-                        <p class="text-sm leading-relaxed text-stone-600" data-bind="reason">Selecione intensidade, evolução e bem-estar para compor o relato.</p>
+                <h1 id="sintomas-titulo" class="text-2xl font-bold tracking-tight">Sintomas</h1>
+                <fieldset class="cc-card space-y-4 p-5 sm:p-6">
+                    <legend class="float-left w-full font-semibold">Além da dor, o que você está sentindo?</legend>
+                    <div class="clear-both grid grid-cols-2 gap-3">
+<label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Cansaço"><span>Cansaço</span></label><label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Enjoo"><span>Enjoo</span></label><label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Falta de ar"><span>Falta de ar</span></label><label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Sonolência"><span>Sonolência</span></label><label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Sem apetite"><span>Sem apetite</span></label><label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Febre"><span>Febre</span></label></div><label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Nenhum outro sintoma"><span>Nenhum outro sintoma</span></label></fieldset>
+                <p id="symptoms-feedback" class="min-h-5 text-sm text-[#567e3d]" role="status"></p>
+                <button type="button" class="cc-button secondary w-full" data-screen="inicio">Voltar ao início</button>
+            </section>
+
+            <section id="alimentacao" data-page class="space-y-5 p-4 sm:p-7" aria-labelledby="alimentacao-titulo" hidden>
+                <header data-component="header">
+        <div class="flex items-center justify-between gap-3 pb-2">
+            <button type="button" class="cc-round" data-action="profile" aria-label="Meu perfil"><span data-ui-icon="user"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></span></button>
+            <button type="button" class="brand" data-action="logout" aria-label="Crabcare — voltar ao login"><span class="brand-leaves" aria-hidden="true"><i></i><i></i><i></i></span>Crabcare</button>
+            <button type="button" class="cc-round relative" data-screen="painel" aria-label="Ver estado do relato"><span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span><span class="alert-dot absolute right-0 top-0" data-alert-dot></span></button>
+        </div>
+    </header>
+                <h1 id="alimentacao-titulo" class="text-2xl font-bold tracking-tight">Alimentação</h1>
+                <fieldset class="cc-card space-y-4 p-5 sm:p-6">
+                    <legend class="float-left w-full font-semibold">Como se alimentou hoje?</legend>
+                    <div class="clear-both grid gap-3">
+                        <label class="choice symptom-choice"><input type="radio" name="alimentacao" value="Comi bem"><span>Comi bem</span></label>
+                        <label class="choice symptom-choice"><input type="radio" name="alimentacao" value="Comi pouco"><span>Comi pouco</span></label>
+                        <label class="choice symptom-choice"><input type="radio" name="alimentacao" value="Não consegui comer"><span>Não consegui comer</span></label>
                     </div>
-                    <button type="submit" class="cc-button w-full">Registrar e ver meu painel <span data-ui-icon="arrow"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span></button>
-                </form>
+                </fieldset>
+                <p id="nutrition-feedback" class="min-h-5 text-sm text-[#567e3d]" role="status"></p>
+                <button type="button" class="cc-button secondary w-full" data-screen="inicio">Voltar ao início</button>
             </section>
 
             <section id="painel" data-page class="space-y-5 p-4 sm:p-7" aria-labelledby="painel-titulo" hidden>
@@ -259,52 +286,20 @@ dialog::backdrop { background: #1f351a65; }
             <button type="button" class="cc-round relative" data-screen="painel" aria-label="Ver estado do relato"><span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span><span class="alert-dot absolute right-0 top-0" data-alert-dot></span></button>
         </div>
     </header>
-                <div class="flex items-center justify-between gap-3">
-                    <div><p class="text-xs font-semibold uppercase tracking-widest text-[#6a904d]">Acompanhamento</p><h1 id="painel-titulo" class="mt-1 text-2xl font-bold tracking-tight">Meu painel</h1></div>
-                    <button type="button" class="text-sm font-semibold text-[#567e3d]" data-screen="escala">Atualizar relato</button>
-                </div>
+                <h1 id="painel-titulo" class="text-2xl font-bold tracking-tight">Meu painel</h1>
                 <article class="alert-card" data-component="alert" data-level="pending" aria-labelledby="alerta-titulo">
-                    <header class="alert-heading flex items-center justify-between gap-3 p-5 sm:px-6">
-                        <h2 id="alerta-titulo" class="text-sm font-bold uppercase tracking-wide" data-bind="title">Aguardando seu registro</h2>
-                        <span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span>
-                    </header>
+                    <header class="alert-heading flex items-center justify-between gap-3 p-5"><h2 id="alerta-titulo" class="font-bold" data-bind="title">Como está sua dor?</h2><span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span></header>
                     <div class="space-y-5 p-5 sm:p-6">
-                        <p class="alert-message p-4 text-sm font-semibold leading-relaxed" data-bind="reason">Selecione intensidade, evolução e bem-estar para compor o relato.</p>
-                        <section class="cc-inset overflow-hidden" aria-labelledby="relato-titulo">
-                            <h3 id="relato-titulo" class="border-b border-stone-200 p-4 text-sm font-semibold">Relato de <span data-bind="patient">paciente</span></h3>
-                            <dl class="grid grid-cols-2 gap-x-4 gap-y-5 p-4 text-sm">
-                                <div><dt class="mb-1 text-xs text-stone-500">Intensidade</dt><dd class="font-semibold" data-bind="painLabel">Não informada</dd></div>
-                                <div><dt class="mb-1 text-xs text-stone-500">Evolução</dt><dd class="font-semibold" data-bind="trendLabel">Não informada</dd></div>
-                                <div><dt class="mb-1 text-xs text-stone-500">Bem-estar</dt><dd class="font-semibold" data-bind="moodLabel">Não informado</dd></div>
-                                <div><dt class="mb-1 text-xs text-stone-500">Último registro</dt><dd class="font-semibold" data-bind="recordedAt">Ainda não registrado</dd></div>
-                            </dl>
-                        </section>
-                        <section aria-labelledby="plano-titulo" class="space-y-3">
-                            <h3 id="plano-titulo" class="font-semibold">Plano de ação</h3>
-                            <ol id="action-plan" class="list-decimal space-y-3 pl-5 text-sm leading-relaxed text-stone-600"><li>Selecionar a intensidade da dor.</li><li>Informar a evolução da dor.</li><li>Escolher como você está se sentindo.</li></ol>
-                        </section>
-                        <button type="button" id="alert-action" class="cc-button alert-action w-full" data-action="alert-primary">Completar meu registro</button>
+                        <p class="alert-message p-4 text-sm font-semibold" data-bind="reason">Escolha um rostinho na tela inicial.</p>
+                        <button type="button" id="alert-action" class="cc-button alert-action w-full" data-action="alert-primary">Ver escala de dor</button>
                     </div>
                 </article>
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <button type="button" class="cc-button secondary" data-action="team">Simular contato com a equipe</button>
-                    <button type="button" class="cc-button secondary" data-action="record" aria-expanded="false" aria-controls="registro-detalhes">Ver meu registro</button>
-                </div>
-                <section id="registro-detalhes" class="cc-inset space-y-3 p-5 text-sm" hidden>
-                    <h2 class="font-semibold">Registro atual</h2>
-                    <p data-bind="summary">Nenhum relato completo registrado.</p>
-                    <p class="text-xs text-stone-500">As escolhas ficam apenas nesta sessão do MVP.</p>
-                </section>
-                <details class="cc-inset p-4 text-sm">
-                    <summary class="cursor-pointer font-semibold">Como essa combinação define o alerta?</summary>
-                    <div class="mt-4 space-y-3 leading-relaxed text-stone-600">
-                        <p><strong>Crítico:</strong> dor muito intensa ou pior dor possível; ou dor intensa combinada com piora ou “Não estou bem”.</p>
-                        <p><strong>Atenção:</strong> dor moderada/intensa, piora ou “Não estou bem”, sem a combinação crítica.</p>
-                        <p><strong>Sem alerta:</strong> sem dor/dor leve, melhorando/igual e “Estou bem”/“Estou mais ou menos”.</p>
-                        <p><strong>Incompleto:</strong> faltam respostas e ainda não há combinação crítica.</p>
-                    </div>
-                </details>
-                <p class="text-center text-xs leading-relaxed text-stone-400">Regras de demonstração do MVP · Não representam um protocolo clínico.</p>
+                <dl class="cc-inset divide-y divide-stone-200 px-5 text-sm">
+                    <div class="flex justify-between gap-4 py-4"><dt class="text-stone-500">Dor</dt><dd class="text-right font-semibold" data-bind="painLabel">Ainda não informada</dd></div>
+                    <div class="py-4"><dt class="mb-1 text-stone-500">Sintomas</dt><dd data-bind="symptomSummary">Ainda não informado</dd></div>
+                    <div class="py-4"><dt class="mb-1 text-stone-500">Alimentação</dt><dd data-bind="nutritionSummary">Ainda não informada</dd></div>
+                </dl>
+                <p class="text-center text-xs text-stone-400">Demonstração do MVP</p>
             </section>
 
             <section id="medicamentos" data-page class="space-y-5 p-4 sm:p-7" aria-labelledby="medicamentos-titulo" hidden>
@@ -328,19 +323,12 @@ dialog::backdrop { background: #1f351a65; }
                 <p class="text-center text-xs text-stone-400">Agenda fictícia do MVP · Toque nos horários para marcar as doses</p>
             </section>
 
-            <nav class="app-nav sticky bottom-0 z-10 grid grid-cols-5 gap-1 px-2 pt-2 sm:rounded-b-2xl" aria-label="Navegação principal" data-component="navigation"><button type="button" class="nav-item" data-screen="inicio"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10H5V10m5 10v-6h4v6"/></svg><span>Início</span></button><button type="button" class="nav-item" data-screen="painel"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 2h6v4H9zm0 9h6m-6 4h6m-6 4h4"/></svg><span>Meu painel</span></button><button type="button" class="nav-item" data-screen="medicamentos"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7"/></svg><span>Medicamentos</span></button><button type="button" class="nav-item" data-screen="escala"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 3 12a6 6 0 0 1 9-8 6 6 0 0 1 9 8Z"/><path d="M3 12h5l2-4 3 8 2-4h6"/></svg><span>Minha dor</span></button><button type="button" class="nav-item" data-action="logout"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H4v16h6m4-12 4 4-4 4m-6-4h12"/></svg><span>Sair</span></button></nav>
+            <nav class="app-nav sticky bottom-0 z-10 grid grid-cols-5 gap-1 px-2 pt-2 sm:rounded-b-2xl" aria-label="Navegação principal" data-component="navigation"><button type="button" class="nav-item" data-screen="inicio"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10H5V10m5 10v-6h4v6"/></svg><span>Início</span></button><button type="button" class="nav-item" data-screen="painel"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 2h6v4H9zm0 9h6m-6 4h6m-6 4h4"/></svg><span>Meu painel</span></button><button type="button" class="nav-item" data-screen="medicamentos"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7"/></svg><span>Medicamentos</span></button><button type="button" class="nav-item" data-screen="sintomas"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14.7V5a3 3 0 0 1 6 0v9.7a5 5 0 1 1-6 0Z"/><path d="M10 8v10m7-12h4m-4 4h3m-3 4h4"/><circle cx="10" cy="18.5" r="1.5" fill="currentColor" stroke="none"/></svg><span>Sintomas</span></button><button type="button" class="nav-item" data-action="logout"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H4v16h6m4-12 4 4-4 4m-6-4h12"/></svg><span>Sair</span></button></nav>
             <p id="app-feedback" class="global-feedback mx-4 my-3 rounded-xl border border-lime-200 bg-lime-50 p-4 text-sm sm:mx-7" role="status" hidden></p>
         </div>
     </main>
 
-    <dialog id="alimentacao-dialog" aria-labelledby="alimentacao-titulo">
-        <h2 id="alimentacao-titulo" class="mb-4 text-xl font-bold">Alimentação</h2>
-        <p class="mb-5 text-sm leading-relaxed text-stone-600">A área de refeições será preparada na próxima etapa do MVP.</p>
-        <form method="dialog"><button class="cc-button w-full">Voltar</button></form>
-    </dialog>
-    <audio id="audio-player"></audio>
-
-    <!-- Componentes nativos: clones compartilham estrutura e comportamento. -->
+<!-- Componentes nativos: clones compartilham estrutura e comportamento. -->
     <template id="header-template">
         <div class="flex items-center justify-between gap-3 pb-2">
             <button type="button" class="cc-round" data-action="profile" aria-label="Meu perfil"><span data-ui-icon="user"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></span></button>
@@ -361,11 +349,11 @@ dialog::backdrop { background: #1f351a65; }
             <div class="mt-3 grid grid-flow-col auto-cols-fr gap-1 sm:ml-12" data-times></div>
         </section>
     </template>
-    <!-- app:start -->
+<!-- app:start -->
 <script>
 'use strict';
 
-// Catálogos compartilhados pelas telas e pelos componentes nativos.
+// Catálogos de componentes, sem alterar os SVGs dos rostinhos.
 // catalog:start
 const COMPONENTS = {
     "PAIN_OPTIONS": [
@@ -404,37 +392,6 @@ const COMPONENTS = {
             "label": "Pior dor possível",
             "face": "face-5",
             "severity": 5
-        }
-    ],
-    "MOOD_OPTIONS": [
-        {
-            "value": "bem",
-            "label": "Estou bem",
-            "face": "face-1"
-        },
-        {
-            "value": "normal",
-            "label": "Estou mais ou menos",
-            "face": "face-3"
-        },
-        {
-            "value": "mal",
-            "label": "Não estou bem",
-            "face": "face-5"
-        }
-    ],
-    "TREND_OPTIONS": [
-        {
-            "value": "melhorando",
-            "label": "Melhorando"
-        },
-        {
-            "value": "igual",
-            "label": "Continua igual"
-        },
-        {
-            "value": "piorando",
-            "label": "Piorando"
         }
     ],
     "MEDICINES": [
@@ -498,9 +455,9 @@ const COMPONENTS = {
             "icon": "pill"
         },
         {
-            "screen": "escala",
-            "label": "Minha dor",
-            "icon": "heart"
+            "screen": "sintomas",
+            "label": "Sintomas",
+            "icon": "thermometer"
         },
         {
             "action": "logout",
@@ -512,77 +469,45 @@ const COMPONENTS = {
         "inicio": "Boas-vindas",
         "painel": "Meu painel",
         "medicamentos": "Medicamentos",
-        "escala": "Minha dor"
+        "sintomas": "Sintomas",
+        "alimentacao": "Alimentação"
     },
     "ICONS": {
         "home": "<path d=\"m3 10 9-7 9 7v10H5V10m5 10v-6h4v6\"/>",
         "user": "<circle cx=\"12\" cy=\"7\" r=\"4\"/><path d=\"M4 22v-3a8 8 0 0 1 16 0v3\"/>",
         "bell": "<path d=\"M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4\"/>",
         "pill": "<path d=\"M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7\"/>",
-        "heart": "<path d=\"M12 21 3 12a6 6 0 0 1 9-8 6 6 0 0 1 9 8Z\"/><path d=\"M3 12h5l2-4 3 8 2-4h6\"/>",
+        "heart": "<path d=\"M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6Z\"/><path d=\"M3 12h4l2-4 4 8 2-4h6\"/>",
         "list": "<rect x=\"5\" y=\"4\" width=\"14\" height=\"18\" rx=\"2\"/><path d=\"M9 2h6v4H9zm0 9h6m-6 4h6m-6 4h4\"/>",
         "exit": "<path d=\"M10 4H4v16h6m4-12 4 4-4 4m-6-4h12\"/>",
-        "thermometer": "<path d=\"M9 14V5a3 3 0 0 1 6 0v9a5 5 0 1 1-6 0Z\"/><path d=\"M12 7v11m4-10h3m-3 4h3\"/>",
-        "food": "<path d=\"M4 3v6m3-6v18M1 3v6a3 3 0 0 0 6 0m11-6v18m0-18c-5 4-5 10 0 10\"/>",
+        "thermometer": "<path d=\"M7 14.7V5a3 3 0 0 1 6 0v9.7a5 5 0 1 1-6 0Z\"/><path d=\"M10 8v10m7-12h4m-4 4h3m-3 4h4\"/><circle cx=\"10\" cy=\"18.5\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\"/>",
+        "food": "<path d=\"M4 3v5a2 2 0 0 0 4 0V3M6 3v18m13 0V3c-3 2-4 5-4 9h4\"/>",
         "check": "<path d=\"m5 12 4 4L19 6\"/>",
         "arrow": "<path d=\"M4 12h16m-6-6 6 6-6 6\"/>"
     }
 };
 // catalog:end
-const { PAIN_OPTIONS, MOOD_OPTIONS, TREND_OPTIONS, MEDICINES, NAVIGATION, SCREEN_TITLES, ICONS } = COMPONENTS;
-
-// Somente memória da página: nenhuma credencial ou relato é enviado/persistido.
-const state = { patient: 'paciente', pain: null, trend: null, mood: null, recordedAt: null };
+const { PAIN_OPTIONS, MEDICINES, NAVIGATION, SCREEN_TITLES, ICONS } = COMPONENTS;
+const state = { patient: 'paciente', pain: null, recordedAt: null, symptoms: null, nutrition: null };
 const app = document.getElementById('aplicativo');
 const login = document.getElementById('login');
 
-function cloneTemplate(id) {
-    return document.getElementById(id).content.cloneNode(true);
-}
-function icon(name) {
-    return '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">' + ICONS[name] + '</svg>';
-}
-function populateIcons(root = document) {
-    root.querySelectorAll('[data-ui-icon]').forEach(element => {
-        // Apenas desenhos estáticos conhecidos; rostinhos vêm de icones.svg.
-        element.innerHTML = icon(element.dataset.uiIcon);
-    });
-}
-function faceOption(option, field, group) {
-    const fragment = cloneTemplate('face-option-template');
-    const input = fragment.querySelector('input');
-    input.name = field + '-' + group;
-    input.value = option.value;
-    input.dataset.field = field;
-    fragment.querySelector('use').setAttribute('href', '#' + option.face);
-    fragment.querySelector('[data-label]').textContent = option.label;
-    if (field === 'pain') fragment.querySelector('label').classList.add('pain-option');
-    return fragment;
-}
+function cloneTemplate(id) { return document.getElementById(id).content.cloneNode(true); }
+function icon(name) { return '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">' + ICONS[name] + '</svg>'; }
 function mountComponents() {
-    document.querySelectorAll('[data-component="header"]').forEach(element => {
-        element.replaceChildren(cloneTemplate('header-template'));
-    });
-    document.querySelectorAll('[data-component="mood"]').forEach(element => {
-        element.replaceChildren();
-        MOOD_OPTIONS.forEach(option => element.append(faceOption(option, 'mood', element.dataset.group)));
-    });
+    document.querySelectorAll('[data-component="header"]').forEach(element => element.replaceChildren(cloneTemplate('header-template')));
     const pain = document.querySelector('[data-component="pain"]');
     pain.replaceChildren();
-    PAIN_OPTIONS.forEach(option => pain.append(faceOption(option, 'pain', 'escala')));
-    const trend = document.querySelector('[data-component="trend"]');
-    trend.replaceChildren();
-    TREND_OPTIONS.forEach(option => {
-        const label = document.createElement('label');
-        label.className = 'choice';
-        const input = document.createElement('input');
-        input.type = 'radio';
-        input.name = 'trend-escala';
-        input.dataset.field = 'trend';
+    PAIN_OPTIONS.forEach(option => {
+        const fragment = cloneTemplate('face-option-template');
+        const input = fragment.querySelector('input');
+        input.name = 'pain-inicio';
         input.value = option.value;
-        input.required = true;
-        label.append(input, document.createTextNode(option.label));
-        trend.append(label);
+        input.dataset.field = 'pain';
+        fragment.querySelector('label').classList.add('pain-option');
+        fragment.querySelector('use').setAttribute('href', '#' + option.face);
+        fragment.querySelector('[data-label]').textContent = option.label;
+        pain.append(fragment);
     });
     const nav = document.querySelector('[data-component="navigation"]');
     nav.replaceChildren();
@@ -593,9 +518,9 @@ function mountComponents() {
         if (item.screen) button.dataset.screen = item.screen;
         else button.dataset.action = item.action;
         button.innerHTML = icon(item.icon);
-        const label = document.createElement('span');
-        label.textContent = item.label;
-        button.append(label);
+        const text = document.createElement('span');
+        text.textContent = item.label;
+        button.append(text);
         nav.append(button);
     });
     const medicines = document.querySelector('[data-component="medicines"]');
@@ -627,97 +552,42 @@ function mountComponents() {
         });
         medicines.append(fragment);
     });
-    populateIcons();
+
+    document.querySelectorAll('[data-ui-icon]').forEach(element => { element.innerHTML = icon(element.dataset.uiIcon); });
 }
 
-// Regra visual do MVP: prioridade crítica antes da checagem de completude.
-// Assim, uma dor muito intensa não aparece como "sem alerta" por faltar bem-estar.
-function evaluateReport(report) {
-    const pain = PAIN_OPTIONS.find(option => option.value === report.pain);
-    if (pain && (pain.severity >= 4 || (pain.severity === 3 && (report.trend === 'piorando' || report.mood === 'mal')))) {
-        return {
-            level: 'critical', title: 'Alerta de dor crítica', shortStatus: 'Alerta crítico nesta combinação',
-            reason: pain.severity >= 4
-                ? pain.label + ' informada no relato. Esta intensidade aciona o alerta crítico da demonstração.'
-                : 'Dor intensa combinada com ' + (report.trend === 'piorando' ? 'piora da dor' : '“Não estou bem”') + '.',
-            plan: ['Simular o contato com a equipe de cuidado.', 'Compartilhar a intensidade, a evolução e o bem-estar relatados.', 'Aguardar a avaliação da equipe e atualizar o relato se houver mudança.'],
-            action: 'Simular chamada da equipe'
-        };
-    }
-    const missing = [];
-    if (!pain) missing.push('intensidade');
-    if (!report.trend) missing.push('evolução');
-    if (!report.mood) missing.push('bem-estar');
-    if (missing.length) {
-        return {
-            level: 'pending', title: 'Complete seu registro', shortStatus: 'Falta completar o relato',
-            reason: 'Ainda falta informar: ' + missing.join(', ') + '.',
-            plan: ['Selecionar a intensidade da dor.', 'Informar se a dor melhorou, permaneceu igual ou piorou.', 'Escolher como você está se sentindo para completar a combinação.'],
-            action: 'Completar meu registro'
-        };
-    }
-    if (pain.severity >= 2 || report.trend === 'piorando' || report.mood === 'mal') {
-        const reasons = [];
-        if (pain.severity >= 2) reasons.push(pain.label.toLowerCase());
-        if (report.trend === 'piorando') reasons.push('piora da dor');
-        if (report.mood === 'mal') reasons.push('“Não estou bem”');
-        return {
-            level: 'attention', title: 'Seu relato precisa de atenção', shortStatus: 'Atenção nesta combinação',
-            reason: 'Combinação registrada: ' + reasons.join(' + ') + '.',
-            plan: ['Compartilhar o relato com a equipe de cuidado na demonstração.', 'Acompanhar como a dor evolui.', 'Atualizar as respostas caso a intensidade ou o bem-estar mudem.'],
-            action: 'Simular envio do relato'
-        };
-    }
-    return {
-        level: 'calm', title: 'Sem alerta nesta combinação', shortStatus: 'Sem alerta nesta combinação',
-        reason: pain.label + ', ' + (report.trend === 'melhorando' ? 'melhorando' : 'sem piora') + ' e relato de bem-estar: ' + (report.mood === 'bem' ? '“Estou bem”' : '“Estou mais ou menos”') + '.',
-        plan: ['Manter o relato atualizado.', 'Registrar novamente se a dor ou o bem-estar mudarem.', 'Consultar os horários da agenda de medicamentos.'],
-        action: 'Ver meus medicamentos'
-    };
+// Estados visuais do MVP, definidos somente pela escala de dor existente.
+function evaluateReport() {
+    const pain = PAIN_OPTIONS.find(option => option.value === state.pain);
+    if (!pain) return { level: 'pending', title: 'Como está sua dor?', reason: 'Escolha um rostinho na tela inicial.', action: 'Ver escala de dor' };
+    if (pain.severity >= 4) return { level: 'critical', title: 'Alerta de dor intensa', reason: pain.label + '. Seu relato precisa de atenção da equipe.', action: 'Simular contato com a equipe' };
+    if (pain.severity >= 2) return { level: 'attention', title: 'Atenção à sua dor', reason: pain.label + ' registrada.', action: 'Simular contato com a equipe' };
+    return { level: 'calm', title: 'Dor registrada', reason: pain.label + '.', action: 'Atualizar minha dor' };
 }
 function bindText(name, text) {
     document.querySelectorAll('[data-bind="' + name + '"]').forEach(element => { element.textContent = text; });
 }
 function renderReport() {
-    const result = evaluateReport(state);
+    const result = evaluateReport();
     const pain = PAIN_OPTIONS.find(option => option.value === state.pain);
-    const trend = TREND_OPTIONS.find(option => option.value === state.trend);
-    const mood = MOOD_OPTIONS.find(option => option.value === state.mood);
     const values = {
-        patient: state.patient,
-        painLabel: pain?.label || 'Não informada',
-        trendLabel: trend?.label || 'Não informada',
-        moodLabel: mood?.label || 'Não informado',
-        recordedAt: state.recordedAt || 'Ainda não registrado',
-        title: result.title, shortStatus: result.shortStatus, reason: result.reason,
-        summary: [pain?.label || 'Dor não informada', trend?.label || 'Evolução não informada', mood?.label || 'Bem-estar não informado'].join(' · ')
+        patient: state.patient, title: result.title, shortStatus: result.title, reason: result.reason,
+        painLabel: pain?.label || 'Ainda não informada', recordedAt: state.recordedAt || 'Ainda não registrado',
+        symptomSummary: state.symptoms ? state.symptoms.join(', ') : 'Ainda não informado',
+        nutritionSummary: state.nutrition || 'Ainda não informada'
     };
-    Object.entries(values).forEach(([name, text]) => bindText(name, text));
+    Object.entries(values).forEach(([key, value]) => bindText(key, value));
     document.querySelector('[data-component="alert"]').dataset.level = result.level;
     document.querySelectorAll('[data-alert-dot]').forEach(dot => { dot.dataset.level = result.level; });
-    const plan = document.getElementById('action-plan');
-    plan.replaceChildren(...result.plan.map(text => {
-        const item = document.createElement('li');
-        item.textContent = text;
-        return item;
-    }));
     document.getElementById('alert-action').textContent = result.action;
-    document.querySelectorAll('input[data-field]').forEach(input => {
-        input.checked = state[input.dataset.field] === input.value;
-    });
-}
-function feedback(text) {
-    const element = document.getElementById('app-feedback');
-    element.textContent = text;
-    element.hidden = false;
-    element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    document.querySelectorAll('input[data-field="pain"]').forEach(input => { input.checked = input.value === state.pain; });
 }
 function showScreen(id) {
     if (!SCREEN_TITLES[id]) return;
     app.classList.remove('preview-grid');
     document.querySelectorAll('[data-page]').forEach(page => { page.hidden = page.id !== id; });
     document.querySelectorAll('.nav-item[data-screen]').forEach(button => {
-        if (button.dataset.screen === id) button.setAttribute('aria-current', 'page');
+        if (button.dataset.screen === (id === 'alimentacao' ? 'inicio' : id)) button.setAttribute('aria-current', 'page');
         else button.removeAttribute('aria-current');
     });
     document.getElementById('app-feedback').hidden = true;
@@ -727,31 +597,24 @@ function showScreen(id) {
     heading.focus({ preventScroll: true });
     window.scrollTo({ top: 0 });
 }
-function logout() {
-    app.hidden = true;
-    login.hidden = false;
-    document.title = 'Crabcare — Entrar';
-    document.getElementById('usuario').focus();
+function feedback(text) {
+    const element = document.getElementById('app-feedback');
+    element.textContent = text;
+    element.hidden = false;
+    element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 function updateDoses() {
     const total = MEDICINES.length;
     const count = MEDICINES.filter((_, index) => document.querySelector('input[data-medicine="' + index + '"]:checked')).length;
     document.getElementById('dose-text').textContent = count + ' de ' + total + ' medicamentos';
     document.getElementById('dose-count').textContent = count + '/' + total;
-    const progress = document.getElementById('dose-progress');
-    progress.max = total;
-    progress.value = count;
+    document.getElementById('dose-progress').max = total;
+    document.getElementById('dose-progress').value = count;
 }
-function playPainAudio(value) {
-    const audio = document.getElementById('audio-player');
-    audio.src = 'assets/audio/' + value + '.mp3';
-    audio.play().catch(() => { /* A seleção continua funcionando sem áudio. */ });
+function goToPain() {
+    showScreen('inicio');
+    document.getElementById('home-pain-form').scrollIntoView({ block: 'center', behavior: 'smooth' });
 }
-function simulateTeamContact() {
-    const result = evaluateReport(state);
-    feedback('Simulação: equipe avisada sobre o relato de ' + state.patient + '. Estado atual: ' + result.shortStatus.toLowerCase() + '.');
-}
-
 mountComponents();
 renderReport();
 updateDoses();
@@ -760,8 +623,10 @@ document.getElementById('login-form').addEventListener('submit', event => {
     event.preventDefault();
     const patient = document.getElementById('usuario').value.trim() || 'paciente';
     if (patient !== state.patient) {
-        Object.assign(state, { pain: null, trend: null, mood: null, recordedAt: null });
-        document.getElementById('mood-feedback').textContent = '';
+        Object.assign(state, { pain: null, recordedAt: null, symptoms: null, nutrition: null });
+        document.querySelectorAll('input[name="sintoma"], input[name="alimentacao"]').forEach(input => { input.checked = false; });
+        document.getElementById('symptoms-feedback').textContent = '';
+        document.getElementById('nutrition-feedback').textContent = '';
     }
     state.patient = patient;
     login.hidden = true;
@@ -769,25 +634,27 @@ document.getElementById('login-form').addEventListener('submit', event => {
     renderReport();
     showScreen('inicio');
 });
-document.getElementById('pain-form').addEventListener('submit', event => {
-    event.preventDefault();
-    showScreen('painel');
-});
+document.getElementById('home-pain-form').addEventListener('submit', event => { event.preventDefault(); showScreen('painel'); });
 document.addEventListener('change', event => {
     const input = event.target;
-    if (input.matches('input[data-field]')) {
-        state[input.dataset.field] = input.value;
+    if (input.matches('[data-field="pain"]')) {
+        state.pain = input.value;
         state.recordedAt = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(new Date());
-        document.getElementById('app-feedback').hidden = true;
         renderReport();
-        if (input.dataset.field === 'mood') {
-            document.getElementById('mood-feedback').textContent = {
-                bem: 'Que bom! Complete seu relato de dor para acompanhar o painel.',
-                normal: 'Obrigado por compartilhar. Como está sua dor?',
-                mal: 'Conte também a intensidade e a evolução da sua dor.'
-            }[input.value];
-        }
-        if (input.dataset.field === 'pain') playPainAudio(input.value);
+    }
+    if (input.matches('input[name="sintoma"]')) {
+        if (input.checked) document.querySelectorAll('input[name="sintoma"]').forEach(option => {
+            if ((input.value === 'Nenhum outro sintoma' && option !== input) || (input.value !== 'Nenhum outro sintoma' && option.value === 'Nenhum outro sintoma')) option.checked = false;
+        });
+        const selected = [...document.querySelectorAll('input[name="sintoma"]:checked')];
+        state.symptoms = selected.length ? selected.map(option => option.value) : null;
+        document.getElementById('symptoms-feedback').textContent = selected.length ? 'Registrado.' : '';
+        renderReport();
+    }
+    if (input.matches('input[name="alimentacao"]')) {
+        state.nutrition = input.value;
+        document.getElementById('nutrition-feedback').textContent = 'Registrado.';
+        renderReport();
     }
     if (input.matches('input[data-medicine]')) updateDoses();
 });
@@ -796,27 +663,17 @@ document.addEventListener('click', event => {
     if (!button) return;
     if (button.dataset.screen) return showScreen(button.dataset.screen);
     switch (button.dataset.action) {
-        case 'logout': logout(); break;
+        case 'pain': goToPain(); break;
+        case 'logout': app.hidden = true; login.hidden = false; document.title = 'Crabcare — Entrar'; document.getElementById('usuario').focus(); break;
         case 'profile': feedback('Perfil de demonstração: ' + state.patient + '.'); break;
-        case 'food': document.getElementById('alimentacao-dialog').showModal(); break;
-        case 'record': {
-            const record = document.getElementById('registro-detalhes');
-            record.hidden = !record.hidden;
-            button.setAttribute('aria-expanded', String(!record.hidden));
-            break;
-        }
-        case 'team': simulateTeamContact(); break;
         case 'alert-primary': {
-            const result = evaluateReport(state);
-            if (result.level === 'pending') showScreen('escala');
-            else if (result.level === 'calm') showScreen('medicamentos');
-            else simulateTeamContact();
+            const result = evaluateReport();
+            if (result.level === 'pending' || result.level === 'calm') goToPain();
+            else feedback('Simulação: relato de dor compartilhado com a equipe.');
             break;
         }
     }
 });
-
-// A demonstração compartilha exatamente os componentes e regras do aplicativo.
 if (document.body.dataset.preview === 'true') {
     login.hidden = true;
     app.hidden = false;

@@ -65,11 +65,31 @@ input { background: #fff; color: #25312b; }
 .medicine-icon[data-color="orange"] { background: #fbedda; color: #c78538; }
 .medicine-icon[data-color="green"] { background: #e9f2df; color: #70964c; }
 progress { accent-color: #418bce; }
-dialog { margin: auto; border: 1px solid #dfe7d7; border-radius: 1.25rem; max-width: min(90vw,26rem); padding: 1.5rem; background: #fff; color: #25312b; }
-dialog::backdrop { background: #1f351a65; }
 .app-shell { max-width: 54rem; }
 .preview-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.5rem; max-width: 86rem; padding: 1.5rem; border: 0; background: transparent; }
 .preview-grid > [data-page] { min-width: 0; border: 1px solid #e3e9df; border-radius: 1.25rem; background-color: #fff; align-self: start; }
 .preview-grid > nav, .preview-grid > .global-feedback { grid-column: 1 / -1; }
 @media(min-width: 90rem) { .preview-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } }
 @media(max-width: 54rem) { .preview-grid { grid-template-columns: minmax(0,1fr); max-width: 36rem; padding: .75rem; } }
+
+/* Atalhos de cuidado: mesma proporção e traço para os três ícones. */
+.care-icon { display: inline-grid; place-items: center; width: 3.5rem; height: 3.5rem; flex-shrink: 0; border-radius: 1rem; }
+.care-icon .ui-icon { width: 2rem; height: 2rem; stroke-width: 1.65; }
+.symptoms-icon { color: #568eab; background: #edf5fa; }
+.nutrition-icon { color: #73954c; background: #f0f5e7; }
+.pain-icon { color: #cf6262; background: #fceeee; }
+.symptom-choice { justify-content: flex-start; min-height: 3.1rem; padding: .9rem 1rem; }
+textarea { font: inherit; }
+.action-tile { gap: .5rem; }
+@media (max-width: 24rem) { .action-tile { padding: 1rem .25rem; } .care-icon { width: 3rem; height: 3rem; } }
+
+.preview-grid #inicio [data-component="pain"] { grid-template-columns: repeat(3,minmax(0,1fr)); }
+
+/* A mesma identidade de cuidado começa no login. */
+.login-screen { background: radial-gradient(ellipse at 15% 15%,#e5efd5,transparent 55%),radial-gradient(ellipse at 90% 85%,#edf3e3,transparent 45%),#f6f8f3; }
+.login-surface { box-shadow: 0 16px 60px #526b3410; border-color: #dde7d3; }
+.login-intro { background: radial-gradient(ellipse at top left,#eef5df,transparent 80%),#f8fbf4; border-bottom: 1px solid #e3ebda; }
+.login-intro .brand { font-size: 1.8rem; }
+.login-care { display: flex; flex-direction: column; align-items: center; gap: .65rem; font-size: .75rem; color: #6c7b5e; }
+.login-care .care-icon { background: #fff; border: 1px solid #e8eddf; box-shadow: 0 3px 10px #567e3d08; }
+@media(min-width: 64rem) { .login-intro { border-bottom: 0; border-right: 1px solid #e3ebda; } }

@@ -50,8 +50,9 @@ def icon(catalog, name):
 
 def render_face(option, field, group):
     classes = 'face-option' + (' pain-option' if field == 'pain' else '')
+    required = ' required' if field == 'pain' else ''
     return (f'<label class="{classes}"><input type="radio" name="{field}-{group}" '
-            f'value="{option["value"]}" data-field="{field}" required>'
+            f'value="{option["value"]}" data-field="{field}"{required}>'
             f'<svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true">'
             f'<use href="#{option["face"]}"></use></svg><span data-label>{escape(option["label"])}</span></label>')
 
@@ -81,11 +82,8 @@ def prerender(html, catalog):
         component = attrs['data-component']
         if component == 'header':
             content = header
-        elif component in ('pain', 'mood'):
-            options = catalog['PAIN_OPTIONS' if component == 'pain' else 'MOOD_OPTIONS']
-            content = ''.join(render_face(option, component, attrs.get('data-group', 'escala')) for option in options)
-        elif component == 'trend':
-            content = ''.join(f'<label class="choice"><input type="radio" name="trend-escala" data-field="trend" value="{option["value"]}" required>{escape(option["label"])}</label>' for option in catalog['TREND_OPTIONS'])
+        elif component == 'pain':
+            content = ''.join(render_face(option, 'pain', attrs.get('data-group', 'inicio')) for option in catalog['PAIN_OPTIONS'])
         elif component == 'navigation':
             content = ''
             for item in catalog['NAVIGATION']:
@@ -98,7 +96,6 @@ def prerender(html, catalog):
         html = html[:start] + content + html[end:]
     for start, end, attrs in sorted(Slots(html, 'data-ui-icon').slots, reverse=True):
         html = html[:start] + icon(catalog, attrs['data-ui-icon']) + html[end:]
-    html = re.sub(r'(<ol id="action-plan"[^>]*>).*?(</ol>)', r'\1<li>Selecionar a intensidade da dor.</li><li>Informar a evolução da dor.</li><li>Escolher como você está se sentindo.</li>\2', html, count=1, flags=re.S)
     html = re.sub(r'(<p id="dose-text"[^>]*>).*?(</p>)', r'\g<1>3 de 3 medicamentos\2', html, count=1, flags=re.S)
     html = html.replace('id="dose-progress" class="my-2 block h-2 w-full" value="0"', 'id="dose-progress" class="my-2 block h-2 w-full" value="3"')
     html = html.replace('id="dose-count" class="text-sm">0/3', 'id="dose-count" class="text-sm">3/3')
@@ -120,7 +117,7 @@ def main():
     preview = html.replace('<body class=', '<body data-preview="true" class=', 1)
     preview = preview.replace('id="login" class=', 'id="login" hidden class=', 1)
     preview = re.sub(r'(<div id="aplicativo" class=")([^"]+)("[^>]*?) hidden>', r'\1preview-grid \2\3>', preview, count=1)
-    for page in ['inicio', 'escala', 'painel', 'medicamentos']:
+    for page in ['inicio', 'sintomas', 'alimentacao', 'painel', 'medicamentos']:
         preview = re.sub(r'(<section id="'+page+r'"[^>]*?) hidden>', r'\1>', preview, count=1)
     preview = preview.replace('<title>Crabcare — Entrar</title>', '<title>Crabcare — Demonstração</title>', 1)
     (ROOT / 'demonstracao.html').write_text(preview)
