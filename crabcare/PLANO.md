@@ -1,36 +1,80 @@
-# Fluxo do MVP Crabcare
+# Demonstração Crabcare: paciente e equipe clínica
 
-- Login visual paciente/1234, com a identidade verde das outras telas. Sem os três atalhos de cuidados e sem textos descritivos adicionais.
-- O início é o acompanhamento: seis rostinhos originais da escala de dor e seleção curta de sintomas juntos no mesmo cartão.
-- Marcar cansaço, enjoo, falta de ar, sonolência, falta de apetite ou febre; ou nenhum outro sintoma.
-- O alerta aparece na própria tela inicial, logo abaixo das escolhas. Não existe aba Meu painel nem página separada de sintomas ou escala de dor.
-- O alerta segue a composição visual do slide: faixa de estado, resumo do paciente, dor e sintomas associados, plano de ação e botões. Mostrar apenas as escolhas reais da sessão; não inventar exames, temperatura, leito ou diagnóstico.
-- Alimentação tem três opções: comi bem, comi pouco ou não consegui comer.
+## Rotas independentes
+
+- `/crabcare/pac/`: paciente, com login visual `paciente1` / `1234`.
+- `/crabcare/doc/`: equipe clínica, com login visual `medico1` / `1234`.
+- `/crabcare/`: encaminha apenas para `/crabcare/pac/`.
+
+Não incluir botão, link, seletor de perfil ou acesso à tela médica na interface do paciente.
+
+## Pacientes de demonstração
+
+`dados-demo.json` define os usuários, seus IDs estáveis, os vínculos com o médico e os relatos iniciais.
+
+- `medico1`: responsável pelos pacientes 1 a 6.
+- `paciente1`: nossa sessão interativa; começa sem respostas, exceto quando já existe um relato salvo.
+- `paciente2`: dor intensa, febre e enjoo.
+- `paciente3`: dor moderada e cansaço.
+- `paciente4`: dor muito intensa e falta de ar.
+- `paciente5`: dor leve e nenhum outro sintoma.
+- `paciente6`: sem dor, com enjoo e falta de apetite.
+
+Todos usam senha visual 1234, definida somente nos campos de login. O JSON não contém senhas. É possível entrar como paciente2, paciente3 etc. para alterar registros separados.
+
+A primeira leitura carrega apenas os pacientes ausentes do armazenamento. Reabrir a página ou regenerar os HTMLs não sobrescreve registros nem ações médicas já salvos. Para acrescentar pacientes, adicionar um ID único ao JSON com o `doctorId` correspondente e executar o gerador. Os novos pacientes serão acrescentados na próxima leitura. Edições em cenários já gravados não reinicializam dados do navegador.
+
+O usuário antigo `paciente` é reconhecido como `paciente1`; o usuário antigo `medico` aponta para `medico1`. Relatos antigos são preservados nessa migração. Outros registros antigos não são removidos.
+
+## Fluxo do paciente
+
+- Uma escala de dor na tela inicial, com os seis rostinhos originais e os sintomas juntos.
+- Sintomas: cansaço, enjoo, falta de ar, sonolência, falta de apetite ou febre; ou nenhum outro sintoma.
+- Alimentação: comi bem, comi pouco ou não consegui comer.
 - Agenda de medicamentos com horários marcáveis.
-- Barra inferior sempre no rodapé; somente o conteúdo central rola dentro da tela. Mensagens de retorno ficam acima da barra. A prévia com várias telas também mantém a navegação no rodapé.
+- Salvar cada alteração automaticamente. Recuperar o último registro do mesmo usuário ao entrar novamente.
+- Mostrar o retorno de relato visto pela equipe quando corresponder à versão atual do registro.
 
-## Combinações visuais da demonstração
+## Fluxo profissional
 
-| Escolhas | Destaque |
-| --- | --- |
-| Dor muito intensa ou pior dor possível | Crítico |
-| Dor intensa + febre ou falta de ar | Crítico |
-| Febre + falta de ar | Crítico |
-| Dor moderada/intensa ou qualquer sintoma associado, sem condição crítica | Atenção |
-| Sem dor/leve e sem outro sintoma | Registro simples, sem cartão de alerta |
-| Nada informado | Aguardando escolhas |
+- Ler os registros dos pacientes no armazenamento compartilhado.
+- Listar somente os pacientes vinculados ao médico conectado, com prioridade para alertas críticos; permitir filtrar alertas.
+- Entrar como medico1 seleciona paciente1, mantendo os outros pacientes disponíveis na lista.
+- Pacientes sem respostas aparecem como aguardando relato, sem contar como relato não visto.
+- Mostrar dor, sintomas, alimentação, combinação e última atualização recebidos do paciente.
+- Exibir faixa de alerta, resumo, plano de ação e botões de acompanhamento inspirados no slide do projeto.
+- Marcar relato como visto e simular chamada da enfermagem. Registrar essas ações localmente.
+- Se o paciente atualizar o relato, mostrar novamente como não visto. Impedir ação sobre uma versão antiga sem revisar a atualização.
+- Não inventar exames, temperatura, leito, diagnóstico ou iniciar protocolo de antibiótico com dados que não foram fornecidos.
 
-Recalcular ao mudar as escolhas, mostrando a combinação que originou o destaque. O contato com a equipe é simulado e não resolve automaticamente o estado do relato. Essas regras são somente do MVP, não um protocolo clínico validado. Dados somente na sessão.
+## localStorage
 
-Não adicionar selects, perguntas de evolução de dor ou bem-estar, questionários numéricos, rotina ou autocuidado. As escalas clínicas e o pitch são contexto, não um pedido para obrigar o paciente a responder todos os instrumentos. Ícone de alimentação só com talheres, sem prato. Preservar `icones.svg`. Não usar áudios.
+`shared.js` concentra armazenamento, validação dos registros e regras de alerta para ambos os lados. A chave é `crabcare.reports.v1`, com versão 1 e uma lista de registros por ID estável do paciente, com `doctorId` separado. Senhas e campos de login não são armazenados.
 
-## Arquivos
+As telas atualizam com o evento `storage` e releem os registros ao recuperar foco. O médico também tem Atualizar. A revisão do médico usa a versão de atualização do paciente; uma revisão antiga não marca automaticamente um novo relato como visto.
 
-- `index.html`: aplicativo com CSS, JS e SVG incorporados.
-- `app.js`: componentes, navegação, registros e combinações do alerta.
-- `style.css`: identidade visual e Tailwind Browser 4.3.3 CDN para distribuição.
+O compartilhamento exige o mesmo navegador/perfil e a mesma origem (protocolo, domínio e porta). Funciona entre `/pac/` e `/doc/` no mesmo site. Arquivos `file://` separados e prévias isoladas não garantem compartilhamento. Não há sincronização entre navegadores, dispositivos ou usuários remotos. Não instalar servidor ou dependências para esta tarefa.
+
+## Regras de demonstração
+
+- Dor muito intensa/pior dor: crítico.
+- Dor intensa + febre ou falta de ar: crítico.
+- Febre + falta de ar: crítico.
+- Dor moderada/intensa ou outro sintoma, sem combinação crítica: atenção.
+- Sem dor/leve sem outros sintomas: registro simples.
+
+São regras visuais do MVP, não protocolo clínico validado. Ações da equipe são simuladas.
+
+## Organização
+
+- `pac/index.html`: fonte da tela do paciente.
+- `doc/index.html` e `doc/app.js`: fonte e comportamento da equipe clínica.
+- `app.js`: componentes e comportamento do paciente.
+- `shared.js`: regras, inicialização dos pacientes e persistência compartilhadas.
+- `dados-demo.json`: médico, pacientes, vínculos e cenários iniciais. O gerador incorpora esse JSON nos HTMLs para não depender de fetch ou servidor.
+- `style.css`: identidade comum; Tailwind Browser 4.3.3 via CDN.
 - `icones.svg`: rostinhos originais preservados.
-- `demonstracao.html`: início, alimentação e medicamentos abertos para visualização.
-- `atualizar_previa.py`: executar `python3 atualizar_previa.py` dentro de `crabcare` após alterar os fontes para sincronizar os HTMLs.
+- `demonstracao.html`: prévia das telas do paciente, sem acesso médico.
+- `atualizar_previa.py`: incorpora os fontes em ambos os HTMLs e atualiza a prévia. Rodar `python3 atualizar_previa.py` dentro de `crabcare` após editar os fontes.
 
-Sem npm, servidor ou fontes externas. O CDN do Tailwind precisa de internet. Não executar push automaticamente.
+Manter os HTMLs autocontidos para visualização. Sem selects, questionários longos, áudios, fontes externas ou prato no ícone de alimentação. A barra inferior fica no rodapé e somente o conteúdo central rola. Fazer push quando solicitado pelo usuário.

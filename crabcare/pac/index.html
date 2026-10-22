@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Crabcare — Paciente</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3"></script>
+    <!-- styles:start -->
+<style>
+:root { font-family: system-ui, sans-serif; color: #25312b; background: #f4f7f3; color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, select { font: inherit; }
+button, a, label:has(input) { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+button:disabled { cursor: default; opacity: .5; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid #2563eb; outline-offset: 4px; }
+input { background: #fff; color: #25312b; }
+.ui-icon { width: 1.4rem; height: 1.4rem; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.svg-library { position: absolute; width: 0; height: 0; overflow: hidden; }
+.cc-card { background: #fff; border: 1px solid #e3e9df; border-radius: 1.25rem; box-shadow: 0 4px 18px #344d2507; }
+.cc-inset { border: 1px solid #e6ebdf; border-radius: .85rem; background: #f7f9f4; }
+.cc-button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; padding: .8rem 1rem; border: 1px solid #63934b; border-radius: .75rem; background: #63934b; color: #fff; font-weight: 600; line-height: 1.3; text-align: center; transition: background .15s; }
+.cc-button:hover { background: #4e7839; }
+.cc-button.secondary { background: #fff; color: #4e7839; }
+.cc-button.secondary:hover { background: #f0f5e9; }
+.cc-button.blue { background: #0066cc; border-color: #0066cc; }
+.cc-button.blue:hover { background: #0052a3; }
+.cc-round { display: inline-grid; place-items: center; width: 2.6rem; height: 2.6rem; border-radius: 50%; border: 1px solid #e4eadf; background: #fff; color: #6b9256; }
+.cc-field { width: 100%; padding: .85rem; border: 1.5px solid #cbd5c6; border-radius: .6rem; background: #fff; }
+.brand { display: inline-flex; align-items: center; gap: .4rem; background: transparent; border: 0; color: #7aa358; font-size: 1.4rem; font-weight: 750; letter-spacing: -.055em; }
+.brand-leaves { width: 1.65rem; height: 1.75rem; position: relative; }
+.brand-leaves i { position: absolute; width: .55rem; height: 1rem; border-radius: 90% 0 90% 0; background: #9ebc70; left: .6rem; top: 0; transform: rotate(-15deg); }
+.brand-leaves i:nth-child(2) { left: 0; top: .65rem; transform: rotate(-65deg); background: #86aa59; }
+.brand-leaves i:nth-child(3) { left: 1rem; top: .7rem; transform: rotate(30deg); background: #b8cc8f; }
+.welcome-background { background: radial-gradient(ellipse at 95% 0%,#eef5dc,transparent 55%),#fff; }
+.face-option { display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: .65rem; position: relative; padding: 1rem .4rem; border: 1.5px solid transparent; border-radius: .9rem; text-align: center; cursor: pointer; transition: background .15s; }
+.face-option.pain-option { background: #fff; border-color: #dfe5da; }
+.face-option input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.face-option:has(input:checked) { background: #eff6e6; border-color: #7fa55d; box-shadow: 0 0 0 1px #7fa55d; }
+.face-option:has(input:focus-visible), .choice:has(input:focus-visible), .dose:has(input:focus-visible) { outline: 3px solid #2563eb; outline-offset: 3px; }
+.face-art { width: 100%; max-width: 4.5rem; aspect-ratio: 1; overflow: visible; filter: drop-shadow(0 4px 5px #4b50272a); }
+.face-option > span { font-size: .8rem; line-height: 1.3; }
+.choice { display: flex; align-items: center; justify-content: center; gap: .5rem; padding: .8rem .5rem; border: 1px solid #dfe5da; border-radius: .75rem; cursor: pointer; font-size: .85rem; background: #fff; }
+.choice input { accent-color: #63934b; }
+.choice:has(input:checked) { background: #eff6e6; border-color: #7fa55d; }
+.action-tile { display: flex; flex-direction: column; align-items: center; gap: .75rem; padding: 1.25rem .4rem; background: #fff; border: 1px solid #e8ede2; border-radius: .85rem; box-shadow: 0 3px 9px #54643b0b; font-size: .8rem; }
+.action-tile:hover { background: #f6f9ef; }
+.action-tile .ui-icon { width: 2rem; height: 2rem; }
+.alert-card { --tone: #64748b; --tint: #f1f5f9; border: 1px solid var(--tone); border-radius: 1.35rem; overflow: hidden; background: #fff; }
+.alert-card[data-level="critical"] { --tone: #b82222; --tint: #fff1ef; }
+.alert-card[data-level="attention"] { --tone: #9a600b; --tint: #fff8e7; }
+.alert-card[data-level="calm"] { --tone: #4c7a35; --tint: #f1f7eb; }
+.alert-heading { background: var(--tone); color: #fff; }
+.alert-message { background: var(--tint); color: var(--tone); border: 1px solid color-mix(in srgb,var(--tone) 20%,transparent); border-radius: .8rem; }
+.alert-card .alert-action { background: var(--tone); border-color: var(--tone); }
+.alert-dot { width: .55rem; height: .55rem; background: #aab3a5; border-radius: 50%; }
+.alert-dot[data-level="critical"] { background: #c72d2d; }
+.alert-dot[data-level="attention"] { background: #c68720; }
+.alert-dot[data-level="calm"] { background: #6e9a53; }
+.app-nav { border-top: 1px solid #e3e9dd; background: #fffffff5; backdrop-filter: blur(12px); box-shadow: 0 -4px 15px #384d2505; padding-bottom: max(.65rem,env(safe-area-inset-bottom)); }
+.nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem; padding: .75rem .2rem; border: 0; background: transparent; border-radius: .75rem; color: #7b8578; font-size: clamp(.6rem,1.8vw,.75rem); text-decoration: none; }
+.nav-item[aria-current="page"] { color: #4d7837; background: #eef5e7; font-weight: 600; }
+.nav-item:hover { background: #f4f7ef; }
+.dose { display: flex; flex-direction: column; align-items: center; gap: .35rem; padding: .5rem .1rem; border-radius: .6rem; cursor: pointer; position: relative; }
+.dose input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.dose-mark { display: grid; place-items: center; width: 1.2rem; height: 1.2rem; border: 1.5px solid #a1aba0; border-radius: 50%; }
+.dose-mark .ui-icon { width: .8rem; height: .8rem; visibility: hidden; stroke-width: 3; }
+.dose:has(input:checked) { background: #eaf3e0; }
+.dose input:checked + .dose-mark { background: #619846; color: #fff; border-color: #619846; }
+.dose input:checked + .dose-mark .ui-icon { visibility: visible; }
+.medicine-icon { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; flex-shrink: 0; border-radius: 50%; background: #e5edfb; color: #447ab5; }
+.medicine-icon[data-color="orange"] { background: #fbedda; color: #c78538; }
+.medicine-icon[data-color="green"] { background: #e9f2df; color: #70964c; }
+progress { accent-color: #418bce; }
+.app-shell { display: flex; flex-direction: column; width: 100%; max-width: 54rem; height: 100dvh; min-height: 0; overflow: hidden; }
+.app-shell > [data-page] { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; }
+.app-shell > .app-nav { position: static; flex-shrink: 0; }
+.app-shell > .global-feedback { flex-shrink: 0; }
+.preview-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.5rem; max-width: 86rem; padding: 1.5rem; border: 0; background: transparent; }
+.preview-grid > [data-page] { min-width: 0; border: 1px solid #e3e9df; border-radius: 1.25rem; background-color: #fff; align-self: start; }
+.preview-grid > nav, .preview-grid > .global-feedback { grid-column: 1 / -1; }
+@media(min-width: 90rem) { .preview-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media(max-width: 54rem) { .preview-grid { grid-template-columns: minmax(0,1fr); max-width: 36rem; padding: .75rem; } }
+
+/* Atalhos de cuidado: mesma proporção e traço para os três ícones. */
+.care-icon { display: inline-grid; place-items: center; width: 3.5rem; height: 3.5rem; flex-shrink: 0; border-radius: 1rem; }
+.care-icon .ui-icon { width: 2rem; height: 2rem; stroke-width: 1.65; }
+.symptoms-icon { color: #568eab; background: #edf5fa; }
+.nutrition-icon { color: #73954c; background: #f0f5e7; }
+.pain-icon { color: #cf6262; background: #fceeee; }
+.symptom-choice { justify-content: flex-start; min-height: 3.1rem; padding: .9rem 1rem; }
+textarea { font: inherit; }
+.action-tile { gap: .5rem; }
+@media (max-width: 24rem) { .action-tile { padding: 1rem .25rem; } .care-icon { width: 3rem; height: 3rem; } }
+
+.preview-grid #inicio [data-component="pain"] { grid-template-columns: repeat(3,minmax(0,1fr)); }
+
+/* A mesma identidade de cuidado começa no login. */
+.login-screen { background: radial-gradient(ellipse at 15% 15%,#e5efd5,transparent 55%),radial-gradient(ellipse at 90% 85%,#edf3e3,transparent 45%),#f6f8f3; }
+.login-surface { box-shadow: 0 16px 60px #526b3410; border-color: #dde7d3; }
+.login-intro { background: radial-gradient(ellipse at top left,#eef5df,transparent 80%),#f8fbf4; border-bottom: 1px solid #e3ebda; }
+.login-intro .brand { font-size: 1.8rem; }
+@media(min-width: 64rem) { .login-intro { border-bottom: 0; border-right: 1px solid #e3ebda; } }
+
+/* Alerta da combinação na própria tela inicial, inspirado no slide do projeto. */
+.combined-alert { border-radius: 1.75rem 1.75rem 1.1rem 1.1rem; box-shadow: 0 5px 20px #a6252515; }
+.combined-alert[data-level="critical"] > .alert-heading { background: linear-gradient(110deg,#d32b29,#a11920); }
+.combined-alert[data-level="attention"] > .alert-heading { background: linear-gradient(110deg,#b97a1a,#90600e); }
+.combined-alert[data-level="critical"] { border-color: #bf2528; }
+.alert-emblem { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 50%; border: 1px solid #ffffff50; background: #ffffff15; font-weight: 800; font-size: 1.2rem; flex-shrink: 0; }
+.alert-patient { border: 1px solid #e6d2a8; border-radius: .85rem; overflow: hidden; background: #fbefd6; }
+.alert-patient > h3 { background: #e9bd63; color: #493714; }
+.alert-patient dt { color: #796345; }
+.alert-patient dd { color: #41372b; }
+.combined-alert .alert-action { box-shadow: 0 3px 8px #a1272525; }
+
+/* A prévia mantém a mesma barra no rodapé enquanto mostra as telas juntas. */
+.app-shell.preview-grid { height: auto; min-height: 100dvh; overflow: visible; padding-bottom: 7rem; }
+.preview-grid > [data-page] { overflow: visible; }
+.preview-grid > .app-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: calc(100% - 1.5rem); max-width: 83rem; z-index: 30; }
+@media (max-width: 54rem) { .preview-grid > .app-nav { max-width: 34.5rem; } }
+
+.doctor-shell { max-width: 68rem; }
+.doctor-role { font-size: .65rem; color: #72825e; border: 1px solid #e4eade; background: #f5f8ee; border-radius: 2rem; padding: .4rem .65rem; }
+.doctor-patient { display: flex; flex-direction: column; gap: .5rem; padding: 1rem; border: 1px solid #e0e7d7; border-left: 4px solid #a7b59b; border-radius: .85rem; text-align: left; background: #fff; }
+.doctor-patient[data-level="critical"] { border-left-color: #b82222; }
+.doctor-patient[data-level="attention"] { border-left-color: #ae7a20; }
+.doctor-patient[aria-current] { background: #f3f7ec; border-top-color: #8aa972; border-right-color: #8aa972; border-bottom-color: #8aa972; box-shadow: 0 2px 8px #567e3d10; }
+.doctor-patient:hover { background: #f7f9f3; }
+</style>
+    <!-- styles:end -->
+</head>
+<body class="min-h-dvh bg-[#f4f7f3]">
+    <!-- faces:start -->
+<svg xmlns="http://www.w3.org/2000/svg" class="svg-library" aria-hidden="true" width="0" height="0">
+    <defs>
+        <radialGradient id="grad-verde-claro" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#5ced41" />
+            <stop offset="60%" stop-color="#2bc215" />
+            <stop offset="100%" stop-color="#158206" />
+        </radialGradient>
+        <radialGradient id="grad-verde" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#a3fa8c" />
+            <stop offset="60%" stop-color="#72e655" />
+            <stop offset="100%" stop-color="#41b822" />
+        </radialGradient>
+        <radialGradient id="grad-amarelo" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#ffee42" />
+            <stop offset="60%" stop-color="#f5c400" />
+            <stop offset="100%" stop-color="#b88f00" />
+        </radialGradient>
+        <radialGradient id="grad-laranja" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#ff9d3b" />
+            <stop offset="60%" stop-color="#f56800" />
+            <stop offset="100%" stop-color="#b84500" />
+        </radialGradient>
+        <radialGradient id="grad-laranja-suave" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#ffcf85" />
+            <stop offset="60%" stop-color="#f5a642" />
+            <stop offset="100%" stop-color="#b87100" />
+        </radialGradient>
+        <radialGradient id="grad-vermelho" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#ff4a4a" />
+            <stop offset="60%" stop-color="#d91414" />
+            <stop offset="100%" stop-color="#910505" />
+        </radialGradient>
+    </defs>
+
+    <g id="face-1">
+        <circle cx="0" cy="0" r="50" fill="url(#grad-verde-claro)" />
+        <path d="M -22 -10 Q -17 -18 -12 -10" fill="none" stroke="#16590b" stroke-width="4" stroke-linecap="round" />
+        <path d="M 12 -10 Q 17 -18 22 -10" fill="none" stroke="#16590b" stroke-width="4" stroke-linecap="round" />
+        <path d="M -16 8 Q 0 26 16 8 Z" fill="#16590b" />
+    </g>
+
+    <g id="face-2">
+        <circle cx="0" cy="0" r="50" fill="url(#grad-verde)" />
+        <circle cx="-16" cy="-8" r="5" fill="#0e5404" />
+        <circle cx="16" cy="-8" r="5" fill="#0e5404" />
+        <path d="M -16 6 Q 0 20 16 6" fill="none" stroke="#0e5404" stroke-width="4" stroke-linecap="round" />
+    </g>
+
+    <g id="face-3">
+        <circle cx="0" cy="0" r="50" fill="url(#grad-amarelo)" />
+        <circle cx="-16" cy="-8" r="5" fill="#6e5400" />
+        <circle cx="16" cy="-8" r="5" fill="#6e5400" />
+        <line x1="-16" y1="12" x2="16" y2="12" stroke="#6e5400" stroke-width="4" stroke-linecap="round" />
+    </g>
+
+    <g id="face-4">
+        <circle cx="0" cy="0" r="50" fill="url(#grad-laranja-suave)" />
+        <circle cx="-16" cy="-8" r="5" fill="#612300" />
+        <circle cx="16" cy="-8" r="5" fill="#612300" />
+        <line x1="-16" y1="12" x2="16" y2="12" stroke="#612300" stroke-width="4" stroke-linecap="round" />
+    </g>
+
+    <g id="face-4-intensa">
+        <circle cx="0" cy="0" r="50" fill="url(#grad-laranja)" />
+        <circle cx="-16" cy="-8" r="5" fill="#612300" />
+        <circle cx="16" cy="-8" r="5" fill="#612300" />
+        <path d="M -16 12 Q 0 -2 16 12" fill="none" stroke="#612300" stroke-width="4" stroke-linecap="round" />
+    </g>
+
+    <g id="face-5">
+        <circle cx="0" cy="0" r="50" fill="url(#grad-vermelho)" />
+        <path d="M -22 -14 L -10 -8" stroke="#4a0202" stroke-width="4" stroke-linecap="round" />
+        <path d="M 22 -14 L 10 -8" stroke="#4a0202" stroke-width="4" stroke-linecap="round" />
+        <path d="M -20 -8 L -12 -8" stroke="#4a0202" stroke-width="4" stroke-linecap="round" />
+        <path d="M 20 -8 L 12 -8" stroke="#4a0202" stroke-width="4" stroke-linecap="round" />
+        <path d="M -14 16 Q 0 4 14 16 Q 14 2 0 2 Q -14 2 -14 16 Z" fill="#4a0202" />
+    </g>
+</svg>
+    <!-- faces:end -->
+    <main>
+        <section id="login" class="login-screen grid min-h-dvh place-items-center p-4 sm:p-8" aria-labelledby="login-titulo">
+            <div class="login-surface cc-card grid w-full max-w-4xl overflow-hidden lg:grid-cols-2">
+                <header class="login-intro flex flex-col justify-center space-y-6 p-6 sm:p-9">
+                    <p class="brand"><span class="brand-leaves" aria-hidden="true"><i></i><i></i><i></i></span>Crabcare</p>
+                    <div class="space-y-3"><p class="text-xs font-semibold uppercase tracking-widest text-[#6a904d]">Acompanhamento oncológico</p><h1 id="login-titulo" class="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">Seu cuidado,<br>todos os dias.</h1></div>
+                </header>
+                <div class="space-y-6 p-6 sm:p-9 lg:self-center">
+                    <div class="space-y-2"><h2 class="text-2xl font-bold tracking-tight">Bem-vindo de volta</h2></div>
+                    <form id="login-form" class="grid gap-3">
+                        <label for="usuario" class="text-sm font-semibold">Usuário</label>
+                        <input id="usuario" name="usuario" class="cc-field" value="paciente1" autocomplete="username" required>
+                        <label for="senha" class="mt-2 text-sm font-semibold">Senha</label>
+                        <input id="senha" name="senha" class="cc-field" type="password" value="1234" autocomplete="current-password" required>
+                        <button type="submit" class="cc-button mt-4 w-full">Entrar <span data-ui-icon="arrow"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span></button>
+                    </form>
+                    <p class="text-center text-xs text-stone-400">Crabcare · Demonstração do MVP</p>
+                </div>
+            </div>
+        </section>
+
+        <div id="aplicativo" class="app-shell mx-auto w-full bg-white sm:border-x sm:border-stone-200" hidden>
+            <section id="inicio" data-page class="welcome-background space-y-5 p-4 sm:p-7" aria-labelledby="inicio-titulo" hidden>
+                <header data-component="header">
+        <div class="flex items-center justify-between gap-3 pb-2">
+            <button type="button" class="cc-round" data-action="profile" aria-label="Meu perfil"><span data-ui-icon="user"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></span></button>
+            <button type="button" class="brand" data-action="logout" aria-label="Crabcare — voltar ao login"><span class="brand-leaves" aria-hidden="true"><i></i><i></i><i></i></span>Crabcare</button>
+            <button type="button" class="cc-round relative" data-action="alert" aria-label="Ver estado do relato"><span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span><span class="alert-dot absolute right-0 top-0" data-alert-dot></span></button>
+        </div>
+    </header>
+                <p id="storage-feedback" class="cc-inset p-4 text-sm" role="status" hidden></p>
+                <section id="home-pain-form" class="cc-card space-y-5 p-5 sm:p-6">
+                    <div><p class="mb-1 text-sm">Olá, <span data-bind="patient">Paciente 1</span>!</p><h1 id="inicio-titulo" class="text-2xl font-bold tracking-tight">Como você está hoje?</h1></div>
+                    <fieldset><legend class="mb-3 font-semibold">Escolha sua dor</legend><div class="grid grid-cols-3 gap-2 sm:grid-cols-6 sm:gap-3" data-component="pain" data-group="inicio"><label class="face-option pain-option"><input type="radio" name="pain-inicio" value="sem_dor" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-1"></use></svg><span data-label>Sem dor</span></label><label class="face-option pain-option"><input type="radio" name="pain-inicio" value="dor_leve" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-2"></use></svg><span data-label>Dor leve</span></label><label class="face-option pain-option"><input type="radio" name="pain-inicio" value="dor_moderada" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-3"></use></svg><span data-label>Dor moderada</span></label><label class="face-option pain-option"><input type="radio" name="pain-inicio" value="dor_intensa" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-4"></use></svg><span data-label>Dor intensa</span></label><label class="face-option pain-option"><input type="radio" name="pain-inicio" value="dor_muito_intensa" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-4-intensa"></use></svg><span data-label>Dor muito intensa</span></label><label class="face-option pain-option"><input type="radio" name="pain-inicio" value="pior_dor_possivel" data-field="pain" required><svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#face-5"></use></svg><span data-label>Pior dor possível</span></label></div></fieldset>
+                    <fieldset id="sintomas-escolhas" class="space-y-3">
+                        <legend class="mb-3 font-semibold">Está sentindo mais alguma coisa?</legend>
+                        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+<label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Cansaço"><span>Cansaço</span></label><label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Enjoo"><span>Enjoo</span></label><label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Falta de ar"><span>Falta de ar</span></label><label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Sonolência"><span>Sonolência</span></label><label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Sem apetite"><span>Sem apetite</span></label><label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Febre"><span>Febre</span></label></div><label class="choice symptom-choice"><input type="checkbox" name="sintoma" value="Nenhum outro sintoma"><span>Nenhum outro sintoma</span></label>
+                    </fieldset>
+                    <p id="symptoms-feedback" class="sr-only" role="status"></p>
+                    <p id="relato-status" class="flex items-center gap-2 text-sm text-stone-500" role="status"><span class="alert-dot" data-alert-dot></span><span data-bind="shortStatus">Escolha sua dor e seus sintomas</span></p>
+                    <p id="care-status" class="text-sm text-[#567e3d]" role="status" hidden></p>
+                </section>
+
+                <article id="alerta-combinacao" class="alert-card combined-alert" data-component="alert" data-level="pending" aria-labelledby="alerta-titulo" tabindex="-1" hidden>
+                    <header class="alert-heading flex items-center justify-between gap-3 px-5 py-4 sm:px-6"><h2 id="alerta-titulo" class="text-sm font-bold uppercase tracking-wide sm:text-base" data-bind="title">Alerta de atenção</h2><span class="alert-emblem" aria-hidden="true">!</span></header>
+                    <div class="space-y-4 p-4 sm:space-y-5 sm:p-6">
+                        <p class="alert-message p-4 text-center text-sm font-bold leading-relaxed sm:text-base" data-bind="reason"></p>
+                        <section class="alert-patient" aria-labelledby="resumo-alerta-titulo">
+                            <h3 id="resumo-alerta-titulo" class="px-4 py-2 text-center text-sm font-bold">Meu relato</h3>
+                            <dl class="grid grid-cols-2 gap-4 p-4 text-sm">
+                                <div><dt class="mb-1 text-xs">Paciente</dt><dd class="font-semibold" data-bind="patient">Paciente 1</dd></div>
+                                <div><dt class="mb-1 text-xs">Dor</dt><dd class="font-semibold" data-bind="painLabel">Ainda não informada</dd></div>
+                                <div class="col-span-2"><dt class="mb-1 text-xs">Sintomas associados</dt><dd class="font-semibold" data-bind="symptomSummary">Ainda não informado</dd></div>
+                                <div class="col-span-2"><dt class="mb-1 text-xs">Status</dt><dd class="font-semibold" data-bind="alertStatus"></dd></div>
+                            </dl>
+                        </section>
+                        <section class="space-y-2 text-center" aria-labelledby="plano-alerta-titulo"><h3 id="plano-alerta-titulo" class="font-bold">Próximo passo</h3><p class="text-sm leading-relaxed text-stone-600" data-bind="actionPlan"></p></section>
+                        <button type="button" id="alert-action" class="cc-button alert-action w-full" data-action="alert-primary">Registrar meu relato</button>
+                        <button type="button" class="cc-button secondary w-full" data-action="record" aria-expanded="false" aria-controls="relato-resumo">Visualizar meu relato</button>
+                        <div id="relato-resumo" class="cc-inset space-y-2 p-4 text-sm" hidden><p class="font-semibold" data-bind="combination"></p><p class="text-stone-500">Último registro: <span data-bind="recordedAt">Ainda não registrado</span></p></div>
+                        <p id="alert-feedback" class="cc-inset p-4 text-sm" role="status" hidden></p>
+                    </div>
+                </article>
+
+                <nav class="grid grid-cols-3 gap-3" aria-label="Cuidados do paciente">
+                    <button type="button" class="action-tile" data-action="symptoms"><span class="care-icon symptoms-icon" data-ui-icon="thermometer"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14.7V5a3 3 0 0 1 6 0v9.7a5 5 0 1 1-6 0Z"/><path d="M10 8v10m7-12h4m-4 4h3m-3 4h4"/><circle cx="10" cy="18.5" r="1.5" fill="currentColor" stroke="none"/></svg></span><span class="font-semibold">Sintomas</span></button>
+                    <button type="button" class="action-tile" data-screen="alimentacao"><span class="care-icon nutrition-icon" data-ui-icon="food"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3v5a2 2 0 0 0 4 0V3M6 3v18m13 0V3c-3 2-4 5-4 9h4"/></svg></span><span class="font-semibold">Alimentação</span></button>
+                    <button type="button" class="action-tile" data-action="pain"><span class="care-icon pain-icon" data-ui-icon="heart"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6Z"/><path d="M3 12h4l2-4 4 8 2-4h6"/></svg></span><span class="font-semibold">Dor</span></button>
+                </nav>
+                <p class="text-center text-xs text-stone-400">Demonstração do MVP</p>
+            </section>
+
+            <section id="alimentacao" data-page class="space-y-5 p-4 sm:p-7" aria-labelledby="alimentacao-titulo" hidden>
+                <header data-component="header">
+        <div class="flex items-center justify-between gap-3 pb-2">
+            <button type="button" class="cc-round" data-action="profile" aria-label="Meu perfil"><span data-ui-icon="user"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></span></button>
+            <button type="button" class="brand" data-action="logout" aria-label="Crabcare — voltar ao login"><span class="brand-leaves" aria-hidden="true"><i></i><i></i><i></i></span>Crabcare</button>
+            <button type="button" class="cc-round relative" data-action="alert" aria-label="Ver estado do relato"><span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span><span class="alert-dot absolute right-0 top-0" data-alert-dot></span></button>
+        </div>
+    </header>
+                <h1 id="alimentacao-titulo" class="text-2xl font-bold tracking-tight">Alimentação</h1>
+                <fieldset class="cc-card space-y-4 p-5 sm:p-6">
+                    <legend class="float-left w-full font-semibold">Como se alimentou hoje?</legend>
+                    <div class="clear-both grid gap-3">
+                        <label class="choice symptom-choice"><input type="radio" name="alimentacao" value="Comi bem"><span>Comi bem</span></label>
+                        <label class="choice symptom-choice"><input type="radio" name="alimentacao" value="Comi pouco"><span>Comi pouco</span></label>
+                        <label class="choice symptom-choice"><input type="radio" name="alimentacao" value="Não consegui comer"><span>Não consegui comer</span></label>
+                    </div>
+                </fieldset>
+                <p id="nutrition-feedback" class="min-h-5 text-sm text-[#567e3d]" role="status"></p>
+                <button type="button" class="cc-button secondary w-full" data-screen="inicio">Voltar ao início</button>
+            </section>
+
+            <section id="medicamentos" data-page class="space-y-5 p-4 sm:p-7" aria-labelledby="medicamentos-titulo" hidden>
+                <header data-component="header">
+        <div class="flex items-center justify-between gap-3 pb-2">
+            <button type="button" class="cc-round" data-action="profile" aria-label="Meu perfil"><span data-ui-icon="user"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></span></button>
+            <button type="button" class="brand" data-action="logout" aria-label="Crabcare — voltar ao login"><span class="brand-leaves" aria-hidden="true"><i></i><i></i><i></i></span>Crabcare</button>
+            <button type="button" class="cc-round relative" data-action="alert" aria-label="Ver estado do relato"><span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span><span class="alert-dot absolute right-0 top-0" data-alert-dot></span></button>
+        </div>
+    </header>
+                <div><p class="text-xs font-semibold uppercase tracking-widest text-[#6a904d]">Meu cuidado</p><h1 id="medicamentos-titulo" class="mt-1 text-2xl font-bold tracking-tight">Medicamentos de hoje</h1><p class="mt-2 text-sm text-stone-500">Seus horários, em um só lugar.</p></div>
+                <article class="cc-card divide-y divide-stone-100 px-4 sm:px-5" aria-label="Agenda de medicamentos" data-component="medicines"><section class="py-5"><header class="flex items-center gap-3"><span class="medicine-icon" data-color="blue"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7"/></svg></span><div class="min-w-0 flex-1"><h2 class="text-sm font-semibold">Morfina 10 mg</h2><p class="mt-1 text-xs text-stone-500">Tomar a cada 6 horas</p></div><span class="text-xs">6/6 h</span></header><div class="mt-3 grid grid-flow-col auto-cols-fr gap-1 sm:ml-12"><label class="dose"><input type="checkbox" data-medicine="0" data-time="00:00" aria-label="Morfina 10 mg, dose das 00:00"><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="00:00">00:00</time></label><label class="dose"><input type="checkbox" data-medicine="0" data-time="06:00" aria-label="Morfina 10 mg, dose das 06:00"><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="06:00">06:00</time></label><label class="dose"><input type="checkbox" data-medicine="0" data-time="12:00" aria-label="Morfina 10 mg, dose das 12:00" checked><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="12:00">12:00</time></label><label class="dose"><input type="checkbox" data-medicine="0" data-time="18:00" aria-label="Morfina 10 mg, dose das 18:00"><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="18:00">18:00</time></label></div></section><section class="py-5"><header class="flex items-center gap-3"><span class="medicine-icon" data-color="orange"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7"/></svg></span><div class="min-w-0 flex-1"><h2 class="text-sm font-semibold">Ondansetrona 8 mg</h2><p class="mt-1 text-xs text-stone-500">Tomar a cada 8 horas</p></div><span class="text-xs">8/8 h</span></header><div class="mt-3 grid grid-flow-col auto-cols-fr gap-1 sm:ml-12"><label class="dose"><input type="checkbox" data-medicine="1" data-time="08:00" aria-label="Ondansetrona 8 mg, dose das 08:00" checked><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="08:00">08:00</time></label><label class="dose"><input type="checkbox" data-medicine="1" data-time="16:00" aria-label="Ondansetrona 8 mg, dose das 16:00"><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="16:00">16:00</time></label><label class="dose"><input type="checkbox" data-medicine="1" data-time="00:00" aria-label="Ondansetrona 8 mg, dose das 00:00"><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="00:00">00:00</time></label></div></section><section class="py-5"><header class="flex items-center gap-3"><span class="medicine-icon" data-color="green"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7"/></svg></span><div class="min-w-0 flex-1"><h2 class="text-sm font-semibold">Pregabalina 75 mg</h2><p class="mt-1 text-xs text-stone-500">Tomar a cada 12 horas</p></div><span class="text-xs">12/12 h</span></header><div class="mt-3 grid grid-flow-col auto-cols-fr gap-1 sm:ml-12"><label class="dose"><input type="checkbox" data-medicine="2" data-time="08:00" aria-label="Pregabalina 75 mg, dose das 08:00" checked><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="08:00">08:00</time></label><label class="dose"><input type="checkbox" data-medicine="2" data-time="20:00" aria-label="Pregabalina 75 mg, dose das 20:00"><span class="dose-mark" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span><time class="text-xs" datetime="20:00">20:00</time></label></div></section></article>
+                <section class="rounded-xl border border-sky-200 bg-sky-50 p-5" aria-labelledby="status-titulo">
+                    <h2 id="status-titulo" class="mb-4 font-semibold">Status de hoje</h2>
+                    <div class="flex items-center gap-4">
+                        <span class="text-sky-600" data-ui-icon="check"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span>
+                        <div class="min-w-0 flex-1"><p id="dose-text" class="text-sm">3 de 3 medicamentos</p><progress id="dose-progress" class="my-2 block h-2 w-full" value="3" max="3" aria-label="Medicamentos com uma dose marcada"></progress><p class="text-xs text-stone-500">Medicamentos com pelo menos uma dose marcada</p></div>
+                        <strong id="dose-count" class="text-sm">3/3</strong>
+                    </div>
+                </section>
+                <p class="text-center text-xs text-stone-400">Agenda fictícia do MVP · Toque nos horários para marcar as doses</p>
+            </section>
+
+            <p id="app-feedback" class="global-feedback mx-4 my-3 rounded-xl border border-lime-200 bg-lime-50 p-4 text-sm sm:mx-7" role="status" hidden></p>
+            <nav class="app-nav z-10 grid grid-cols-5 gap-1 px-2 pt-2" aria-label="Navegação principal" data-component="navigation"><button type="button" class="nav-item" data-screen="inicio"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10H5V10m5 10v-6h4v6"/></svg><span>Início</span></button><button type="button" class="nav-item" data-action="alert"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg><span>Alertas</span></button><button type="button" class="nav-item" data-screen="alimentacao"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3v5a2 2 0 0 0 4 0V3M6 3v18m13 0V3c-3 2-4 5-4 9h4"/></svg><span>Alimentação</span></button><button type="button" class="nav-item" data-screen="medicamentos"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7"/></svg><span>Medicamentos</span></button><button type="button" class="nav-item" data-action="logout"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H4v16h6m4-12 4 4-4 4m-6-4h12"/></svg><span>Sair</span></button></nav>
+        </div>
+    </main>
+
+<!-- Componentes nativos: clones compartilham estrutura e comportamento. -->
+    <template id="header-template">
+        <div class="flex items-center justify-between gap-3 pb-2">
+            <button type="button" class="cc-round" data-action="profile" aria-label="Meu perfil"><span data-ui-icon="user"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></span></button>
+            <button type="button" class="brand" data-action="logout" aria-label="Crabcare — voltar ao login"><span class="brand-leaves" aria-hidden="true"><i></i><i></i><i></i></span>Crabcare</button>
+            <button type="button" class="cc-round relative" data-action="alert" aria-label="Ver estado do relato"><span data-ui-icon="bell"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4"/></svg></span><span class="alert-dot absolute right-0 top-0" data-alert-dot></span></button>
+        </div>
+    </template>
+    <template id="face-option-template">
+        <label class="face-option">
+            <input type="radio" required>
+            <svg class="face-art" viewBox="-50 -50 100 100" aria-hidden="true"><use></use></svg>
+            <span data-label></span>
+        </label>
+    </template>
+    <template id="medicine-template">
+        <section class="py-5">
+            <header class="flex items-center gap-3"><span class="medicine-icon" data-color><span data-ui-icon="pill"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7"/></svg></span></span><div class="min-w-0 flex-1"><h2 class="text-sm font-semibold" data-name></h2><p class="mt-1 text-xs text-stone-500" data-frequency></p></div><span class="text-xs" data-interval></span></header>
+            <div class="mt-3 grid grid-flow-col auto-cols-fr gap-1 sm:ml-12" data-times></div>
+        </section>
+    </template>
+<!-- shared:start -->
+<script>
+'use strict';
+
+// shared-config:start
+const CRABCARE_CONFIG = {
+    "PAIN_OPTIONS": [
+        {
+            "value": "sem_dor",
+            "label": "Sem dor",
+            "face": "face-1",
+            "severity": 0
+        },
+        {
+            "value": "dor_leve",
+            "label": "Dor leve",
+            "face": "face-2",
+            "severity": 1
+        },
+        {
+            "value": "dor_moderada",
+            "label": "Dor moderada",
+            "face": "face-3",
+            "severity": 2
+        },
+        {
+            "value": "dor_intensa",
+            "label": "Dor intensa",
+            "face": "face-4",
+            "severity": 3
+        },
+        {
+            "value": "dor_muito_intensa",
+            "label": "Dor muito intensa",
+            "face": "face-4-intensa",
+            "severity": 4
+        },
+        {
+            "value": "pior_dor_possivel",
+            "label": "Pior dor possível",
+            "face": "face-5",
+            "severity": 5
+        }
+    ],
+    "STORAGE_KEY": "crabcare.reports.v1"
+};
+// shared-config:end
+
+// demo-data:start
+const CRABCARE_DEMO = {
+    "version": 1,
+    "defaultPatientId": "paciente1",
+    "defaultDoctorId": "medico1",
+    "doctors": [
+        {
+            "id": "medico1",
+            "name": "Médico 1"
+        }
+    ],
+    "patients": [
+        {
+            "id": "paciente1",
+            "name": "Paciente 1",
+            "doctorId": "medico1",
+            "minutesAgo": 0,
+            "report": {
+                "pain": null,
+                "symptoms": null,
+                "nutrition": null,
+                "doses": null
+            }
+        },
+        {
+            "id": "paciente2",
+            "name": "Paciente 2",
+            "doctorId": "medico1",
+            "minutesAgo": 15,
+            "report": {
+                "pain": "dor_intensa",
+                "symptoms": [
+                    "Febre",
+                    "Enjoo"
+                ],
+                "nutrition": "Comi pouco",
+                "doses": [
+                    "0:12:00",
+                    "1:08:00"
+                ]
+            }
+        },
+        {
+            "id": "paciente3",
+            "name": "Paciente 3",
+            "doctorId": "medico1",
+            "minutesAgo": 35,
+            "report": {
+                "pain": "dor_moderada",
+                "symptoms": [
+                    "Cansaço"
+                ],
+                "nutrition": "Comi bem",
+                "doses": [
+                    "0:12:00",
+                    "1:08:00",
+                    "2:08:00"
+                ]
+            }
+        },
+        {
+            "id": "paciente4",
+            "name": "Paciente 4",
+            "doctorId": "medico1",
+            "minutesAgo": 55,
+            "report": {
+                "pain": "dor_muito_intensa",
+                "symptoms": [
+                    "Falta de ar"
+                ],
+                "nutrition": "Não consegui comer",
+                "doses": [
+                    "1:08:00"
+                ]
+            }
+        },
+        {
+            "id": "paciente5",
+            "name": "Paciente 5",
+            "doctorId": "medico1",
+            "minutesAgo": 80,
+            "report": {
+                "pain": "dor_leve",
+                "symptoms": [
+                    "Nenhum outro sintoma"
+                ],
+                "nutrition": "Comi bem",
+                "doses": [
+                    "0:12:00",
+                    "1:08:00",
+                    "2:08:00"
+                ]
+            }
+        },
+        {
+            "id": "paciente6",
+            "name": "Paciente 6",
+            "doctorId": "medico1",
+            "minutesAgo": 110,
+            "report": {
+                "pain": "sem_dor",
+                "symptoms": [
+                    "Enjoo",
+                    "Sem apetite"
+                ],
+                "nutrition": "Comi pouco",
+                "doses": [
+                    "1:08:00",
+                    "2:08:00"
+                ]
+            }
+        }
+    ]
+};
+// demo-data:end
+
+(function () {
+    const { PAIN_OPTIONS, STORAGE_KEY } = CRABCARE_CONFIG;
+function evaluateReport(state) {
+    const pain = PAIN_OPTIONS.find(option => option.value === state.pain);
+    const symptoms = (state.symptoms || []).filter(value => value !== 'Nenhum outro sintoma');
+    const fever = symptoms.includes('Febre');
+    const breathing = symptoms.includes('Falta de ar');
+    const parts = [...(pain ? [pain.label] : []), ...symptoms];
+    const combination = parts.join(' + ');
+    const critical = pain?.severity >= 4 || (pain?.severity >= 3 && (fever || breathing)) || (fever && breathing);
+    if (critical) return {
+        level: 'critical', title: 'Alerta de paciente crítico',
+        reason: 'Combinação identificada: ' + combination + '.',
+        combination, status: 'Atenção prioritária',
+        action: 'Simular chamada da equipe',
+        plan: 'Compartilhar com a equipe a dor e os sintomas informados.'
+    };
+    if (pain?.severity >= 2 || symptoms.length) return {
+        level: 'attention', title: 'Alerta de atenção',
+        reason: 'Combinação identificada: ' + combination + '.',
+        combination, status: 'Relato precisa de atenção',
+        action: 'Simular contato com a equipe',
+        plan: 'Encaminhar o relato para acompanhamento da equipe.'
+    };
+    if (pain || state.symptoms) return {
+        level: 'calm', title: 'Relato registrado', reason: combination || 'Nenhum outro sintoma informado.',
+        combination, status: 'Registrado', action: '', plan: ''
+    };
+    return { level: 'pending', title: 'Escolha sua dor e seus sintomas', reason: '', combination: '', status: '', action: '', plan: '' };
+}
+    const SYMPTOMS = ['Cansaço', 'Enjoo', 'Falta de ar', 'Sonolência', 'Sem apetite', 'Febre', 'Nenhum outro sintoma'];
+    const NUTRITION = ['Comi bem', 'Comi pouco', 'Não consegui comer'];
+    function identity(value) { return String(value || '').trim().toLocaleLowerCase('pt-BR').slice(0, 80); }
+    function getPatientProfile(value) {
+        const key = identity(value);
+        if (key === 'paciente') return CRABCARE_DEMO.patients.find(patient => patient.id === CRABCARE_DEMO.defaultPatientId);
+        return CRABCARE_DEMO.patients.find(patient => identity(patient.id) === key || identity(patient.name) === key) || null;
+    }
+    function getDoctorProfile(value) {
+        const key = identity(value);
+        if (key === 'medico') return CRABCARE_DEMO.doctors.find(doctor => doctor.id === CRABCARE_DEMO.defaultDoctorId);
+        return CRABCARE_DEMO.doctors.find(doctor => identity(doctor.id) === key || identity(doctor.name) === key) || null;
+    }
+    function normalize(record) {
+        if (!record || typeof record !== 'object' || typeof record.patient !== 'string' || !record.patient.trim()) return null;
+        const profile = getPatientProfile(record.id || record.patientId || record.patient);
+        const updatedAt = typeof record.updatedAt === 'string' && Number.isFinite(Date.parse(record.updatedAt)) ? record.updatedAt : null;
+        if (!updatedAt) return null;
+        const symptoms = Array.isArray(record.symptoms) ? [...new Set(record.symptoms.filter(value => SYMPTOMS.includes(value)))] : null;
+        if (symptoms?.includes('Nenhum outro sintoma') && symptoms.length > 1) symptoms.splice(symptoms.indexOf('Nenhum outro sintoma'), 1);
+        const pain = PAIN_OPTIONS.some(option => option.value === record.pain) ? record.pain : null;
+        const nutrition = NUTRITION.includes(record.nutrition) ? record.nutrition : null;
+        const doses = Array.isArray(record.doses) ? record.doses.filter(value => typeof value === 'string' && /^[0-2]:\d{2}:\d{2}$/.test(value)) : null;
+        return {
+            id: profile?.id || identity(record.id || record.patient),
+            patient: profile?.name || record.patient.trim().slice(0, 80),
+            doctorId: profile?.doctorId || (getDoctorProfile(record.doctorId)?.id ?? CRABCARE_DEMO.defaultDoctorId),
+            pain, symptoms: symptoms?.length ? symptoms : null, nutrition, doses,
+            hasReport: !!(pain || symptoms?.length || nutrition || doses?.length),
+            recordedAt: typeof record.recordedAt === 'string' ? record.recordedAt.slice(0, 40) : null,
+            updatedAt,
+            reviewedFor: typeof record.reviewedFor === 'string' ? record.reviewedFor : null,
+            reviewedAt: typeof record.reviewedAt === 'string' ? record.reviewedAt : null,
+            reviewedBy: typeof record.reviewedBy === 'string' ? record.reviewedBy.slice(0, 80) : null,
+            careActions: Array.isArray(record.careActions) ? record.careActions.filter(action => action && typeof action.label === 'string' && typeof action.at === 'string').slice(-10).map(action => ({ label: action.label.slice(0, 150), at: action.at, doctorId: typeof action.doctorId === 'string' ? action.doctorId : CRABCARE_DEMO.defaultDoctorId })) : []
+        };
+    }
+    function readStoredReports() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const data = JSON.parse(raw);
+        if (data.version !== 1 || !Array.isArray(data.reports)) throw new Error('Formato de armazenamento não reconhecido.');
+        const unique = new Map();
+        data.reports.map(normalize).filter(Boolean).forEach(record => {
+            const previous = unique.get(record.id);
+            if (!previous || record.updatedAt > previous.updatedAt) unique.set(record.id, record);
+        });
+        return [...unique.values()];
+    }
+    function writeReports(reports) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, reports }));
+    }
+    function initializeDemo() {
+        const records = readStoredReports();
+        const ids = new Set(records.map(record => record.id));
+        let changed = false;
+        const now = Date.now();
+        CRABCARE_DEMO.patients.forEach(profile => {
+            if (ids.has(profile.id)) return;
+            const date = new Date(now - Math.max(0, Number(profile.minutesAgo) || 0) * 60000);
+            records.push(normalize({ ...profile.report, id: profile.id, patient: profile.name, doctorId: profile.doctorId, recordedAt: new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(date), updatedAt: date.toISOString() }));
+            ids.add(profile.id);
+            changed = true;
+        });
+        // Seed only missing patients. Saved reports and professional actions take precedence.
+        if (changed) writeReports(records);
+        return records;
+    }
+    function readReports(doctorId) {
+        const records = initializeDemo();
+        return doctorId ? records.filter(record => record.doctorId === doctorId) : records;
+    }
+    function getReport(value) {
+        const id = getPatientProfile(value)?.id || identity(value);
+        return readReports().find(record => record.id === id) || null;
+    }
+    function saveReport(report) {
+        const profile = getPatientProfile(report.patientId || report.id || report.patient);
+        if (!profile) throw new Error('Paciente não cadastrado na demonstração.');
+        const records = readReports();
+        const index = records.findIndex(record => record.id === profile.id);
+        const previous = index < 0 ? {} : records[index];
+        const next = normalize({
+            ...previous, id: profile.id, patient: profile.name, doctorId: profile.doctorId,
+            pain: report.pain, symptoms: report.symptoms, nutrition: report.nutrition,
+            doses: report.doses, recordedAt: report.recordedAt,
+            updatedAt: new Date(Math.max(Date.now(), (Date.parse(previous.updatedAt) || 0) + 1)).toISOString()
+        });
+        if (!next) throw new Error('Registro inválido.');
+        if (index < 0) records.push(next);
+        else records[index] = next;
+        writeReports(records);
+        return next;
+    }
+    function reviewReport(id, expectedUpdatedAt, label, doctorId) {
+        const profile = getDoctorProfile(doctorId);
+        if (!profile) throw new Error('Médico não cadastrado na demonstração.');
+        const records = readReports();
+        const record = records.find(item => item.id === id && item.doctorId === profile.id);
+        if (!record) throw new Error('O registro não está disponível para este médico.');
+        if (!record.hasReport) throw new Error('O paciente ainda não enviou um relato.');
+        if (record.updatedAt !== expectedUpdatedAt) throw new Error('O paciente atualizou o relato. Revise os novos dados antes de registrar a ação.');
+        const now = new Date().toISOString();
+        record.reviewedFor = record.updatedAt;
+        record.reviewedAt = now;
+        record.reviewedBy = profile.id;
+        if (label) record.careActions = [...record.careActions, { label, at: now, doctorId: profile.id }].slice(-10);
+        writeReports(records);
+        return record;
+    }
+    window.Crabcare = Object.freeze({ STORAGE_KEY, PAIN_OPTIONS, DEFAULT_PATIENT_ID: CRABCARE_DEMO.defaultPatientId, DEFAULT_DOCTOR_ID: CRABCARE_DEMO.defaultDoctorId, getPatientProfile, getDoctorProfile, initializeDemo, evaluateReport, readReports, getReport, saveReport, reviewReport });
+})();
+</script>
+    <!-- shared:end -->
+<!-- app:start -->
+<script>
+'use strict';
+
+// Catálogos de componentes, sem alterar os SVGs dos rostinhos.
+// catalog:start
+const COMPONENTS = {
+    "MEDICINES": [
+        {
+            "name": "Morfina 10 mg",
+            "frequency": "Tomar a cada 6 horas",
+            "interval": "6/6 h",
+            "color": "blue",
+            "times": [
+                "00:00",
+                "06:00",
+                "12:00",
+                "18:00"
+            ],
+            "checked": [
+                "12:00"
+            ]
+        },
+        {
+            "name": "Ondansetrona 8 mg",
+            "frequency": "Tomar a cada 8 horas",
+            "interval": "8/8 h",
+            "color": "orange",
+            "times": [
+                "08:00",
+                "16:00",
+                "00:00"
+            ],
+            "checked": [
+                "08:00"
+            ]
+        },
+        {
+            "name": "Pregabalina 75 mg",
+            "frequency": "Tomar a cada 12 horas",
+            "interval": "12/12 h",
+            "color": "green",
+            "times": [
+                "08:00",
+                "20:00"
+            ],
+            "checked": [
+                "08:00"
+            ]
+        }
+    ],
+    "NAVIGATION": [
+        {
+            "screen": "inicio",
+            "label": "Início",
+            "icon": "home"
+        },
+        {
+            "action": "alert",
+            "label": "Alertas",
+            "icon": "bell"
+        },
+        {
+            "screen": "alimentacao",
+            "label": "Alimentação",
+            "icon": "food"
+        },
+        {
+            "screen": "medicamentos",
+            "label": "Medicamentos",
+            "icon": "pill"
+        },
+        {
+            "action": "logout",
+            "label": "Sair",
+            "icon": "exit"
+        }
+    ],
+    "SCREEN_TITLES": {
+        "inicio": "Boas-vindas",
+        "medicamentos": "Medicamentos",
+        "alimentacao": "Alimentação"
+    },
+    "ICONS": {
+        "home": "<path d=\"m3 10 9-7 9 7v10H5V10m5 10v-6h4v6\"/>",
+        "user": "<circle cx=\"12\" cy=\"7\" r=\"4\"/><path d=\"M4 22v-3a8 8 0 0 1 16 0v3\"/>",
+        "bell": "<path d=\"M5 17h14l-2-3V9a5 5 0 0 0-10 0v5zm5 3h4\"/>",
+        "pill": "<path d=\"M9 4a5 5 0 0 1 7 7l-6 6a5 5 0 0 1-7-7zm-3 3 7 7\"/>",
+        "heart": "<path d=\"M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6Z\"/><path d=\"M3 12h4l2-4 4 8 2-4h6\"/>",
+        "list": "<rect x=\"5\" y=\"4\" width=\"14\" height=\"18\" rx=\"2\"/><path d=\"M9 2h6v4H9zm0 9h6m-6 4h6m-6 4h4\"/>",
+        "exit": "<path d=\"M10 4H4v16h6m4-12 4 4-4 4m-6-4h12\"/>",
+        "thermometer": "<path d=\"M7 14.7V5a3 3 0 0 1 6 0v9.7a5 5 0 1 1-6 0Z\"/><path d=\"M10 8v10m7-12h4m-4 4h3m-3 4h4\"/><circle cx=\"10\" cy=\"18.5\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\"/>",
+        "food": "<path d=\"M4 3v5a2 2 0 0 0 4 0V3M6 3v18m13 0V3c-3 2-4 5-4 9h4\"/>",
+        "check": "<path d=\"m5 12 4 4L19 6\"/>",
+        "arrow": "<path d=\"M4 12h16m-6-6 6 6-6 6\"/>"
+    }
+};
+// catalog:end
+const { MEDICINES, NAVIGATION, SCREEN_TITLES, ICONS } = COMPONENTS;
+const { PAIN_OPTIONS } = Crabcare;
+const state = { patientId: Crabcare.DEFAULT_PATIENT_ID, patient: Crabcare.getPatientProfile(Crabcare.DEFAULT_PATIENT_ID).name, pain: null, recordedAt: null, symptoms: null, nutrition: null };
+const app = document.getElementById('aplicativo');
+const login = document.getElementById('login');
+let loggedIn = false;
+
+function cloneTemplate(id) { return document.getElementById(id).content.cloneNode(true); }
+function icon(name) { return '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">' + ICONS[name] + '</svg>'; }
+function mountComponents() {
+    document.querySelectorAll('[data-component="header"]').forEach(element => element.replaceChildren(cloneTemplate('header-template')));
+    const pain = document.querySelector('[data-component="pain"]');
+    pain.replaceChildren();
+    PAIN_OPTIONS.forEach(option => {
+        const fragment = cloneTemplate('face-option-template');
+        const input = fragment.querySelector('input');
+        input.name = 'pain-inicio';
+        input.value = option.value;
+        input.dataset.field = 'pain';
+        fragment.querySelector('label').classList.add('pain-option');
+        fragment.querySelector('use').setAttribute('href', '#' + option.face);
+        fragment.querySelector('[data-label]').textContent = option.label;
+        pain.append(fragment);
+    });
+    const nav = document.querySelector('[data-component="navigation"]');
+    nav.replaceChildren();
+    NAVIGATION.forEach(item => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'nav-item';
+        if (item.screen) button.dataset.screen = item.screen;
+        else button.dataset.action = item.action;
+        button.innerHTML = icon(item.icon);
+        const text = document.createElement('span');
+        text.textContent = item.label;
+        button.append(text);
+        nav.append(button);
+    });
+    const medicines = document.querySelector('[data-component="medicines"]');
+    medicines.replaceChildren();
+    MEDICINES.forEach((medicine, index) => {
+        const fragment = cloneTemplate('medicine-template');
+        fragment.querySelector('[data-name]').textContent = medicine.name;
+        fragment.querySelector('[data-frequency]').textContent = medicine.frequency;
+        fragment.querySelector('[data-interval]').textContent = medicine.interval;
+        fragment.querySelector('[data-color]').dataset.color = medicine.color;
+        medicine.times.forEach(time => {
+            const label = document.createElement('label');
+            label.className = 'dose';
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.dataset.medicine = index;
+            input.dataset.time = time;
+            input.checked = medicine.checked.includes(time);
+            input.setAttribute('aria-label', medicine.name + ', dose das ' + time);
+            const mark = document.createElement('span');
+            mark.className = 'dose-mark';
+            mark.setAttribute('aria-hidden', 'true');
+            mark.innerHTML = icon('check');
+            const timeElement = document.createElement('time');
+            timeElement.className = 'text-xs';
+            timeElement.dateTime = time;
+            timeElement.textContent = time;
+            label.append(input, mark, timeElement);
+            fragment.querySelector('[data-times]').append(label);
+        });
+        medicines.append(fragment);
+    });
+
+    document.querySelectorAll('[data-ui-icon]').forEach(element => { element.innerHTML = icon(element.dataset.uiIcon); });
+}
+
+// Combinações visuais do MVP. Nenhum exame ou diagnóstico é inferido.
+function evaluateReport() { return Crabcare.evaluateReport(state); }
+function bindText(name, text) {
+    document.querySelectorAll('[data-bind="' + name + '"]').forEach(element => { element.textContent = text; });
+}
+function renderReport() {
+    const result = evaluateReport();
+    const pain = PAIN_OPTIONS.find(option => option.value === state.pain);
+    const values = {
+        patient: state.patient, title: result.level === 'critical' ? 'Seu relato precisa de atenção' : result.title, shortStatus: result.level === 'critical' ? 'Seu relato precisa de atenção' : result.title, reason: result.reason,
+        combination: result.combination, alertStatus: result.status, actionPlan: 'Avise sua equipe de cuidado sobre o que você está sentindo.',
+        painLabel: pain?.label || 'Ainda não informada', recordedAt: state.recordedAt || 'Ainda não registrado',
+        symptomSummary: state.symptoms ? state.symptoms.join(', ') : 'Ainda não informado',
+        nutritionSummary: state.nutrition || 'Ainda não informada'
+    };
+    Object.entries(values).forEach(([key, value]) => bindText(key, value));
+    const alert = document.querySelector('[data-component="alert"]');
+    alert.dataset.level = result.level;
+    alert.hidden = !['critical', 'attention'].includes(result.level);
+    document.querySelectorAll('[data-alert-dot]').forEach(dot => { dot.dataset.level = result.level; });
+    document.getElementById('alert-action').textContent = 'Registrar meu relato';
+    document.querySelectorAll('input[data-field="pain"]').forEach(input => { input.checked = input.value === state.pain; });
+}
+function showScreen(id) {
+    if (!SCREEN_TITLES[id]) return;
+    app.classList.remove('preview-grid');
+    document.querySelectorAll('[data-page]').forEach(page => { page.hidden = page.id !== id; });
+    document.querySelectorAll('.nav-item[data-screen]').forEach(button => {
+        if (button.dataset.screen === id) button.setAttribute('aria-current', 'page');
+        else button.removeAttribute('aria-current');
+    });
+    document.getElementById('app-feedback').hidden = true;
+    document.title = 'Crabcare — ' + SCREEN_TITLES[id];
+    document.getElementById(id).scrollTop = 0;
+    const heading = document.getElementById(id).querySelector('h1');
+    heading.setAttribute('tabindex', '-1');
+    heading.focus({ preventScroll: true });
+    window.scrollTo({ top: 0 });
+}
+function feedback(text) {
+    const element = document.getElementById('app-feedback');
+    element.textContent = text;
+    element.hidden = false;
+    element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function updateDoses() {
+    const total = MEDICINES.length;
+    const count = MEDICINES.filter((_, index) => document.querySelector('input[data-medicine="' + index + '"]:checked')).length;
+    document.getElementById('dose-text').textContent = count + ' de ' + total + ' medicamentos';
+    document.getElementById('dose-count').textContent = count + '/' + total;
+    document.getElementById('dose-progress').max = total;
+    document.getElementById('dose-progress').value = count;
+}
+function goToPain() {
+    showScreen('inicio');
+    document.getElementById('home-pain-form').scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+function storageMessage(text) {
+    const element = document.getElementById('storage-feedback');
+    element.textContent = text;
+    element.hidden = !text;
+}
+function restorePatient(patient) {
+    let record = null;
+    try { record = Crabcare.getReport(patient); storageMessage(''); }
+    catch {
+        storageMessage('Não foi possível recuperar o registro neste navegador.');
+        if (patient === state.patient) return;
+    }
+    const profile = Crabcare.getPatientProfile(patient);
+    Object.assign(state, { patientId: profile.id, patient: profile.name, pain: null, recordedAt: null, symptoms: null, nutrition: null, updatedAt: null });
+    if (record) Object.assign(state, { patientId: record.id, patient: record.patient, pain: record.pain, symptoms: record.symptoms, nutrition: record.nutrition, recordedAt: record.recordedAt, updatedAt: record.updatedAt });
+    document.querySelectorAll('input[name="sintoma"]').forEach(input => { input.checked = !!state.symptoms?.includes(input.value); });
+    document.querySelectorAll('input[name="alimentacao"]').forEach(input => { input.checked = input.value === state.nutrition; });
+    document.querySelectorAll('input[data-medicine]').forEach(input => {
+        const medicine = MEDICINES[Number(input.dataset.medicine)];
+        input.checked = record?.doses ? record.doses.includes(input.dataset.medicine + ':' + input.dataset.time) : medicine.checked.includes(input.dataset.time);
+    });
+    const care = document.getElementById('care-status');
+    care.hidden = !record || record.reviewedFor !== record.updatedAt;
+    care.textContent = care.hidden ? '' : 'Sua equipe visualizou este relato na demonstração.';
+    renderReport();
+    updateDoses();
+}
+function persistReport() {
+    if (!loggedIn) return false;
+    try {
+        const doses = [...document.querySelectorAll('input[data-medicine]:checked')].map(input => input.dataset.medicine + ':' + input.dataset.time);
+        const record = Crabcare.saveReport({ ...state, doses });
+        state.updatedAt = record.updatedAt;
+        document.getElementById('care-status').hidden = true;
+        storageMessage('');
+        return true;
+    } catch {
+        storageMessage('Não foi possível salvar seu registro neste navegador. Suas escolhas continuam nesta tela.');
+        return false;
+    }
+}
+window.addEventListener('storage', event => {
+    if (loggedIn && (event.key === Crabcare.STORAGE_KEY || event.key === null)) restorePatient(state.patient);
+});
+window.addEventListener('focus', () => { if (loggedIn) restorePatient(state.patient); });
+
+mountComponents();
+renderReport();
+updateDoses();
+
+document.getElementById('usuario').addEventListener('input', event => event.target.setCustomValidity(''));
+document.getElementById('login-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const input = document.getElementById('usuario');
+    const profile = Crabcare.getPatientProfile(input.value);
+    if (!profile) {
+        input.setCustomValidity('Use um paciente da demonstração, como paciente1.');
+        input.reportValidity();
+        return;
+    }
+    loggedIn = true;
+    restorePatient(profile.id);
+    login.hidden = true;
+    app.hidden = false;
+    renderReport();
+    showScreen('inicio');
+});
+document.addEventListener('change', event => {
+    const input = event.target;
+    if (!loggedIn) return;
+    if (input.matches('[data-field="pain"], input[name="sintoma"]')) document.getElementById('alert-feedback').hidden = true;
+    if (input.matches('[data-field="pain"]')) {
+        state.pain = input.value;
+        state.recordedAt = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(new Date());
+        renderReport();
+    }
+    if (input.matches('input[name="sintoma"]')) {
+        state.recordedAt = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(new Date());
+        if (input.checked) document.querySelectorAll('input[name="sintoma"]').forEach(option => {
+            if ((input.value === 'Nenhum outro sintoma' && option !== input) || (input.value !== 'Nenhum outro sintoma' && option.value === 'Nenhum outro sintoma')) option.checked = false;
+        });
+        const selected = [...document.querySelectorAll('input[name="sintoma"]:checked')];
+        state.symptoms = selected.length ? selected.map(option => option.value) : null;
+        document.getElementById('symptoms-feedback').textContent = selected.length ? 'Registrado.' : '';
+        renderReport();
+    }
+    if (input.matches('input[name="alimentacao"]')) {
+        state.nutrition = input.value;
+        document.getElementById('nutrition-feedback').textContent = 'Registrado.';
+        renderReport();
+    }
+    if (input.matches('input[data-medicine]')) updateDoses();
+    if (input.matches('[data-field="pain"], input[name="sintoma"], input[name="alimentacao"], input[data-medicine]')) persistReport();
+});
+document.addEventListener('click', event => {
+    const button = event.target.closest('button');
+    if (!button) return;
+    if (button.dataset.screen) return showScreen(button.dataset.screen);
+    switch (button.dataset.action) {
+        case 'pain': goToPain(); break;
+        case 'symptoms': showScreen('inicio'); document.getElementById('sintomas-escolhas').scrollIntoView({block: 'center', behavior: 'smooth'}); break;
+        case 'alert': {
+            showScreen('inicio');
+            const target = document.getElementById('alerta-combinacao');
+            if (target.hidden) document.getElementById('relato-status').scrollIntoView({block: 'center', behavior: 'smooth'});
+            else { target.scrollIntoView({block: 'center', behavior: 'smooth'}); target.focus({preventScroll: true}); }
+            break;
+        }
+        case 'record': {
+            const record = document.getElementById('relato-resumo');
+            record.hidden = !record.hidden;
+            button.setAttribute('aria-expanded', String(!record.hidden));
+            break;
+        }
+        case 'logout': loggedIn = false; app.hidden = true; login.hidden = false; document.title = 'Crabcare — Paciente'; document.getElementById('usuario').focus(); break;
+        case 'profile': feedback('Perfil de demonstração: ' + state.patient + '.'); break;
+        case 'alert-primary': {
+            if (persistReport()) {
+                const message = document.getElementById('alert-feedback');
+                message.textContent = 'Seu relato foi registrado.';
+                message.hidden = false;
+            }
+            break;
+        }
+    }
+});
+if (document.body.dataset.preview === 'true') {
+    loggedIn = true;
+    restorePatient(Crabcare.DEFAULT_PATIENT_ID);
+    login.hidden = true;
+    app.hidden = false;
+    app.classList.add('preview-grid');
+    document.querySelectorAll('[data-page]').forEach(page => { page.hidden = false; });
+    document.title = 'Crabcare — Demonstração';
+}
+</script>
+    <!-- app:end -->
+</body>
+</html>

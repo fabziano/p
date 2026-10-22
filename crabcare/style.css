@@ -112,3 +112,11 @@ textarea { font: inherit; }
 .preview-grid > [data-page] { overflow: visible; }
 .preview-grid > .app-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: calc(100% - 1.5rem); max-width: 83rem; z-index: 30; }
 @media (max-width: 54rem) { .preview-grid > .app-nav { max-width: 34.5rem; } }
+
+.doctor-shell { max-width: 68rem; }
+.doctor-role { font-size: .65rem; color: #72825e; border: 1px solid #e4eade; background: #f5f8ee; border-radius: 2rem; padding: .4rem .65rem; }
+.doctor-patient { display: flex; flex-direction: column; gap: .5rem; padding: 1rem; border: 1px solid #e0e7d7; border-left: 4px solid #a7b59b; border-radius: .85rem; text-align: left; background: #fff; }
+.doctor-patient[data-level="critical"] { border-left-color: #b82222; }
+.doctor-patient[data-level="attention"] { border-left-color: #ae7a20; }
+.doctor-patient[aria-current] { background: #f3f7ec; border-top-color: #8aa972; border-right-color: #8aa972; border-bottom-color: #8aa972; box-shadow: 0 2px 8px #567e3d10; }
+.doctor-patient:hover { background: #f7f9f3; }

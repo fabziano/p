@@ -68,7 +68,7 @@ def render_medicines(catalog):
                       '<div class="mt-3 grid grid-flow-col auto-cols-fr gap-1 sm:ml-12">')
         for time in medicine['times']:
             checked = ' checked' if time in medicine['checked'] else ''
-            result.append(f'<label class="dose"><input type="checkbox" data-medicine="{index}" '
+            result.append(f'<label class="dose"><input type="checkbox" data-medicine="{index}" data-time="{time}" '
                           f'aria-label="{escape(medicine["name"])}, dose das {time}"{checked}>'
                           f'<span class="dose-mark" aria-hidden="true">{icon(catalog,"check")}</span>'
                           f'<time class="text-xs" datetime="{time}">{time}</time></label>')
@@ -103,11 +103,30 @@ def prerender(html, catalog):
 
 
 def main():
-    index = ROOT / 'index.html'
+    index = ROOT / 'pac' / 'index.html'
     javascript = (ROOT / 'app.js').read_text()
     catalog = json.loads(javascript.split('const COMPONENTS = ', 1)[1].split(';\n// catalog:end', 1)[0])
+    demo = json.loads((ROOT / 'dados-demo.json').read_text())
+    patient_ids = [profile['id'] for profile in demo['patients']]
+    doctor_ids = [profile['id'] for profile in demo['doctors']]
+    if len(set(patient_ids)) != len(patient_ids) or len(set(doctor_ids)) != len(doctor_ids):
+        raise ValueError('IDs duplicados no JSON de demonstração.')
+    if demo['defaultPatientId'] not in patient_ids or demo['defaultDoctorId'] not in doctor_ids or any(profile['doctorId'] not in doctor_ids for profile in demo['patients']):
+        raise ValueError('Vínculo de paciente ou médico inválido no JSON.')
+    shared_path = ROOT / 'shared.js'
+    shared = shared_path.read_text()
+    before, block = shared.split('// demo-data:start', 1)
+    _, after = block.split('// demo-data:end', 1)
+    shared = before + '// demo-data:start\nconst CRABCARE_DEMO = ' + json.dumps(demo, ensure_ascii=False, indent=4) + ';\n// demo-data:end' + after
+    shared_path.write_text(shared)
+    config = json.loads(shared.split('const CRABCARE_CONFIG = ', 1)[1].split(';\n// shared-config:end', 1)[0])
+    catalog['PAIN_OPTIONS'] = config['PAIN_OPTIONS']
     html = prerender(index.read_text(), catalog)
+    html = re.sub(r'(<input id="usuario"[^>]*value=")[^"]*(")', lambda match: match[1] + escape(demo['defaultPatientId']) + match[2], html, count=1)
+    default_patient = next(profile for profile in demo['patients'] if profile['id'] == demo['defaultPatientId'])
+    html = re.sub(r'(data-bind="patient">)[^<]*(<)', lambda match: match[1] + escape(default_patient['name']) + match[2], html)
     html = replace_block(html, 'styles', '<style>\n' + (ROOT / 'style.css').read_text() + '</style>')
+    html = replace_block(html, 'shared', '<script>\n' + shared + '</script>')
     html = replace_block(html, 'app', '<script>\n' + javascript + '</script>')
     faces = (ROOT / 'icones.svg').read_text().replace(
         '<svg xmlns="http://www.w3.org/2000/svg">',
@@ -119,8 +138,17 @@ def main():
     preview = re.sub(r'(<div id="aplicativo" class=")([^"]+)("[^>]*?) hidden>', r'\1preview-grid \2\3>', preview, count=1)
     for page in ['inicio', 'alimentacao', 'medicamentos']:
         preview = re.sub(r'(<section id="'+page+r'"[^>]*?) hidden>', r'\1>', preview, count=1)
-    preview = preview.replace('<title>Crabcare — Entrar</title>', '<title>Crabcare — Demonstração</title>', 1)
+    preview = preview.replace('<title>Crabcare — Paciente</title>', '<title>Crabcare — Demonstração do paciente</title>', 1)
     (ROOT / 'demonstracao.html').write_text(preview)
+    doctor_path = ROOT / 'doc' / 'index.html'
+    doctor = doctor_path.read_text()
+    doctor = re.sub(r'(<input id="doc-usuario"[^>]*value=")[^"]*(")', lambda match: match[1] + escape(demo['defaultDoctorId']) + match[2], doctor, count=1)
+    default_doctor = next(profile for profile in demo['doctors'] if profile['id'] == demo['defaultDoctorId'])
+    doctor = re.sub(r'(<span id="doc-identity"[^>]*>)[^<]*(</span>)', lambda match: match[1] + escape(default_doctor['name']) + match[2], doctor, count=1)
+    doctor = replace_block(doctor, 'styles', '<style>\n' + (ROOT / 'style.css').read_text() + '</style>')
+    doctor = replace_block(doctor, 'shared', '<script>\n' + shared + '</script>')
+    doctor = replace_block(doctor, 'app', '<script>\n' + (ROOT / 'doc' / 'app.js').read_text() + '</script>')
+    doctor_path.write_text(doctor)
 
 
 if __name__ == '__main__':

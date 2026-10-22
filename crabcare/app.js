@@ -3,44 +3,6 @@
 // Catálogos de componentes, sem alterar os SVGs dos rostinhos.
 // catalog:start
 const COMPONENTS = {
-    "PAIN_OPTIONS": [
-        {
-            "value": "sem_dor",
-            "label": "Sem dor",
-            "face": "face-1",
-            "severity": 0
-        },
-        {
-            "value": "dor_leve",
-            "label": "Dor leve",
-            "face": "face-2",
-            "severity": 1
-        },
-        {
-            "value": "dor_moderada",
-            "label": "Dor moderada",
-            "face": "face-3",
-            "severity": 2
-        },
-        {
-            "value": "dor_intensa",
-            "label": "Dor intensa",
-            "face": "face-4",
-            "severity": 3
-        },
-        {
-            "value": "dor_muito_intensa",
-            "label": "Dor muito intensa",
-            "face": "face-4-intensa",
-            "severity": 4
-        },
-        {
-            "value": "pior_dor_possivel",
-            "label": "Pior dor possível",
-            "face": "face-5",
-            "severity": 5
-        }
-    ],
     "MEDICINES": [
         {
             "name": "Morfina 10 mg",
@@ -132,10 +94,12 @@ const COMPONENTS = {
     }
 };
 // catalog:end
-const { PAIN_OPTIONS, MEDICINES, NAVIGATION, SCREEN_TITLES, ICONS } = COMPONENTS;
-const state = { patient: 'paciente', pain: null, recordedAt: null, symptoms: null, nutrition: null };
+const { MEDICINES, NAVIGATION, SCREEN_TITLES, ICONS } = COMPONENTS;
+const { PAIN_OPTIONS } = Crabcare;
+const state = { patientId: Crabcare.DEFAULT_PATIENT_ID, patient: Crabcare.getPatientProfile(Crabcare.DEFAULT_PATIENT_ID).name, pain: null, recordedAt: null, symptoms: null, nutrition: null };
 const app = document.getElementById('aplicativo');
 const login = document.getElementById('login');
+let loggedIn = false;
 
 function cloneTemplate(id) { return document.getElementById(id).content.cloneNode(true); }
 function icon(name) { return '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">' + ICONS[name] + '</svg>'; }
@@ -182,6 +146,7 @@ function mountComponents() {
             const input = document.createElement('input');
             input.type = 'checkbox';
             input.dataset.medicine = index;
+            input.dataset.time = time;
             input.checked = medicine.checked.includes(time);
             input.setAttribute('aria-label', medicine.name + ', dose das ' + time);
             const mark = document.createElement('span');
@@ -202,34 +167,7 @@ function mountComponents() {
 }
 
 // Combinações visuais do MVP. Nenhum exame ou diagnóstico é inferido.
-function evaluateReport() {
-    const pain = PAIN_OPTIONS.find(option => option.value === state.pain);
-    const symptoms = (state.symptoms || []).filter(value => value !== 'Nenhum outro sintoma');
-    const fever = symptoms.includes('Febre');
-    const breathing = symptoms.includes('Falta de ar');
-    const parts = [...(pain ? [pain.label] : []), ...symptoms];
-    const combination = parts.join(' + ');
-    const critical = pain?.severity >= 4 || (pain?.severity >= 3 && (fever || breathing)) || (fever && breathing);
-    if (critical) return {
-        level: 'critical', title: 'Alerta de paciente crítico',
-        reason: 'Combinação identificada: ' + combination + '.',
-        combination, status: 'Atenção prioritária',
-        action: 'Simular chamada da equipe',
-        plan: 'Compartilhar com a equipe a dor e os sintomas informados.'
-    };
-    if (pain?.severity >= 2 || symptoms.length) return {
-        level: 'attention', title: 'Alerta de atenção',
-        reason: 'Combinação identificada: ' + combination + '.',
-        combination, status: 'Relato precisa de atenção',
-        action: 'Simular contato com a equipe',
-        plan: 'Encaminhar o relato para acompanhamento da equipe.'
-    };
-    if (pain || state.symptoms) return {
-        level: 'calm', title: 'Relato registrado', reason: combination || 'Nenhum outro sintoma informado.',
-        combination, status: 'Registrado', action: '', plan: ''
-    };
-    return { level: 'pending', title: 'Escolha sua dor e seus sintomas', reason: '', combination: '', status: '', action: '', plan: '' };
-}
+function evaluateReport() { return Crabcare.evaluateReport(state); }
 function bindText(name, text) {
     document.querySelectorAll('[data-bind="' + name + '"]').forEach(element => { element.textContent = text; });
 }
@@ -237,8 +175,8 @@ function renderReport() {
     const result = evaluateReport();
     const pain = PAIN_OPTIONS.find(option => option.value === state.pain);
     const values = {
-        patient: state.patient, title: result.title, shortStatus: result.title, reason: result.reason,
-        combination: result.combination, alertStatus: result.status, actionPlan: result.plan,
+        patient: state.patient, title: result.level === 'critical' ? 'Seu relato precisa de atenção' : result.title, shortStatus: result.level === 'critical' ? 'Seu relato precisa de atenção' : result.title, reason: result.reason,
+        combination: result.combination, alertStatus: result.status, actionPlan: 'Avise sua equipe de cuidado sobre o que você está sentindo.',
         painLabel: pain?.label || 'Ainda não informada', recordedAt: state.recordedAt || 'Ainda não registrado',
         symptomSummary: state.symptoms ? state.symptoms.join(', ') : 'Ainda não informado',
         nutritionSummary: state.nutrition || 'Ainda não informada'
@@ -248,7 +186,7 @@ function renderReport() {
     alert.dataset.level = result.level;
     alert.hidden = !['critical', 'attention'].includes(result.level);
     document.querySelectorAll('[data-alert-dot]').forEach(dot => { dot.dataset.level = result.level; });
-    document.getElementById('alert-action').textContent = result.action;
+    document.getElementById('alert-action').textContent = 'Registrar meu relato';
     document.querySelectorAll('input[data-field="pain"]').forEach(input => { input.checked = input.value === state.pain; });
 }
 function showScreen(id) {
@@ -285,20 +223,69 @@ function goToPain() {
     showScreen('inicio');
     document.getElementById('home-pain-form').scrollIntoView({ block: 'center', behavior: 'smooth' });
 }
+
+function storageMessage(text) {
+    const element = document.getElementById('storage-feedback');
+    element.textContent = text;
+    element.hidden = !text;
+}
+function restorePatient(patient) {
+    let record = null;
+    try { record = Crabcare.getReport(patient); storageMessage(''); }
+    catch {
+        storageMessage('Não foi possível recuperar o registro neste navegador.');
+        if (patient === state.patient) return;
+    }
+    const profile = Crabcare.getPatientProfile(patient);
+    Object.assign(state, { patientId: profile.id, patient: profile.name, pain: null, recordedAt: null, symptoms: null, nutrition: null, updatedAt: null });
+    if (record) Object.assign(state, { patientId: record.id, patient: record.patient, pain: record.pain, symptoms: record.symptoms, nutrition: record.nutrition, recordedAt: record.recordedAt, updatedAt: record.updatedAt });
+    document.querySelectorAll('input[name="sintoma"]').forEach(input => { input.checked = !!state.symptoms?.includes(input.value); });
+    document.querySelectorAll('input[name="alimentacao"]').forEach(input => { input.checked = input.value === state.nutrition; });
+    document.querySelectorAll('input[data-medicine]').forEach(input => {
+        const medicine = MEDICINES[Number(input.dataset.medicine)];
+        input.checked = record?.doses ? record.doses.includes(input.dataset.medicine + ':' + input.dataset.time) : medicine.checked.includes(input.dataset.time);
+    });
+    const care = document.getElementById('care-status');
+    care.hidden = !record || record.reviewedFor !== record.updatedAt;
+    care.textContent = care.hidden ? '' : 'Sua equipe visualizou este relato na demonstração.';
+    renderReport();
+    updateDoses();
+}
+function persistReport() {
+    if (!loggedIn) return false;
+    try {
+        const doses = [...document.querySelectorAll('input[data-medicine]:checked')].map(input => input.dataset.medicine + ':' + input.dataset.time);
+        const record = Crabcare.saveReport({ ...state, doses });
+        state.updatedAt = record.updatedAt;
+        document.getElementById('care-status').hidden = true;
+        storageMessage('');
+        return true;
+    } catch {
+        storageMessage('Não foi possível salvar seu registro neste navegador. Suas escolhas continuam nesta tela.');
+        return false;
+    }
+}
+window.addEventListener('storage', event => {
+    if (loggedIn && (event.key === Crabcare.STORAGE_KEY || event.key === null)) restorePatient(state.patient);
+});
+window.addEventListener('focus', () => { if (loggedIn) restorePatient(state.patient); });
+
 mountComponents();
 renderReport();
 updateDoses();
 
+document.getElementById('usuario').addEventListener('input', event => event.target.setCustomValidity(''));
 document.getElementById('login-form').addEventListener('submit', event => {
     event.preventDefault();
-    const patient = document.getElementById('usuario').value.trim() || 'paciente';
-    if (patient !== state.patient) {
-        Object.assign(state, { pain: null, recordedAt: null, symptoms: null, nutrition: null });
-        document.querySelectorAll('input[name="sintoma"], input[name="alimentacao"]').forEach(input => { input.checked = false; });
-        document.getElementById('symptoms-feedback').textContent = '';
-        document.getElementById('nutrition-feedback').textContent = '';
+    const input = document.getElementById('usuario');
+    const profile = Crabcare.getPatientProfile(input.value);
+    if (!profile) {
+        input.setCustomValidity('Use um paciente da demonstração, como paciente1.');
+        input.reportValidity();
+        return;
     }
-    state.patient = patient;
+    loggedIn = true;
+    restorePatient(profile.id);
     login.hidden = true;
     app.hidden = false;
     renderReport();
@@ -306,6 +293,7 @@ document.getElementById('login-form').addEventListener('submit', event => {
 });
 document.addEventListener('change', event => {
     const input = event.target;
+    if (!loggedIn) return;
     if (input.matches('[data-field="pain"], input[name="sintoma"]')) document.getElementById('alert-feedback').hidden = true;
     if (input.matches('[data-field="pain"]')) {
         state.pain = input.value;
@@ -328,6 +316,7 @@ document.addEventListener('change', event => {
         renderReport();
     }
     if (input.matches('input[data-medicine]')) updateDoses();
+    if (input.matches('[data-field="pain"], input[name="sintoma"], input[name="alimentacao"], input[data-medicine]')) persistReport();
 });
 document.addEventListener('click', event => {
     const button = event.target.closest('button');
@@ -349,21 +338,21 @@ document.addEventListener('click', event => {
             button.setAttribute('aria-expanded', String(!record.hidden));
             break;
         }
-        case 'logout': app.hidden = true; login.hidden = false; document.title = 'Crabcare — Entrar'; document.getElementById('usuario').focus(); break;
+        case 'logout': loggedIn = false; app.hidden = true; login.hidden = false; document.title = 'Crabcare — Paciente'; document.getElementById('usuario').focus(); break;
         case 'profile': feedback('Perfil de demonstração: ' + state.patient + '.'); break;
         case 'alert-primary': {
-            const result = evaluateReport();
-            if (result.level === 'pending' || result.level === 'calm') goToPain();
-            else {
-                const feedback = document.getElementById('alert-feedback');
-                feedback.textContent = 'Simulação: equipe avisada sobre ' + result.combination.toLowerCase() + '.';
-                feedback.hidden = false;
+            if (persistReport()) {
+                const message = document.getElementById('alert-feedback');
+                message.textContent = 'Seu relato foi registrado.';
+                message.hidden = false;
             }
             break;
         }
     }
 });
 if (document.body.dataset.preview === 'true') {
+    loggedIn = true;
+    restorePatient(Crabcare.DEFAULT_PATIENT_ID);
     login.hidden = true;
     app.hidden = false;
     app.classList.add('preview-grid');

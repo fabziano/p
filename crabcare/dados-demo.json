@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "defaultPatientId": "paciente1",
+  "defaultDoctorId": "medico1",
+  "doctors": [
+    { "id": "medico1", "name": "Médico 1" }
+  ],
+  "patients": [
+    {
+      "id": "paciente1",
+      "name": "Paciente 1",
+      "doctorId": "medico1",
+      "minutesAgo": 0,
+      "report": { "pain": null, "symptoms": null, "nutrition": null, "doses": null }
+    },
+    {
+      "id": "paciente2",
+      "name": "Paciente 2",
+      "doctorId": "medico1",
+      "minutesAgo": 15,
+      "report": { "pain": "dor_intensa", "symptoms": ["Febre", "Enjoo"], "nutrition": "Comi pouco", "doses": ["0:12:00", "1:08:00"] }
+    },
+    {
+      "id": "paciente3",
+      "name": "Paciente 3",
+      "doctorId": "medico1",
+      "minutesAgo": 35,
+      "report": { "pain": "dor_moderada", "symptoms": ["Cansaço"], "nutrition": "Comi bem", "doses": ["0:12:00", "1:08:00", "2:08:00"] }
+    },
+    {
+      "id": "paciente4",
+      "name": "Paciente 4",
+      "doctorId": "medico1",
+      "minutesAgo": 55,
+      "report": { "pain": "dor_muito_intensa", "symptoms": ["Falta de ar"], "nutrition": "Não consegui comer", "doses": ["1:08:00"] }
+    },
+    {
+      "id": "paciente5",
+      "name": "Paciente 5",
+      "doctorId": "medico1",
+      "minutesAgo": 80,
+      "report": { "pain": "dor_leve", "symptoms": ["Nenhum outro sintoma"], "nutrition": "Comi bem", "doses": ["0:12:00", "1:08:00", "2:08:00"] }
+    },
+    {
+      "id": "paciente6",
+      "name": "Paciente 6",
+      "doctorId": "medico1",
+      "minutesAgo": 110,
+      "report": { "pain": "sem_dor", "symptoms": ["Enjoo", "Sem apetite"], "nutrition": "Comi pouco", "doses": ["1:08:00", "2:08:00"] }
+    }
+  ]
+}
