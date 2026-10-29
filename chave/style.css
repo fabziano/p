@@ -1,0 +1,59 @@
+:root { color-scheme: dark; font-family: Arial, sans-serif; background: #121212; color: #fff; }
+* { box-sizing: border-box; }
+html { height: 100%; }
+body { margin: 0; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+main { display: flex; flex: 1; min-width: 0; min-height: 0; gap: 12px; padding: 12px; }
+button { font: inherit; color: inherit; border: 0; padding: 0; background: transparent; cursor: pointer; min-width: 0; }
+button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.roster { flex: 0 0 12%; display: flex; flex-direction: column; min-width: 0; min-height: 0; gap: 8px; }
+.participants { flex: 1; min-width: 0; min-height: 0; display: grid; grid-template-columns: repeat(var(--columns, 2), minmax(0, 1fr)); grid-auto-rows: max-content; align-content: center; gap: 6px; }
+.person { width: 100%; min-width: 0; }
+.person[draggable="true"] { cursor: grab; }
+.slot.drop-over .portrait { outline: 2px solid #fff; outline-offset: -2px; }
+.portrait { display: grid; place-items: center; width: 100%; aspect-ratio: 1; overflow: hidden; background: #282828; font-size: clamp(10px, 1.2vw, 24px); }
+.portrait img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.person-name { display: block; font-size: 11px; line-height: 16px; white-space: normal; overflow-wrap: anywhere; text-align: center; }
+.bracket-panel { flex: 1; min-width: 0; min-height: 0; container-type: size; }
+.bracket { --square: max(1px, min(110px, calc(100cqw / var(--slots, 8) - 8px), calc(100cqh / var(--levels, 4) - 28px))); display: flex; flex-direction: column; width: 100%; height: 100%; }
+.champion, .round { flex: 1; min-height: 0; }
+.champion { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.champion .portrait, .champion .person-name { width: var(--square); }
+.champion-dialog .portrait { background: transparent; }
+.round { display: grid; grid-template-columns: repeat(var(--matches), minmax(0, 1fr)); }
+.match { display: flex; justify-content: center; align-items: center; min-width: 0; position: relative; }
+.match::before { content: ''; position: absolute; left: 50%; top: 0; height: calc((100% - var(--square) - 16px) / 2); border-left: 1px solid #555; }
+.round:not(.final-round) .match::after { content: ''; position: absolute; top: 0; width: 50%; border-top: 1px solid #555; }
+.round:not(.final-round) .match:nth-child(odd)::after { left: 50%; }
+.round:not(.final-round) .match:nth-child(even)::after { right: 50%; }
+.fighters { display: flex; gap: 4px; }
+.slot { width: var(--square); }
+.slot .person-name { font-size: clamp(6px, .8vw, 11px); }
+dialog { width: min(94vw, calc(156dvh + 96px)); max-height: 90dvh; padding: 16px; border: 0; background: #181818; color: #fff; }
+dialog::backdrop { background: rgb(0 0 0 / .8); }
+.opponents { display: flex; gap: 16px; }
+.opponents .person { flex: 1; }
+.opponents .portrait { width: 100%; aspect-ratio: 1; }
+.opponents .person-name { font-size: 16px; line-height: 28px; }
+#status { position: fixed; left: 12px; bottom: 12px; font-size: 12px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.versus { flex: 0 0 auto; align-self: center; font-size: 24px; }
+
+[hidden] { display: none !important; }
+
+
+.slot[draggable="true"], .champion[draggable="true"] { cursor: grab; }
+.champion.drop-over .portrait { outline: 2px solid #fff; outline-offset: -2px; }
+#undo { font-size: 11px; text-align: left; }
+#undo:disabled { opacity: .3; cursor: default; }
+
+.participants { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; overflow-y: auto; gap: 8px; }
+.participants .person { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; text-align: left; }
+.participants .portrait { width: 36px; flex: 0 0 36px; }
+.participants .person-name { text-align: left; font-size: 11px; }
+.champion { cursor: pointer; }
+.champion-dialog { width: min(90vw, 78dvh); background: transparent; border: 0; outline: none; box-shadow: none; }
+.champion-dialog .opponents { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.champion-title { margin: 0; font-size: clamp(24px, 4vw, 48px); font-weight: 700; }
+.champion-dialog .portrait { width: min(100%, 58dvh); flex: 0 0 auto; }
+.champion-name { display: block; text-align: center; overflow-wrap: anywhere; font-size: clamp(20px, 3vw, 36px); font-weight: 700; }

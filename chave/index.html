@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Competição</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main>
+    <div class="roster">
+      <div id="participants" class="participants" aria-label="Participantes"></div>
+      <button id="undo" type="button" disabled>Desfazer</button>
+    </div>
+    <div class="bracket-panel" aria-label="Chave de competição"><div id="bracket" class="bracket"></div></div>
+  </main>
+  <p id="status" role="status" hidden></p>
+  <p id="notice" class="sr-only" role="status"></p>
+  <dialog id="match-dialog" aria-label="Disputa">
+    <div id="opponents" class="opponents"></div>
+  </dialog>
+</body>
+</html>
