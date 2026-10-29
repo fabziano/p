@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f0e8">
+  <title>Enviar mensagem</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main class="card form-card">
+    <h1>Enviar mensagem</h1>
+    <form id="message-form">
+      <label for="name">Nome</label>
+      <input id="name" name="name" maxlength="100" autocomplete="name" placeholder="Nome">
+      <label for="message">Mensagem</label>
+      <textarea id="message" name="message" maxlength="240" rows="4" required placeholder="Mensagem"></textarea>
+      <div class="form-bottom"><small id="counter">0 / 240</small><button type="submit">Enviar</button></div>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </form>
+  </main>
+</body>
+</html>

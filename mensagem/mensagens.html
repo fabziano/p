@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f0e8">
+  <title>Mural</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body class="wall-page">
+  <main class="wall-wrap">
+    <section id="cloud" class="cloud" aria-label="Mensagens recebidas" aria-live="polite"><p class="loading">Carregando…</p></section>
+    <button id="refresh" class="refresh" type="button" aria-label="Atualizar mural">↻</button>
+    <dialog id="message-dialog" class="message-dialog" aria-label="Mensagem" aria-describedby="dialog-message dialog-name">
+      <button class="dialog-close" type="button" aria-label="Fechar">×</button>
+      <p id="dialog-message"></p>
+      <small id="dialog-name"></small>
+    </dialog>
+  </main>
+</body>
+</html>
