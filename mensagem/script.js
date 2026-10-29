@@ -109,7 +109,7 @@
         nextIndex = 0;
       }
       if (slideshow.length) showMessage(slideshow[nextIndex++]);
-    }, 7000);
+    }, 5000);
   }
 
   function renderPuzzle() {
