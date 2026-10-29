@@ -42,6 +42,9 @@
   let messages = [];
   let loading = false;
   let lastSize = '';
+  let slideshowTimer;
+
+  dialog.addEventListener('close', () => window.clearInterval(slideshowTimer));
 
   document.querySelector('.dialog-close').addEventListener('click', () => dialog.close());
   dialog.addEventListener('click', event => {
@@ -85,10 +88,28 @@
     ).join(' ') + ' Z';
   }
 
-  function openMessage(item) {
+  function showMessage(item) {
     document.querySelector('#dialog-message').textContent = item.message;
     document.querySelector('#dialog-name').textContent = `- ${item.name}`;
+  }
+
+  function openMessage(item) {
+    window.clearInterval(slideshowTimer);
+    showMessage(item);
     dialog.showModal();
+    let nextIndex = 0;
+    let slideshow = messages.slice().reverse();
+    slideshowTimer = window.setInterval(() => {
+      if (!dialog.open) {
+        window.clearInterval(slideshowTimer);
+        return;
+      }
+      if (nextIndex >= slideshow.length) {
+        slideshow = messages.slice().reverse();
+        nextIndex = 0;
+      }
+      if (slideshow.length) showMessage(slideshow[nextIndex++]);
+    }, 7000);
   }
 
   function renderPuzzle() {
@@ -101,7 +122,7 @@
     const cellWidth = width / columns;
     const cellHeight = height / rows;
     const depth = Math.min(cellWidth, cellHeight) * .18;
-    const visible = messages.slice(-columns * rows);
+    const visible = messages.slice(-columns * rows).reverse();
     const horizontal = Array.from({ length: rows + 1 }, (_, row) =>
       Array.from({ length: columns }, (_, col) => edge(
         col * cellWidth, row * cellHeight, cellWidth, 0,
